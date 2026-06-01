@@ -1,8 +1,27 @@
+# dependencies
 node_modules/
-dist/
-build/
-.DS_Store
+.venv/
+__pycache__/
+*.pyc
+
+# environment and secrets
 .env
 .env.*
 !.env.example
+
+# build outputs
+dist/
+build/
+coverage/
+
+# temporary internal material
+docs-dev/tmp/
+docs-dev/private/
+docs-dev/reference/proprietary/
+docs-dev/reference/customer/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
 *.log

@@ -20,6 +20,7 @@ Small documentation or workflow-maintenance requests may be implemented directly
 - `docs-dev/reference/primary_authoritative/specification.md` — binding canon (ground truth).
 - `docs-dev/reference/secondary_background/` — non-binding context and examples.
 - `docs-dev/planning/current_state.md` — living "where we are"; read at session start.
+- `docs-dev/reviews/` — manual review guidance and written audits.
 - `docs/` — user-facing, publishable docs.
 
 If the repository is public, everything in it — including `docs-dev/` — is publicly visible. Never put secrets, tokens, or `.env*` files in the repository. `docs-dev/` must never reach the deployed build output (see `scripts/check-public-build.sh`).
@@ -48,7 +49,7 @@ Default workflow (see `prompt_execution_guide.md` for the full steps):
 
 ## Supporting guides
 
-`how_to_use.md` (map + daily loop), `prompt_authoring_guide.md` (writing prompts), `prompt_execution_guide.md` (running them), `prompt_iteration_guide.md` (supersede/revert), `document_contract.md` (what documents the project expects), `reviews/code_review_guide.md` (manual post-commit review checklist).
+`how_to_use.md` (map + daily loop), `prompt_authoring_guide.md` (writing prompts), `prompt_execution_guide.md` (running them), `prompt_iteration_guide.md` (supersede/revert), `document_contract.md` (what documents the project expects), `docs-dev/reviews/code_review_guide.md` (manual post-commit review checklist).
 
 ## Final response
 

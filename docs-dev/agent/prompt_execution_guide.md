@@ -17,6 +17,8 @@ Work is committed directly to `main` — one commit per prompt, no per-prompt br
 11. For public website deployment, deploy only the generated build output, and only when the prompt explicitly requires deployment.
 12. End with the required final report, citing the commit hash and the verify/checks result as evidence.
 
+Before an app scaffold exists, the project may not yet have a verify command. In that case, run only the prompt-specific checks that exist, such as manual documentation review, `bash -n scripts/*.sh`, or `bash scripts/validate-prompts.sh`.
+
 If the prompt is ambiguous, missing, or matches multiple files, stop and ask for clarification.
 
 If checks fail, do not commit or push unless the user explicitly requests a WIP commit. Report which checks failed and what was attempted, then stop.

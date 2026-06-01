@@ -16,7 +16,7 @@ The beta covers psychology, with four sub-disciplines: cognitive, social, clinic
 
 ## How it plays
 
-Each turn represents one academic term, about three months of in-game time. You allocate finite time across competing demands and live with the consequences. A full game is roughly twenty-five turns and takes about thirty minutes to play, in any modern browser, on a smartphone or a computer.
+Each turn represents an abstract career step rather than a fixed academic term. Turn duration varies by career stage, so a full game compresses roughly eighteen in-game years into about twenty-five turns and takes about thirty minutes to play, in any modern browser, on a smartphone or a computer. You allocate finite time across competing demands and live with the consequences.
 
 **Research.** Run studies, write papers, submit to journals, survive peer review. Each paper is tracked individually, with its own co-authors, journal, methodology, and citation trajectory. Where you publish and with whom matters; so does what you put your name on.
 

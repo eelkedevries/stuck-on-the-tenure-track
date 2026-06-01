@@ -17,3 +17,7 @@ This project uses direct commits to `main`, so review happens after each commit 
 ## When review finds a problem
 
 Do not amend or force-push committed prompt work. Create a superseding prompt such as `004b_title_screen_fix.md`, or a revert prompt if the whole commit should be undone.
+
+## Audits
+
+Store completed written audits under `docs-dev/reviews/audits/`.

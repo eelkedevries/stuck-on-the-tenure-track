@@ -7,8 +7,8 @@ Use this guide when creating new files in `docs-dev/agent/prompts/`. You can als
 Prompt files must be numbered and briefly named:
 
 - `001_setup.md`
-- `002_title_screen.md`
-- `003_github_pages.md`
+- `NNN_title_screen.md`
+- `NNN_github_pages.md`
 
 Continue the existing numbering. Do not renumber old prompt files.
 
@@ -16,7 +16,7 @@ Use lowercase words separated by underscores.
 
 Supersede prompts may use a letter suffix:
 
-- `004b_title_screen_fix.md`
+- `NNNb_title_screen_fix.md`
 
 Do not rename prompt files after they have been run.
 

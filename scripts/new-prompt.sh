@@ -6,7 +6,7 @@ set -euo pipefail
 #   <short_name>  lowercase words separated by underscores, e.g. title_screen
 # Run from the project root (where docs-dev/ lives).
 
-SHORT_NAME="${1:?Usage: new-prompt.sh <short_name> ["Task title"]}"
+SHORT_NAME="${1:?Usage: new-prompt.sh <short_name> [\"Task title\"]}"
 TITLE="${2:-}"
 PROMPT_DIR="${PROMPT_DIR:-docs-dev/agent/prompts}"
 

@@ -7,7 +7,7 @@ A short map of how the workflow fits together. Read this first.
 Three actions cover almost everything:
 
 1. **Describe what you want** — tell the agent in plain language ("add a title screen with a start button"). It drafts a numbered prompt file in `docs-dev/agent/prompts/` and shows it for your approval. (Prefer to write it yourself? `bash scripts/new-prompt.sh <short_name>` scaffolds the next one.) For a big goal, ask the agent to propose a *plan* — a numbered sequence of small prompts — and approve that first.
-2. **Run a prompt** — tell the agent "run prompt 003". It does exactly that work and commits it to `main` with the prompt filename as the message.
+2. **Run a prompt** — tell the agent "run prompt NNN". It does exactly that work and commits it to `main` with the prompt filename as the message.
 3. **Review** — preview the result (run/open the app) and skim the diff, then move to the next prompt.
 
 Small documentation or workflow-maintenance requests can also be handled directly when you explicitly ask the agent to implement them.
@@ -20,6 +20,7 @@ Small documentation or workflow-maintenance requests can also be handled directl
 | `docs-dev/reference/primary_authoritative/specification.md` | Binding canon: the design the project must follow | You (the agent proposes changes) |
 | `docs-dev/reference/secondary_background/overview.md` | Non-binding orientation: what the project is | You |
 | `docs-dev/planning/current_state.md` | Living "where we are now" | The agent maintains it |
+| `docs-dev/reviews/code_review_guide.md` | Manual post-commit review checklist | You |
 | `AGENTS.md` | Concise agent rules + project conventions | You set conventions once |
 | `docs/` | User-facing documentation, safe to publish | You |
 | source code | The project itself | The agent, via prompts |
@@ -38,13 +39,13 @@ Empty stub files are fine — they mean "not decided yet", not "broken". Don't a
 ## A worked example
 
 ```
-You:   Run prompt 002 (002_title_screen.md)
+You:   Run prompt NNN (NNN_title_screen.md)
 Agent: Plan — edit src/TitleScreen.svelte and src/App.svelte; add the title
        screen only; not implementing menus or settings.
        [makes the change] [runs the verify command + the prompt's checks]
-       Committed `002_title_screen.md` to main and pushed.
+       Committed `NNN_title_screen.md` to main and pushed.
        <five-section final report>
-You:   [review the diff] Looks good — run prompt 003.
+You:   [review the diff] Looks good — run the next prompt.
 ```
 
 If a prompt turns out too broad, the agent stops and asks you to split it rather than committing half-done work. To change something already shipped, write a superseding or revert prompt (see `prompt_iteration_guide.md`).
@@ -58,7 +59,7 @@ Once the app scaffold and CI are added, the moving parts should be small: the bu
 - Writing good prompts: `prompt_authoring_guide.md`
 - Exactly how a prompt is run: `prompt_execution_guide.md`
 - Fixing or reverting a prompt: `prompt_iteration_guide.md`
-- Manual post-commit review: `reviews/code_review_guide.md`
+- Manual post-commit review: `../reviews/code_review_guide.md`
 - What documents the project expects (and what to give a doc-authoring assistant): `document_contract.md`
 - Instructions for setting up that assistant (a custom GPT): `gpt_author_instructions.md`
 - The rules the agent always follows: `../../AGENTS.md`
