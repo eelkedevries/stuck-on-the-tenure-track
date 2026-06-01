@@ -32,6 +32,20 @@ Start with `docs-dev/agent/how_to_use.md` for the daily workflow.
 - `docs-dev/reference/secondary_background/overview.md` — non-binding product overview.
 - `docs-dev/planning/current_state.md` — current repository state and implemented progress.
 
+## Local safety hooks
+
+Optional but recommended after cloning locally:
+
+```bash
+pre-commit install
+```
+
+This enables local checks for large files, private keys, `.env` files, prompt numbering, and basic formatting before commits.
+
+## Licence status
+
+No licence has been granted yet. All rights are reserved unless a `LICENSE` file is added later.
+
 ## Public repository note
 
 This repository is public. Do not commit secrets, credentials, private notes, customer material, or proprietary material.

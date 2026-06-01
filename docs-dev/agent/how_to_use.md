@@ -10,6 +10,8 @@ Three actions cover almost everything:
 2. **Run a prompt** — tell the agent "run prompt 003". It does exactly that work and commits it to `main` with the prompt filename as the message.
 3. **Review** — preview the result (run/open the app) and skim the diff, then move to the next prompt.
 
+Small documentation or workflow-maintenance requests can also be handled directly when you explicitly ask the agent to implement them.
+
 ## Map of the pieces
 
 | File / folder | What it is | Who edits it |
@@ -49,13 +51,14 @@ If a prompt turns out too broad, the agent stops and asks you to split it rather
 
 ## How it builds (orientation)
 
-If the stack is new to you, the moving parts are small: the build tool compiles the source into a `dist/` folder; for a public project, GitHub Pages serves `dist/`. The **verify command** (set in `AGENTS.md` Project conventions, e.g. `npm run check`) is the gate that must pass before a commit. Builds use the committed lockfile (`npm ci`, not `npm install`) so they're reproducible — the same way you'd pin an R or conda environment. CI re-runs the build, verify, and a secret scan on every push, so a broken or leaky commit is caught automatically.
+Once the app scaffold and CI are added, the moving parts should be small: the build tool compiles the source into a `dist/` folder; for a public project, GitHub Pages can serve `dist/`. The **verify command** (set in `AGENTS.md` Project conventions, e.g. `npm run check`) is the gate that must pass before a commit. Builds should use the committed lockfile (`npm ci`, not `npm install`) so they're reproducible — the same way you'd pin an R or conda environment. CI should re-run the build, verify command, prompt validation, public-build safety check, and secret scan on every push once configured.
 
 ## More detail
 
 - Writing good prompts: `prompt_authoring_guide.md`
 - Exactly how a prompt is run: `prompt_execution_guide.md`
 - Fixing or reverting a prompt: `prompt_iteration_guide.md`
+- Manual post-commit review: `reviews/code_review_guide.md`
 - What documents the project expects (and what to give a doc-authoring assistant): `document_contract.md`
 - Instructions for setting up that assistant (a custom GPT): `gpt_author_instructions.md`
 - The rules the agent always follows: `../../AGENTS.md`

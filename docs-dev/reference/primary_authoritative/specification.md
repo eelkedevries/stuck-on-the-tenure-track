@@ -1,6 +1,8 @@
-# Stuck on the Tenure Track — LLM reference documentation
+# Stuck on the Tenure Track — Specification
 
-**Status:** canonical repository specification, v1.4. Imported from Drive planning files and aligned with the `eek-a-dev` reference structure.
+Version: 1.5
+Last updated: 2026-06-01
+Status: Binding project specification
 
 **Audience:** coding-focused LLM tools building this game with the developer.
 
@@ -26,7 +28,7 @@ The shorter overview document is `docs-dev/reference/secondary_background/overvi
 
 ### 1.1 What the game is
 
-*Stuck on the Tenure Track* is a turn-based, browser-based, single-player satirical simulation of an academic career, from undergraduate matriculation to the tenure decision. The player allocates time each term across research, teaching, service, relationships, funding, and health while competing against three computer-controlled rivals from the same high-school cohort. A full game is approximately 25 turns, takes around 30 minutes, and runs in smartphone and desktop browsers.
+*Stuck on the Tenure Track* is a turn-based, browser-based, single-player satirical simulation of an academic career, from undergraduate matriculation to the tenure decision. The player allocates time across research, teaching, service, relationships, funding, and health while competing against three computer-controlled rivals from the same high-school cohort. A full game is approximately 25 turns, covers roughly 18 in-game years, takes around 30 minutes, and runs in smartphone and desktop browsers.
 
 ### 1.2 Hard constraints
 
@@ -120,7 +122,9 @@ This hierarchy is a core architectural constraint. Psychology-specific content m
 
 ## 3. Time, turns, and calendar
 
-One turn represents one academic term, approximately three months. The full game spans approximately 25 turns.
+One turn is an abstract career turn rather than a fixed three-month term. The full game spans approximately 25 turns and covers approximately 18 in-game years from undergraduate study to the tenure decision.
+
+The calendar advances by stage-specific intervals so that short early stages and longer later stages can both fit into a 25-turn, 30-minute playthrough. The engine should still maintain real dates for event timing, but turn duration may vary by career stage.
 
 The engine maintains both:
 
@@ -131,7 +135,7 @@ calendar:
   start_date: ISO date
 ```
 
-The beta uses a Dutch/EU academic calendar:
+The beta uses a Dutch/EU academic calendar for event flavour and timing:
 
 - Autumn term: September to late January.
 - Spring term: February to late June.
@@ -139,16 +143,16 @@ The beta uses a Dutch/EU academic calendar:
 
 Career-stage turn budget, subject to playtesting:
 
-| Stage | In-game years | Approx. turns |
-|---|---:|---:|
-| Undergraduate | 3 | 3 |
-| MSc | 2 | 2 |
-| PhD | 4 | 8 |
-| Postdoc(s) | 3 | 6 |
-| Assistant professor | 6 | 6 |
-| Total | ~18 | ~25 |
+| Stage | In-game years | Approx. turns | Approx. duration per turn |
+|---|---:|---:|---:|
+| Undergraduate | 3 | 3 | 1 year |
+| MSc | 2 | 2 | 1 year |
+| PhD | 4 | 8 | 6 months |
+| Postdoc(s) | 3 | 6 | 6 months |
+| Assistant professor | 6 | 6 | 1 year |
+| Total | ~18 | ~25 | variable |
 
-The engine must support calendar-conditional events: exam weeks, summer recruitment difficulty, salary/stipend events, grant-call dates, and conference seasons.
+The engine must support calendar-conditional events: exam weeks, summer recruitment difficulty, salary/stipend events, grant-call dates, and conference seasons. Events should use calendar dates or career-stage windows rather than assuming a globally fixed turn length.
 
 ---
 
@@ -191,7 +195,7 @@ Canonical turn loop:
 6. Save game state.
 7. End turn.
 
-Time uses abstract time points. A default of 100 TP per full term is recommended.
+Time uses abstract time points. A default of 100 TP per full turn is recommended, independent of the calendar duration represented by that turn.
 
 Action categories: research, teaching, service, networking, funding, personal, and misconduct.
 

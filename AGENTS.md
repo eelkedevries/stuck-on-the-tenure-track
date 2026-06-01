@@ -9,7 +9,9 @@ Concise root rules for Claude Code and Codex. Detailed procedures live in the gu
 
 ## Turning intent into prompts
 
-Prompts need not be hand-written. When the user describes a task in plain language, draft the prompt file for them, show the draft, and run it only on approval. For a large or vague goal, first propose a numbered sequence of small prompts and get approval before running any. `scripts/new-prompt.sh <short_name>` scaffolds a prompt manually if preferred.
+Prompts need not be hand-written. When the user describes a product or code task in plain language, draft the prompt file for them, show it for approval, and run it only on approval. For a large or vague goal, first propose a numbered sequence of small prompts and get approval before running any. `scripts/new-prompt.sh <short_name>` scaffolds a prompt manually if preferred.
+
+Small documentation or workflow-maintenance requests may be implemented directly when the user explicitly asks to implement them. If the change is substantial enough to become part of the audit trail, create a prompt file and commit with that prompt filename.
 
 ## Where things live
 
@@ -46,7 +48,7 @@ Default workflow (see `prompt_execution_guide.md` for the full steps):
 
 ## Supporting guides
 
-`how_to_use.md` (map + daily loop), `prompt_authoring_guide.md` (writing prompts), `prompt_execution_guide.md` (running them), `prompt_iteration_guide.md` (supersede/revert), `document_contract.md` (what documents the project expects), `reviews/code_review_guide.md` (reviews).
+`how_to_use.md` (map + daily loop), `prompt_authoring_guide.md` (writing prompts), `prompt_execution_guide.md` (running them), `prompt_iteration_guide.md` (supersede/revert), `document_contract.md` (what documents the project expects), `reviews/code_review_guide.md` (manual post-commit review checklist).
 
 ## Final response
 
