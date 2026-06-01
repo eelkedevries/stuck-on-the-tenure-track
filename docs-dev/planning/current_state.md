@@ -55,6 +55,10 @@ Both are tool-agnostic (Claude Code and ChatGPT Codex), reference the specificat
 
 `docs-dev/planning/build_roadmap.md` now exists. It is the dependency-ordered queue of build prompts (`010`–`072`) grouped into milestones M0–M16, covering every specification system and nothing in specification section 9. It is the source of truth for build-prompt numbering and ordering. Discipline-specific content is centralised in the M15 content packs rather than embedded in engine prompts.
 
+## Build-prompt queue
+
+The build-prompt files `010`–`072` (63 prompts across milestones M0–M16) now exist in `docs-dev/agent/prompts/`, authored from `build_roadmap.md`. Each follows the required prompt structure, references its specification section(s), names its dependencies, and commits directly to `main`. No application or content code has been written yet.
+
 ## Recommended next prompt
 
-Run `005_author_build_prompt_files.md` to author the build-prompt files (`010`–`072`) from the roadmap. Then execute the build prompts in order, starting with `010_scaffold_svelte_vite.md`; deployment (`072`) comes last. Do not implement gameplay while authoring prompts.
+Execute the build prompts in order, starting with `010_scaffold_svelte_vite.md` (the Svelte 5 + TypeScript + Vite scaffold). Deployment (`072`) comes last. Run one prompt per session per `prompt_execution_guide.md`.
