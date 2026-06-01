@@ -1,0 +1,13 @@
+# Example Layer-1 (core) content. Universal across all disciplines (spec §2, §7).
+meta:
+  id: core
+  name: Core
+  layer: core
+events:
+  - event_id: desk_reject
+    title: Desk rejection
+    body: >-
+      The editor thanks you for your submission and regrets that it is not a
+      priority for the journal at this time. Time from submission to decision:
+      nine minutes.
+    tags: [publishing, peer_review]

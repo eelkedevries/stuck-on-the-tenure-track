@@ -1,0 +1,13 @@
+# Example Layer-2 (psychology) content (spec §2, §7). The cognitive Layer-3 pack
+# overrides `replication_failure` to show same-id override.
+meta:
+  id: psychology
+  name: Psychology
+  layer: discipline
+events:
+  - event_id: replication_failure
+    title: A replication fails
+    body: >-
+      A registered replication of your best-known finding reports a null
+      result. The first authors are scrupulously polite about it.
+    tags: [research, reputation]

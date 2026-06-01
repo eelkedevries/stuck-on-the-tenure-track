@@ -1,0 +1,15 @@
+# Example Layer-3 (cognitive) content (spec §2, §7). Shares `event_id` with the
+# psychology Layer-2 event, so it overrides it under layer precedence.
+meta:
+  id: cognitive
+  name: Cognitive psychology
+  layer: sub-discipline
+  parent: psychology
+events:
+  - event_id: replication_failure
+    title: A replication fails
+    body: >-
+      A multi-laboratory replication of your signature priming effect reports a
+      null result across several thousand undergraduates. The effect size, it
+      emerges, was largely an artefact of testing on Monday mornings.
+    tags: [research, reputation, cognitive]

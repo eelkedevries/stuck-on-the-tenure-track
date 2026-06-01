@@ -83,3 +83,14 @@ export function loadCorePacks(): ContentPack[] {
   }) as Record<string, string>;
   return Object.values(files).map(parsePack);
 }
+
+// Load every pack across all layers. Each pack declares its own `meta.layer`,
+// so the override resolver in `./inheritance` applies the correct precedence.
+export function loadAllPacks(): ContentPack[] {
+  const files = import.meta.glob('/content/**/*.yaml', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  }) as Record<string, string>;
+  return Object.values(files).map(parsePack);
+}
