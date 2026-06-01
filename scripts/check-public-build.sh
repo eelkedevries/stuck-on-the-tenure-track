@@ -19,8 +19,11 @@ matches="$(find "$BUILD_DIR" \( \
     -iname 'AGENTS.md' -o \
     -iname 'CLAUDE.md' \
   \) -print)"
-if [[ -n "$matches" ]]; then
-  printf 'Potential private files found in build output:\n%s\n' "$matches" >&2
+prompt_matches="$(find "$BUILD_DIR" -regextype posix-extended \
+    -regex '.*/[0-9]{3}_[^/]+\.md' \
+    -print)"
+if [[ -n "$matches" || -n "$prompt_matches" ]]; then
+  printf 'Potential private files found in build output:\n%s\n%s\n' "$matches" "$prompt_matches" >&2
   fail=1
 fi
 
@@ -30,18 +33,11 @@ if [[ -n "$maps" ]]; then
   fail=1
 fi
 
-if grep -RIl --binary-files=without-match \
-     -e 'docs-dev' \
-     -e 'prompt_authoring_guide' \
-     -e 'prompt_execution_guide' \
-     -e 'prompt_iteration_guide' \
-     "$BUILD_DIR" >/dev/null 2>&1; then
-  refs="$(grep -RIl --binary-files=without-match \
-            -e 'docs-dev' \
-            -e 'prompt_authoring_guide' \
-            -e 'prompt_execution_guide' \
-            -e 'prompt_iteration_guide' \
-            "$BUILD_DIR")"
+refs="$(find "$BUILD_DIR" -type f ! -name '*.map' \
+    -exec grep -EIl \
+      'docs-dev|prompt_authoring_guide|prompt_execution_guide|prompt_iteration_guide' \
+      {} + || true)"
+if [[ -n "$refs" ]]; then
   printf 'Potential private workflow references inside build files:\n%s\n' "$refs" >&2
   fail=1
 fi

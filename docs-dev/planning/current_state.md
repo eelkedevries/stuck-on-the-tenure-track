@@ -4,7 +4,7 @@ Last updated: 2026-06-01.
 
 ## Repository state
 
-The repository has been initialised with documentation, agent workflow guides, prompt scaffolding, helper scripts, review guidance, and reference documents. The Svelte 5 + TypeScript + Vite scaffold now exists (`010_scaffold_svelte_vite.md`): `npm run check` type-checks and builds, `npm run dev` serves under the base path `/stuck-on-the-tenure-track/`, and the lockfile is committed. No content loader, turn engine, game systems, tests, or deployment workflow has been implemented yet.
+The repository has been initialised with documentation, agent workflow guides, prompt scaffolding, helper scripts, review guidance, and reference documents. The Svelte 5 + TypeScript + Vite scaffold now exists (`010_scaffold_svelte_vite.md`): `npm run dev` serves under the base path `/stuck-on-the-tenure-track/`, and the lockfile is committed. The public-build safety check is wired into `npm run check` and `npm run build` (`011_public_build_safety_check.md`) so the build fails if `docs-dev/`, prompt files, source maps, or private workflow references appear in `dist/`. No content loader, turn engine, game systems, tests, CI workflow, or deployment workflow has been implemented yet.
 
 ## Active workflow
 
@@ -57,8 +57,8 @@ Both are tool-agnostic (Claude Code and ChatGPT Codex), reference the specificat
 
 ## Build-prompt queue
 
-The build-prompt files `010`–`072` (63 prompts across milestones M0–M16) now exist in `docs-dev/agent/prompts/`, authored from `build_roadmap.md`. Each follows the required prompt structure, references its specification section(s), names its dependencies, and commits directly to `main`. No application or content code has been written yet.
+The build-prompt files `010`–`072` (63 prompts across milestones M0–M16) now exist in `docs-dev/agent/prompts/`, authored from `build_roadmap.md`. Each follows the required prompt structure, references its specification section(s), names its dependencies, and commits directly to `main`. The scaffold and public-build safety wiring have been implemented; no content code or game systems have been written yet.
 
 ## Recommended next prompt
 
-Execute the build prompts in order, starting with `010_scaffold_svelte_vite.md` (the Svelte 5 + TypeScript + Vite scaffold). Deployment (`072`) comes last. Run one prompt per session per `prompt_execution_guide.md`.
+Execute the build prompts in order. The next recommended prompt is `012_ci_workflow.md`; deployment (`072`) comes last. Run one prompt per session per `prompt_execution_guide.md`.
