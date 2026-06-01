@@ -1,10 +1,10 @@
 # Stuck on the Tenure Track — LLM reference documentation
 
-**Status:** canonical repository specification, v1.3. Imported from Drive planning files and updated to use direct commits to `main`.
+**Status:** canonical repository specification, v1.4. Imported from Drive planning files and aligned with the `eek-a-dev` reference structure.
 
 **Audience:** coding-focused LLM tools building this game with the developer.
 
-This document describes the game's product design, scope, and architecture. It should be read together with `AGENTS.md` and `docs-dev/development-status.md` before implementation work.
+This document describes the game's product design, scope, and architecture. It should be read together with `AGENTS.md` and `docs-dev/planning/current_state.md` before implementation work.
 
 ## 0. Repository workflow
 
@@ -16,9 +16,9 @@ This repository uses direct commits to `main`.
 - Keep commits atomic.
 - Run relevant checks before committing.
 
-The canonical filename for this document is `specification.md`.
+The canonical filename and path for this document is `docs-dev/reference/primary_authoritative/specification.md`.
 
-The shorter overview document is `stuck-on-the-tenure-track-overview.md`.
+The shorter overview document is `docs-dev/reference/secondary_background/overview.md`.
 
 ---
 

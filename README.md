@@ -16,21 +16,21 @@ The game is a browser-based static site for smartphone and desktop browsers. The
 
 ## Development workflow
 
-This repository uses direct-to-`main` development.
+This repository follows the `eek-a-dev` commit-to-`main` workflow:
 
-- Work is committed directly to `main`.
-- Do not create feature branches unless explicitly instructed.
-- Do not open pull requests unless explicitly instructed.
-- After every completed code or documentation adjustment, run the relevant checks, commit, and push to `main`.
-- Keep commits atomic: one logical change per commit.
+- one prompt equals one reviewable unit of work;
+- prompt files live in `docs-dev/agent/prompts/`;
+- prompt work is committed directly to `main` using the exact prompt filename as the commit message;
+- do not create feature branches or pull requests unless explicitly instructed;
+- run the project verify command and prompt checks before committing.
 
-See `AGENTS.md` and `CLAUDE.md` for the active agent instructions.
+Start with `docs-dev/agent/how_to_use.md` for the daily workflow.
 
 ## Reference documents
 
-- `specification.md` — canonical design and architecture reference.
-- `stuck-on-the-tenure-track-overview.md` — shorter product overview.
-- `docs-dev/development-status.md` — current repository status and known mismatches with earlier planning files.
+- `docs-dev/reference/primary_authoritative/specification.md` — binding design and architecture reference.
+- `docs-dev/reference/secondary_background/overview.md` — non-binding product overview.
+- `docs-dev/planning/current_state.md` — current repository state and implemented progress.
 
 ## Public repository note
 

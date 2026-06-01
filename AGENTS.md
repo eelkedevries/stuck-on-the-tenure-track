@@ -1,117 +1,68 @@
-# Project agent instructions — Stuck on the Tenure Track
+# Agent instructions
 
-These instructions apply to all coding-agent work in this repository.
+Concise root rules for Claude Code and Codex. Detailed procedures live in the guides under `docs-dev/agent/` — start with `docs-dev/agent/how_to_use.md`. These rules guide behaviour but do not enforce it; safety also relies on checks, hooks, and review.
 
-## 1. Project summary
+## Core principles
 
-*Stuck on the Tenure Track* is a turn-based, browser-based, single-player satirical simulation of an academic career, from undergraduate matriculation to the tenure decision. The player allocates limited time across research, teaching, service, funding, relationships, and health while competing against three AI rivals from the same cohort.
+- One prompt = one reviewable unit. Do only what the prompt or request says; prefer the smallest correct change. No unrequested features, frameworks, tests, or architecture.
+- Before editing, briefly state intended files, planned changes, and out-of-scope items.
 
-The beta covers psychology, with four sub-disciplines: cognitive, social, clinical, and developmental psychology.
+## Turning intent into prompts
 
-## 2. Authoritative references
+Prompts need not be hand-written. When the user describes a task in plain language, draft the prompt file for them, show the draft, and run it only on approval. For a large or vague goal, first propose a numbered sequence of small prompts and get approval before running any. `scripts/new-prompt.sh <short_name>` scaffolds a prompt manually if preferred.
 
-Read these before implementing project-specific work:
+## Where things live
 
-1. `specification.md` — canonical design, scope, data models, and architecture.
-2. `docs-dev/development-status.md` — current repository state and known imported-document mismatches.
-3. The active user request or prompt file, if one is being used.
+- `docs-dev/agent/prompts/` — numbered prompt files (work queue and audit trail).
+- `docs-dev/agent/` — guides: `how_to_use`, `prompt_authoring_guide`, `prompt_execution_guide`, `prompt_iteration_guide`, `document_contract`, `gpt_author_instructions`.
+- `docs-dev/reference/primary_authoritative/specification.md` — binding canon (ground truth).
+- `docs-dev/reference/secondary_background/` — non-binding context and examples.
+- `docs-dev/planning/current_state.md` — living "where we are"; read at session start.
+- `docs/` — user-facing, publishable docs.
 
-When these sources conflict, follow this order:
+If the repository is public, everything in it — including `docs-dev/` — is publicly visible. Never put secrets, tokens, or `.env*` files in the repository. `docs-dev/` must never reach the deployed build output (see `scripts/check-public-build.sh`).
 
-1. The active user request.
-2. The active prompt file, if one is being used.
-3. `docs-dev/development-status.md` for repository reality.
-4. `specification.md` for product/design intent.
-5. This `AGENTS.md` for general workflow rules.
+## Ground truth
 
-Do not assume implementation code exists because an older planning document says it does. Verify the repository state first.
+Treat `primary_authoritative/specification.md` as correct. Never contradict it; if a change would conflict, stop and flag it. Empty or stubbed sections mean "not yet decided" — no constraint. When a decision changes, update the spec and bump its version. `secondary_background/` is informational only.
 
-## 3. Workflow rules
+Update `current_state.md` when a prompt adds a system or a key decision — for genuinely useful orientation, not after routine commits.
 
-This repository uses direct commits to `main`.
+## Running and committing (commit-to-`main`)
 
-- Always commit and push directly to `main` after completed changes.
-- Do not create feature branches unless explicitly instructed.
-- Do not open pull requests unless explicitly instructed.
-- Do not leave completed work only in a branch.
-- Make atomic commits: one logical change per commit.
-- Run relevant checks before committing.
-- If checks cannot be run, state that clearly in the final report.
-- Do not commit partial or failed work unless explicitly instructed.
+Default workflow (see `prompt_execution_guide.md` for the full steps):
 
-If a numbered prompt file is used, treat one prompt as one logical unit of work, but still commit directly to `main`.
+- Run a prompt: clean tree on `main` → make only that change → run the verify command (Project conventions) and the prompt's checks → if they pass, commit to `main` and push. One commit per prompt; no branch, no PR.
+- **Commit messages:** prompt work uses the exact prompt filename; any other commit uses a conventional prefix (`feat:`, `fix:`, `docs:`, `refactor:`).
+- Do not commit partial or failing work unless a WIP commit is requested. Do not rewrite history or force-push.
 
-## 4. Repository layout
+## Project conventions
 
-Use this structure unless a later instruction changes it deliberately:
+- **Language / locale:** British English in code comments, documentation, and user-facing text.
+- **Workflow:** commit and push directly to `main`; no feature branches or pull requests unless explicitly requested.
+- **Verify command:** not yet set; after the scaffold exists, use `npm run check`.
+- **Testing policy:** no tests unless a prompt asks, until the scaffold defines a test setup.
+- **Deploy base path:** `/stuck-on-the-tenure-track/`.
 
-```text
-/
-  README.md
-  AGENTS.md
-  CLAUDE.md
-  specification.md
-  stuck-on-the-tenure-track-overview.md
-  docs-dev/                  # development-facing docs and prompt material
-    development-status.md
-    prompts/                 # optional numbered implementation prompts
-  docs/                      # public-facing usage/docs, if needed
-  src/                       # application source, once implemented
-  content/                   # YAML/JSON content packs, once implemented
-  public/                    # static files served as-is
-  .github/workflows/         # CI/deployment workflows, once implemented
-```
+## Supporting guides
 
-This repository is public. Do not put secrets, credentials, unreleasable private notes, customer data, or proprietary information anywhere in this repository.
+`how_to_use.md` (map + daily loop), `prompt_authoring_guide.md` (writing prompts), `prompt_execution_guide.md` (running them), `prompt_iteration_guide.md` (supersede/revert), `document_contract.md` (what documents the project expects), `reviews/code_review_guide.md` (reviews).
 
-## 5. Product and implementation constraints
+## Final response
 
-Preserve these unless explicitly changed:
-
-- Browser-based static app.
-- Mobile and desktop support.
-- No backend for the beta.
-- No runtime LLM for the beta.
-- Local browser saves.
-- Psychology beta only.
-- British English throughout.
-- Content lives in external content files rather than being hardcoded into the engine.
-- Game state must serialise cleanly to JSON.
-
-## 6. Coding conventions
-
-- Prefer clarity over cleverness.
-- Comment only non-obvious decisions.
-- Keep TypeScript types aligned with the reference schemas once implementation begins.
-- Use British spelling in code comments, documentation, and player-facing text.
-- Keep player-facing satire dry, specific, and recognisable rather than broad or moralising.
-
-## 7. Maintenance rules
-
-At the end of each implementation round, assess whether `docs-dev/development-status.md` needs a small update. Update it only when the change materially alters repository state, implemented systems, deployment state, or known limitations.
-
-Do not rewrite the reference specification opportunistically. If a design conflict is found, make the smallest necessary correction and document it clearly.
-
-## 8. Required final report
-
-Every agent run must end with this five-section report:
+Every response must end with this five-section report:
 
 ### 1. Work done
-
-Use `Completed successfully`, `Partially completed`, or `Not completed`. State whether all stated acceptance criteria were met and whether the result was 100% successful.
+`Completed successfully`, `Partially completed`, or `Not completed` — and whether all acceptance criteria were met. Cite the commit hash and the result of the verify command / checks as evidence.
 
 ### 2. Files changed
-
-List every file added, modified, or deleted, with a one-line description. Write `None.` if no files were changed.
+Every file added, modified, or deleted, one line each. `None.` if no changes.
 
 ### 3. Scope deviations
-
-List any work done that was not requested, with a brief reason. Write `None.` if scope was followed exactly.
+Any work outside the prompt's `Required changes`, with a reason. `None.` if scope was followed exactly.
 
 ### 4. Open issues
-
-List issues or write `None.`
+List issues, or `None.`
 
 ### 5. Human actions required
-
-List required actions or write `None. You can proceed to the next prompt.`
+List required actions, or `None. You can proceed to the next prompt.`
