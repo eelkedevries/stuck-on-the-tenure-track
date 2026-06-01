@@ -13,7 +13,7 @@ echo "Inspecting build output: $BUILD_DIR"
 fail=0
 
 matches="$(find "$BUILD_DIR" \( \
-    -iname '*docs-dev*' -o \
+    -ipath '*docs-dev*' -o \
     -iname '*.env*' -o \
     -iname '*prompt_*_guide*' -o \
     -iname 'AGENTS.md' -o \
@@ -21,6 +21,13 @@ matches="$(find "$BUILD_DIR" \( \
   \) -print)"
 if [[ -n "$matches" ]]; then
   printf 'Potential private files found in build output:\n%s\n' "$matches" >&2
+  fail=1
+fi
+
+prompts="$(find "$BUILD_DIR" -type f -regextype posix-extended \
+  -regex '.*/[0-9]{3}[a-z]?_[a-z0-9]+(_[a-z0-9]+)*\.md$' -print)"
+if [[ -n "$prompts" ]]; then
+  printf 'Numbered prompt files found in build output:\n%s\n' "$prompts" >&2
   fail=1
 fi
 
