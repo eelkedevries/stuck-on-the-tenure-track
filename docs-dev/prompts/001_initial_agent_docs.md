@@ -1,0 +1,58 @@
+# Task: Add initial agent workflow and reference documents
+
+## Goal
+
+Initialise the repository with direct-to-`main` agent instructions and canonical *Stuck on the Tenure Track* reference filenames.
+
+## Scope
+
+Create only the documentation and agent-workflow files needed to make future implementation work consistent.
+
+## Context
+
+The source planning files came from a Google Drive folder containing `CLAUDE.md`, `overview.md`, and `specification.md`. The canonical repository filenames are now:
+
+- `stuck-on-the-tenure-track-llm-reference.md`
+- `stuck-on-the-tenure-track-overview.md`
+
+The GitHub repository was effectively empty except for a one-line README, so this step is an initial repository-organisation step rather than a code implementation step.
+
+## Required changes
+
+1. Add project-level `AGENTS.md` with direct-to-`main` workflow rules.
+2. Add a minimal `CLAUDE.md` wrapper that imports `AGENTS.md`.
+3. Replace the one-line README with a public-facing project overview.
+4. Add the canonical LLM reference and product overview filenames at repository root.
+5. Add development-status notes under `docs-dev/`.
+
+## Do not implement
+
+Do not implement:
+
+- app source code;
+- Svelte/Vite scaffolding;
+- GitHub Pages deployment;
+- CI workflows;
+- gameplay systems.
+
+## Acceptance criteria
+
+The task is complete when:
+
+- repository-level agent instructions exist;
+- active instructions say to commit and push directly to `main`;
+- reference filenames are consistent;
+- current repository status does not claim unverified implemented code;
+- future work can proceed directly on `main`.
+
+## Checks
+
+Manual documentation check only.
+
+## Commit and push
+
+Commit directly to `main` with the message `001_initial_agent_docs.md`, then push `main`.
+
+## Final report
+
+End with the required final report specified in `AGENTS.md`.
