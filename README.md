@@ -14,6 +14,20 @@ The beta scope is psychology, with four sub-disciplines: cognitive, social, clin
 
 The game is a browser-based static site for smartphone and desktop browsers. The beta has no backend, no accounts, and no runtime LLM dependency. Saves are local browser saves.
 
+## Running locally
+
+The app is a Svelte 5 + TypeScript + Vite project. With Node.js 22 or later:
+
+```bash
+npm ci          # install exact dependencies from the committed lockfile
+npm run dev     # start the development server
+npm run check   # type-check and build (the verify command)
+npm run build   # produce the static site in dist/
+npm run preview # preview the production build
+```
+
+The site is served under the base path `/stuck-on-the-tenure-track/` to match GitHub Pages deployment.
+
 ## Development workflow
 
 This repository follows the `eek-a-dev` commit-to-`main` workflow:

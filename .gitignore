@@ -11,8 +11,10 @@ __pycache__/
 
 # build outputs
 dist/
+dist-ssr/
 build/
 coverage/
+*.local
 
 # temporary internal material
 docs-dev/tmp/
