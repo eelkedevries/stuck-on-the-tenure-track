@@ -4,7 +4,7 @@ Last updated: 2026-06-01.
 
 ## Repository state
 
-The repository has been initialised with documentation, agent workflow guides, prompt scaffolding, helper scripts, review guidance, and reference documents. The Svelte 5 + TypeScript + Vite scaffold now exists (`010_scaffold_svelte_vite.md`): `npm run check` type-checks and builds, `npm run dev` serves under the base path `/stuck-on-the-tenure-track/`, and the lockfile is committed. No content loader, turn engine, game systems, tests, or deployment workflow has been implemented yet.
+The repository has been initialised with documentation, agent workflow guides, prompt scaffolding, helper scripts, review guidance, and reference documents. The Svelte 5 + TypeScript + Vite scaffold now exists (`010_scaffold_svelte_vite.md`): `npm run check` type-checks and builds, `npm run dev` serves under the base path `/stuck-on-the-tenure-track/`, and the lockfile is committed. A public-build safety check runs after every build (`011`) and a CI workflow runs build and safety checks on push (`012`). The `content/` directory tree and JSON-serialisable content types (`src/content/types.ts`) exist (`013`). No content loader, turn engine, game systems, tests, or deployment workflow has been implemented yet.
 
 ## Active workflow
 
