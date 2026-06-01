@@ -28,7 +28,7 @@ See `AGENTS.md` and `CLAUDE.md` for the active agent instructions.
 
 ## Reference documents
 
-- `stuck-on-the-tenure-track-llm-reference.md` — canonical design and architecture reference.
+- `specification.md` — canonical design and architecture reference.
 - `stuck-on-the-tenure-track-overview.md` — shorter product overview.
 - `docs-dev/development-status.md` — current repository status and known mismatches with earlier planning files.
 

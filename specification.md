@@ -1,6 +1,6 @@
 # Stuck on the Tenure Track — LLM reference documentation
 
-**Status:** canonical repository reference, v1.2. Imported from Drive planning files and updated to use direct commits to `main`.
+**Status:** canonical repository specification, v1.3. Imported from Drive planning files and updated to use direct commits to `main`.
 
 **Audience:** coding-focused LLM tools building this game with the developer.
 
@@ -16,7 +16,7 @@ This repository uses direct commits to `main`.
 - Keep commits atomic.
 - Run relevant checks before committing.
 
-The canonical filename for this document is `stuck-on-the-tenure-track-llm-reference.md`. Do not refer to it as `specification.md` in repository instructions.
+The canonical filename for this document is `specification.md`.
 
 The shorter overview document is `stuck-on-the-tenure-track-overview.md`.
 

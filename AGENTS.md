@@ -12,7 +12,7 @@ The beta covers psychology, with four sub-disciplines: cognitive, social, clinic
 
 Read these before implementing project-specific work:
 
-1. `stuck-on-the-tenure-track-llm-reference.md` — canonical design, scope, data models, and architecture.
+1. `specification.md` — canonical design, scope, data models, and architecture.
 2. `docs-dev/development-status.md` — current repository state and known imported-document mismatches.
 3. The active user request or prompt file, if one is being used.
 
@@ -21,7 +21,7 @@ When these sources conflict, follow this order:
 1. The active user request.
 2. The active prompt file, if one is being used.
 3. `docs-dev/development-status.md` for repository reality.
-4. `stuck-on-the-tenure-track-llm-reference.md` for product/design intent.
+4. `specification.md` for product/design intent.
 5. This `AGENTS.md` for general workflow rules.
 
 Do not assume implementation code exists because an older planning document says it does. Verify the repository state first.
@@ -50,7 +50,7 @@ Use this structure unless a later instruction changes it deliberately:
   README.md
   AGENTS.md
   CLAUDE.md
-  stuck-on-the-tenure-track-llm-reference.md
+  specification.md
   stuck-on-the-tenure-track-overview.md
   docs-dev/                  # development-facing docs and prompt material
     development-status.md

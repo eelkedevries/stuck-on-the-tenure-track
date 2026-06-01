@@ -23,10 +23,10 @@ This repository uses direct commits to `main`:
 
 The canonical reference filenames are:
 
-- `stuck-on-the-tenure-track-llm-reference.md`
+- `specification.md`
 - `stuck-on-the-tenure-track-overview.md`
 
-Do not use `specification.md` or `overview.md` as canonical repository references.
+Do not use `stuck-on-the-tenure-track-llm-reference.md` or `overview.md` as canonical repository references.
 
 ## Public repository note
 

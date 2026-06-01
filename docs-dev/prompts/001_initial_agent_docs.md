@@ -12,7 +12,7 @@ Create only the documentation and agent-workflow files needed to make future imp
 
 The source planning files came from a Google Drive folder containing `CLAUDE.md`, `overview.md`, and `specification.md`. The canonical repository filenames are now:
 
-- `stuck-on-the-tenure-track-llm-reference.md`
+- `specification.md`
 - `stuck-on-the-tenure-track-overview.md`
 
 The GitHub repository was effectively empty except for a one-line README, so this step is an initial repository-organisation step rather than a code implementation step.
@@ -22,7 +22,7 @@ The GitHub repository was effectively empty except for a one-line README, so thi
 1. Add project-level `AGENTS.md` with direct-to-`main` workflow rules.
 2. Add a minimal `CLAUDE.md` wrapper that imports `AGENTS.md`.
 3. Replace the one-line README with a public-facing project overview.
-4. Add the canonical LLM reference and product overview filenames at repository root.
+4. Add the canonical specification and product overview filenames at repository root.
 5. Add development-status notes under `docs-dev/`.
 
 ## Do not implement
