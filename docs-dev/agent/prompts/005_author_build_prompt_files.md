@@ -39,11 +39,10 @@ Operating principles (these make the project's four goals checkable):
 
 ## Do not implement
 
-Do not:
+You author prompt files that *describe* scaffold, CI, and deployment work; you must not implement or configure any of it yourself. Specifically, do not:
 - create, reorder, renumber, or rename prompts beyond what the roadmap specifies;
-- scaffold Svelte/Vite or write any application code;
-- write any `content/` data files;
-- add CI, deployment, or GitHub Pages configuration;
+- scaffold Svelte/Vite or write any application or content code;
+- create, configure, or edit CI, deployment, or GitHub Pages files yourself;
 - execute any of the build prompts you author;
 - contradict or restructure the specification.
 

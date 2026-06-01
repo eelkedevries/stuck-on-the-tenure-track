@@ -52,7 +52,7 @@ Operating principles for this prompt — these also bind the build prompts you p
    | M16 Polish and deploy | bundle <5 MB, TTI <3 s, turn <1 s, deployment workflow | 5, 6 |
 
 4. Under each milestone, list its build prompts as a Markdown table with columns: `Prompt file` (e.g. `010_scaffold_svelte_vite.md`), `One-sentence goal`, `Depends on` (prompt numbers or `—`), `Spec section`.
-5. Number build prompts sequentially starting at `010`, so they never collide with meta-prompts `004`–`005` and leave `006`–`009` reserved. Use filenames matching `^[0-9]{3}_[a-z0-9]+(_[a-z0-9]+)*\.md$`.
+5. Number build prompts sequentially starting at `010`, so they never collide with meta-prompts `004`–`005` and leave `006`–`009` reserved. Treat any earlier next-prompt numbering recommendation in `current_state.md` (such as an older `004_scaffold_*` suggestion) as superseded by this queue, and do not renumber existing prompt files. Use filenames matching `^[0-9]{3}_[a-z0-9]+(_[a-z0-9]+)*\.md$`.
 6. Keep each planned prompt narrow per `prompt_authoring_guide.md`: one reviewable unit, completable in one session, with observable outcomes. Split any system that is too large for one session (for example, give the turn engine separate prompts for the loop skeleton and for resolution).
 7. Order prompts so dependencies always point to lower-numbered prompts; the scaffold prompt must be first and deployment last.
 8. Add a final "Out of scope" note pointing to specification section 9 so no build prompt targets deferred features.
@@ -60,11 +60,10 @@ Operating principles for this prompt — these also bind the build prompts you p
 
 ## Do not implement
 
-Do not:
+This is a planning task. You must plan build prompts for scaffold, CI, and deployment in the roadmap when the specification requires them; you must not implement, configure, or edit any of those yourself. Specifically, do not:
 - author any `NNN_*.md` build-prompt files (that is prompt `005`);
-- scaffold Svelte/Vite or write any application code;
-- write any `content/` data files;
-- add CI, deployment, or GitHub Pages configuration;
+- scaffold Svelte/Vite or write any application or content code;
+- create, configure, or edit CI, deployment, or GitHub Pages files yourself;
 - restructure or contradict the specification.
 
 ## Acceptance criteria
