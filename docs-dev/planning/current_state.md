@@ -42,6 +42,15 @@ The original Drive `CLAUDE.md` source file recorded that a Svelte 5 + TypeScript
 
 This repository is public. Do not commit secrets, credentials, private planning notes, customer information, proprietary material, or anything unsuitable for public repository history.
 
+## Prompt-generation layer
+
+Two meta-prompts now plan the build-prompt queue before any code is written:
+
+- `004_author_build_roadmap.md` — produces `docs-dev/planning/build_roadmap.md`, a dependency-ordered, milestone-grouped list of every build prompt (one row each), numbered from `010`. This is the planning gate.
+- `005_author_build_prompt_files.md` — authors the actual numbered build-prompt files from that roadmap, each conforming to `prompt_authoring_guide.md`.
+
+Both are tool-agnostic (Claude Code and ChatGPT Codex), reference the specification by section rather than inlining it, and keep each planned prompt to one narrow reviewable unit.
+
 ## Recommended next prompt
 
-Create `004_scaffold_svelte_vite.md` to add the initial Svelte 5 + TypeScript + Vite scaffold, update README run instructions, and verify that the development server starts. Do not implement gameplay in that prompt.
+Run `004_author_build_roadmap.md` to generate the build roadmap, review it, then run `005_author_build_prompt_files.md`. The first build prompt (`010`) should add the initial Svelte 5 + TypeScript + Vite scaffold; deployment comes last. Do not implement gameplay while authoring prompts.
