@@ -1,0 +1,22 @@
+# Layer-3 cognitive psychology figures (specification §2, §7). Fictional,
+# archetypal field characters used to colour a cognitive career. No real living
+# academics are named. Dry, specific, British English.
+meta:
+  id: cognitive-figures
+  name: Cognitive psychology figures
+  layer: sub-discipline
+  parent: cognitive
+
+figures:
+  - id: priming_sceptic
+    role: The priming sceptic
+    description: Has a preprint, a podcast, and a forest plot for every occasion.
+  - id: model_purist
+    role: The computational purist
+    description: Will not accept a finding until it has been fit by a model with a Greek-letter name.
+  - id: paradigm_inventor
+    role: The paradigm inventor
+    description: Built the task everyone uses and is quietly furious nobody cites the 1998 paper.
+  - id: replication_lead
+    role: The replication lead
+    description: Coordinates forty labs with a shared spreadsheet and infinite patience.

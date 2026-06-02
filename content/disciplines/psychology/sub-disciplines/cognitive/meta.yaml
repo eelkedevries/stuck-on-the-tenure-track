@@ -1,0 +1,17 @@
+# Layer-3 cognitive psychology pack metadata (specification §2, §7). Declares
+# the psychology discipline as its parent so discipline content applies unless
+# overridden here. Sub-discipline skeleton only.
+meta:
+  id: cognitive
+  name: Cognitive psychology
+  layer: sub-discipline
+  parent: psychology
+
+focus: >-
+  Attention, memory, language, perception, and decision-making, studied chiefly
+  through reaction times, modelling, and an abiding faith in the lab task.
+signature_method_ids:
+  - priming_paradigm
+  - lexical_decision
+  - drift_diffusion
+  - erp_components

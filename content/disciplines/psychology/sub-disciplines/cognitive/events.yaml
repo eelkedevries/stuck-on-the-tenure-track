@@ -1,5 +1,6 @@
-# Example Layer-3 (cognitive) content (spec §2, §7). Shares `event_id` with the
-# psychology Layer-2 event, so it overrides it under layer precedence.
+# Layer-3 (cognitive) events (specification §2, §7). The first event shares an
+# id with the psychology Layer-2 event and overrides it under layer precedence;
+# the rest are cognitive-only supplements. No broad-psychology events here.
 meta:
   id: cognitive
   name: Cognitive psychology
@@ -13,3 +14,17 @@ events:
       null result across several thousand undergraduates. The effect size, it
       emerges, was largely an artefact of testing on Monday mornings.
     tags: [research, reputation, cognitive]
+
+  - event_id: model_recovery_problem
+    title: The model won't recover
+    body: >-
+      A reviewer asks for a parameter-recovery analysis. Your tidy three-parameter
+      model recovers two of them, and only on alternate Tuesdays.
+    tags: [research, methods, cognitive]
+
+  - event_id: stimulus_set_leak
+    title: The stimulus set is everywhere
+    body: >-
+      Your carefully normed word list turns up, uncredited, in three other labs'
+      experiments. Imitation, flattery, and a citation you will never receive.
+    tags: [research, cognitive]

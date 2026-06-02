@@ -1,0 +1,27 @@
+# Layer-3 cognitive psychology methods (specification §2, §7). Sub-discipline
+# signature methods; supplements the discipline method list. British English.
+meta:
+  id: cognitive-methods
+  name: Cognitive psychology methods
+  layer: sub-discipline
+  parent: cognitive
+
+methods:
+  - id: priming_paradigm
+    name: Priming paradigm
+    notes: A prime, a target, and a literature that cannot agree whether it replicates.
+  - id: lexical_decision
+    name: Lexical decision task
+    notes: Word or non-word, pressed as fast as possible, analysed forever.
+  - id: stroop_task
+    name: Stroop task
+    notes: The undergraduate demo that launched ten thousand interference studies.
+  - id: n_back
+    name: N-back working-memory task
+    notes: Beloved of training studies, distrusted by anyone who has run a meta-analysis.
+  - id: drift_diffusion
+    name: Drift-diffusion modelling
+    notes: Decomposes the reaction time into parameters you will defend at every talk.
+  - id: erp_components
+    name: ERP component analysis
+    notes: The N400, the P600, and a reviewer who wants the other one.

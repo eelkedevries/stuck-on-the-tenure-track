@@ -1,0 +1,33 @@
+# Layer-3 cognitive psychology journals (specification §2, §4.4, §7). Real
+# names; approximate tiers. Supplements the discipline journal list.
+meta:
+  id: cognitive-journals
+  name: Cognitive psychology journals
+  layer: sub-discipline
+  parent: cognitive
+
+journals:
+  - id: cognitive_psychology
+    name: Cognitive Psychology
+    tier: 1
+    impact_factor: 3.0
+  - id: journal_of_memory_and_language
+    name: Journal of Memory and Language
+    tier: 1
+    impact_factor: 3.2
+  - id: jep_lmc
+    name: "Journal of Experimental Psychology: Learning, Memory, and Cognition"
+    tier: 2
+    impact_factor: 2.6
+  - id: memory_and_cognition
+    name: Memory & Cognition
+    tier: 2
+    impact_factor: 2.4
+  - id: psychonomic_bulletin_review
+    name: Psychonomic Bulletin & Review
+    tier: 2
+    impact_factor: 3.4
+  - id: attention_perception_psychophysics
+    name: Attention, Perception, & Psychophysics
+    tier: 3
+    impact_factor: 2.1
