@@ -10,6 +10,8 @@ import type { SaveGame } from '../state/save';
 import type { Stage } from '../calendar/stages';
 import { advanceTurn } from '../calendar/stages';
 import { saveGame } from '../state/storage';
+import { emptyAllocation, type Allocation } from './actions';
+import { resolve, type ResolutionResult } from './resolution';
 
 export type TurnPhase =
   | 'turn_start'
@@ -31,21 +33,19 @@ export const TURN_PHASES: readonly TurnPhase[] = [
 ];
 
 export interface RunTurnDeps {
+  // The player's committed action allocation for this turn (defaults to none).
+  allocation?: Allocation;
   // Storage for the save phase; defaults to browser localStorage inside saveGame.
   storage?: Storage | null;
   // Optional observer, called as each phase begins. Useful for UI and tests.
   onPhase?: (phase: TurnPhase) => void;
+  // Optional observer for the resolution result (effects + checks).
+  onResolution?: (result: ResolutionResult) => void;
 }
 
 // Stub phases. Later prompts replace these with real behaviour; for now they
 // return the state unchanged so the loop is observable end to end.
 function eventPhase(state: SaveGame): SaveGame {
-  return state;
-}
-function actionPhase(state: SaveGame): SaveGame {
-  return state;
-}
-function resolutionPhase(state: SaveGame): SaveGame {
   return state;
 }
 function rivalPhase(state: SaveGame): SaveGame {
@@ -66,11 +66,15 @@ export function runTurn(state: SaveGame, stage: Stage, deps: RunTurnDeps = {}): 
         next = eventPhase(next);
         break;
       case 'action':
-        next = actionPhase(next);
+        // The action phase carries the player's committed allocation forward;
+        // its effects are applied in the resolution phase.
         break;
-      case 'resolution':
-        next = resolutionPhase(next);
+      case 'resolution': {
+        const result = resolve(next, deps.allocation ?? emptyAllocation());
+        next = result.state;
+        deps.onResolution?.(result);
         break;
+      }
       case 'rival':
         next = rivalPhase(next);
         break;
