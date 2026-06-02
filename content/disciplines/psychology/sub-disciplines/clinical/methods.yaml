@@ -1,0 +1,27 @@
+# Layer-3 clinical psychology methods (specification §2, §7). Sub-discipline
+# signature methods; supplements the discipline list. British English.
+meta:
+  id: clinical-methods
+  name: Clinical psychology methods
+  layer: sub-discipline
+  parent: clinical
+
+methods:
+  - id: randomised_controlled_trial
+    name: Randomised controlled trial
+    notes: The gold standard, a three-year timeline, and a recruitment target you will miss.
+  - id: structured_clinical_interview
+    name: Structured clinical interview
+    notes: Two hours per participant and a diagnostic manual that changes edition mid-study.
+  - id: symptom_rating_scales
+    name: Symptom rating scales
+    notes: Self-report, clinician-report, and a ceiling effect at every follow-up.
+  - id: ecological_momentary_assessment
+    name: Ecological momentary assessment
+    notes: Six pings a day, glorious time-series data, and a compliance rate that breaks hearts.
+  - id: single_case_design
+    name: Single-case experimental design
+    notes: An N of one, defended rigorously, dismissed cheerfully by the trialists.
+  - id: manualised_protocol
+    name: Manualised therapy protocol
+    notes: Fidelity checklists, supervision tapes, and a therapist who keeps "improving" it.

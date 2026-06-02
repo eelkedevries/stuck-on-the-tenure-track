@@ -1,0 +1,21 @@
+# Layer-3 clinical psychology figures (specification §2, §7). Fictional,
+# archetypal field characters. No real living academics are named. British English.
+meta:
+  id: clinical-figures
+  name: Clinical psychology figures
+  layer: sub-discipline
+  parent: clinical
+
+figures:
+  - id: rct_purist
+    role: The trial purist
+    description: Will not believe an intervention works until 400 people have been randomised.
+  - id: transdiagnostic_evangelist
+    role: The transdiagnostic evangelist
+    description: Thinks the diagnostic categories are a polite fiction and is, annoyingly, half right.
+  - id: manual_sceptic
+    role: The manual sceptic
+    description: Insists the therapeutic relationship does the work the protocol takes credit for.
+  - id: lived_experience_advocate
+    role: The lived-experience advocate
+    description: Asks, reasonably, why no patient was consulted before you designed the study.

@@ -1,0 +1,16 @@
+# Layer-3 clinical psychology pack metadata (specification §2, §7). Parent is the
+# psychology discipline. Sub-discipline skeleton only.
+meta:
+  id: clinical
+  name: Clinical psychology
+  layer: sub-discipline
+  parent: psychology
+
+focus: >-
+  Psychopathology, assessment, and intervention — trials, manuals, and the slow
+  ethics of working with people who are genuinely unwell.
+signature_method_ids:
+  - randomised_controlled_trial
+  - structured_clinical_interview
+  - symptom_rating_scales
+  - ecological_momentary_assessment

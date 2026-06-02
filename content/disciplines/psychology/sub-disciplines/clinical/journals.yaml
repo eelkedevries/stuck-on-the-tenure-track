@@ -1,0 +1,29 @@
+# Layer-3 clinical psychology journals (specification §2, §4.4, §7). Real names;
+# approximate tiers. Supplements the discipline journal list.
+meta:
+  id: clinical-journals
+  name: Clinical psychology journals
+  layer: sub-discipline
+  parent: clinical
+
+journals:
+  - id: jccp
+    name: Journal of Consulting and Clinical Psychology
+    tier: 1
+    impact_factor: 4.6
+  - id: psychological_medicine
+    name: Psychological Medicine
+    tier: 1
+    impact_factor: 6.5
+  - id: brat
+    name: Behaviour Research and Therapy
+    tier: 2
+    impact_factor: 4.2
+  - id: jpcs
+    name: Journal of Psychopathology and Clinical Science
+    tier: 2
+    impact_factor: 4.7
+  - id: jad
+    name: Journal of Affective Disorders
+    tier: 3
+    impact_factor: 4.4
