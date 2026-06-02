@@ -9,7 +9,7 @@
 import type { SaveGame } from '../state/save';
 import type { Rival } from '../rivals/simulation';
 import type { ActionCategory, Allocation } from '../engine/actions';
-import { emptyAllocation } from '../engine/actions';
+import { emptyAllocation, allocationTotal, TURN_TIME_POINTS } from '../engine/actions';
 import { runTurn } from '../engine/turn';
 import { stageForTurn, totalTurns, type Stage } from '../calendar/stages';
 import { loadGame, saveGame, clearSave, hasSave } from '../state/storage';
@@ -18,9 +18,14 @@ import { decideTenure, applyTenure } from '../milestones/tenure';
 import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, type SelectedEvent } from '../engine/events';
+import { LOCATIONS, type LocationId } from '../locations/types';
 
 // The resolved content events are static, so load them once.
 const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
+
+// Abstract context-switching cost of moving to another location (§3, §4.11).
+// Kept small here; tuning is `079`.
+export const MOVE_COST = 10;
 
 export type View = 'start' | 'event' | 'turn' | 'allocate' | 'cohort' | 'end';
 
@@ -35,6 +40,8 @@ export class Game {
   allocation = $state<Allocation>(emptyAllocation());
   view = $state<View>('start');
   pendingEvents = $state<SelectedEvent[]>([]);
+  // Movement time spent this turn (not an action category).
+  movementSpent = $state(0);
   private lastCategories: ActionCategory[] = [];
 
   get hasSave(): boolean {
@@ -49,6 +56,58 @@ export class Game {
   // advances undergraduate → … → assistant professor across the game.
   get stage(): Stage {
     return stageForTurn(this.state?.calendar.turn_number ?? 0);
+  }
+
+  get moveCost(): number {
+    return MOVE_COST;
+  }
+
+  get currentLocation(): LocationId {
+    return (this.state?.board.current_location ?? 'office') as LocationId;
+  }
+
+  // Time points left this turn = budget minus actions committed minus movement.
+  get timeRemaining(): number {
+    return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.movementSpent;
+  }
+
+  // The action categories bound to the current location (§4.11).
+  get availableActions(): ActionCategory[] {
+    return [...LOCATIONS[this.currentLocation].actions];
+  }
+
+  // Move to another location, paying the context-switch cost and recording the
+  // visit for location memory (§4.11).
+  moveTo(id: LocationId): void {
+    const current = this.state;
+    if (!current) return;
+    if (id === current.board.current_location) return;
+    if (this.timeRemaining < MOVE_COST) return;
+    this.movementSpent += MOVE_COST;
+    this.state = {
+      ...current,
+      board: { ...current.board, current_location: id },
+      player: {
+        ...current.player,
+        location_visits: [
+          ...current.player.location_visits,
+          { location: id, turn: current.calendar.turn_number },
+        ],
+      },
+    };
+  }
+
+  // Spend time on a location-bound action, drawing down the budget.
+  act(category: ActionCategory, points: number): void {
+    if (!this.availableActions.includes(category)) return;
+    const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
+    if (pts === 0) return;
+    this.allocation = { ...this.allocation, [category]: this.allocation[category] + pts };
+  }
+
+  // Pour the rest of the turn into one action.
+  actMax(category: ActionCategory): void {
+    this.act(category, this.timeRemaining);
   }
 
   newGame(): void {
@@ -70,12 +129,27 @@ export class Game {
     else this.beginTurn();
   }
 
-  // Start-of-turn: select the turn's events from content by context and present
-  // them; if there are none, go straight to the board.
+  // Start-of-turn: reset the time budget and movement, record the starting
+  // location as a visit, then select the turn's events from content by context
+  // and present them; if there are none, go straight to the board.
   private beginTurn(): void {
     const current = this.state;
     if (!current) return;
-    const seen = (current.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
+    this.allocation = emptyAllocation();
+    this.movementSpent = 0;
+    const refreshed: SaveGame = {
+      ...current,
+      board: { ...current.board, time_remaining: TURN_TIME_POINTS },
+      player: {
+        ...current.player,
+        location_visits: [
+          ...current.player.location_visits,
+          { location: current.board.current_location, turn: current.calendar.turn_number },
+        ],
+      },
+    };
+    this.state = refreshed;
+    const seen = (refreshed.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
     this.pendingEvents = selectTurnEvents(ALL_EVENTS, {
       stage: this.stage,
       recentCategories: this.lastCategories,

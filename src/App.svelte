@@ -8,7 +8,7 @@
   import SaveLoadControls from './ui/SaveLoadControls.svelte';
   import EventScreen from './ui/EventScreen.svelte';
   import TurnScreen from './ui/TurnScreen.svelte';
-  import ActionAllocationScreen from './ui/ActionAllocationScreen.svelte';
+  import BoardScreen from './ui/BoardScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
   import CvScreen from './ui/CvScreen.svelte';
   import { cohortTracker } from './rivals/cohort';
@@ -34,19 +34,18 @@
     <EventScreen events={game.pendingEvents} onResolve={(id) => game.resolveEvent(id)} />
   {:else if game.view === 'turn' && game.state}
     <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
-    <nav class="actions" aria-label="Turn actions">
-      <button type="button" class="primary" onclick={() => game.showAllocate()}>Plan this turn</button>
-      <button type="button" onclick={() => game.showCohort()}>Cohort</button>
-    </nav>
-  {:else if game.view === 'allocate' && game.state}
-    <ActionAllocationScreen
-      allocation={game.allocation}
-      onAllocate={(category, points) => game.setAllocation(category, points)}
-      onCommit={() => game.commit()}
+    <BoardScreen
+      currentLocation={game.currentLocation}
+      timeRemaining={game.timeRemaining}
+      moveCost={game.moveCost}
+      availableActions={game.availableActions}
+      spent={game.allocation}
+      onMove={(id) => game.moveTo(id)}
+      onAct={(category, points) => game.act(category, points)}
+      onActMax={(category) => game.actMax(category)}
+      onEndTurn={() => game.commit()}
+      onCohort={() => game.showCohort()}
     />
-    <nav class="actions" aria-label="Allocation actions">
-      <button type="button" onclick={() => game.showTurn()}>Back</button>
-    </nav>
   {:else if game.view === 'cohort' && game.state}
     <CohortScreen entries={cohortTracker(game.rivals)} />
     <nav class="actions" aria-label="Cohort actions">
