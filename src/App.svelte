@@ -10,6 +10,7 @@
   import EventScreen from './ui/EventScreen.svelte';
   import TurnScreen from './ui/TurnScreen.svelte';
   import BoardScreen from './ui/BoardScreen.svelte';
+  import StatusBars from './ui/StatusBars.svelte';
   import DeadlineBoard from './ui/DeadlineBoard.svelte';
   import DiaryScreen from './ui/DiaryScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
@@ -55,7 +56,8 @@
   {:else if game.view === 'turn' && game.state}
     <p class="objective">🎓 Be the first of your cohort to win tenure.</p>
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
-    <p class="hint">Move around campus and spend your time, then End turn.</p>
+    <p class="hint">Move around campus and spend your time; the day ends when your time runs out.</p>
+    <StatusBars player={game.state.player} tenureProgress={game.tenureProgress} />
     <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
       currentLocation={game.currentLocation}

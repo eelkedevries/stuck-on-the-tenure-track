@@ -25,6 +25,7 @@ export interface EventEffects {
   sleep?: number;
   mood?: number;
   physical?: number;
+  stress?: number;
   reputation?: number;
   affiliation_prestige?: number;
   personal_funds?: number;

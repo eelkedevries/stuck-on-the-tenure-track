@@ -102,6 +102,7 @@ export function applyEventEffects(state: SaveGame, effects: EventEffects | undef
         sleep: clamp(w.sleep + (effects.sleep ?? 0)),
         mood: clamp(w.mood + (effects.mood ?? 0)),
         physical: clamp(w.physical + (effects.physical ?? 0)),
+        stress: clamp(w.stress + (effects.stress ?? 0)),
       },
       standing: {
         ...s,

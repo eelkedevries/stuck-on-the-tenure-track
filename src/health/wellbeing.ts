@@ -18,11 +18,14 @@ export interface WellbeingDeltas {
   sleep?: number;
   mood?: number;
   physical?: number;
+  stress?: number;
 }
 
-// Apply the coupling between the three values for one turn.
+// Apply the coupling between the values for one turn. Poor sleep and high stress
+// drag mood down; rest lifts it.
 export function coupleWellbeing(wellbeing: Wellbeing): Wellbeing {
   let { sleep, mood, physical } = wellbeing;
+  const stress = wellbeing.stress;
   if (sleep < 40) {
     mood -= 5;
     physical -= 3;
@@ -33,7 +36,15 @@ export function coupleWellbeing(wellbeing: Wellbeing): Wellbeing {
   if (physical < 30) {
     mood -= 3;
   }
-  return { sleep: clamp(sleep), mood: clamp(mood), physical: clamp(physical) };
+  if (stress > 70) {
+    mood -= 4;
+  }
+  return {
+    sleep: clamp(sleep),
+    mood: clamp(mood),
+    physical: clamp(physical),
+    stress: clamp(stress),
+  };
 }
 
 // Advance wellbeing one turn: apply explicit deltas (from actions/events), then
@@ -43,6 +54,7 @@ export function stepWellbeing(wellbeing: Wellbeing, deltas: WellbeingDeltas = {}
     sleep: clamp(wellbeing.sleep + (deltas.sleep ?? 0)),
     mood: clamp(wellbeing.mood + (deltas.mood ?? 0)),
     physical: clamp(wellbeing.physical + (deltas.physical ?? 0)),
+    stress: clamp(wellbeing.stress + (deltas.stress ?? 0)),
   };
   return coupleWellbeing(applied);
 }

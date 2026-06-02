@@ -84,10 +84,13 @@ export function applyOutcomes(
   const date = state.calendar.current_date;
   const { methods, writing, statistics, politics } = state.player.expertise;
 
-  // Health reduces the productive yield of effortful work.
+  // Health conditions and high stress both reduce the productive yield of
+  // effortful work, so the player has to look after their emotional state.
   const conditions = (state.player.health_conditions ?? []) as unknown as HealthCondition[];
   const penalty = totalProductivityPenalty(conditions);
-  const yield_ = 1 - penalty;
+  const stressNow = state.player.wellbeing.stress;
+  const stressPenalty = stressNow > 60 ? Math.min(0.3, (stressNow - 60) / 100) : 0;
+  const yield_ = (1 - penalty) * (1 - stressPenalty);
   const research = allocation.research * yield_;
   const funding = allocation.funding * yield_;
 
@@ -170,6 +173,8 @@ export function applyOutcomes(
     sleep: Math.round(allocation.personal / 8 - workload / 40),
     mood: Math.round(allocation.personal / 12 - workload / 60),
     physical: Math.round(allocation.personal / 15 - workload / 80),
+    // Intense work raises stress; rest brings it down.
+    stress: Math.round(workload / 25 - allocation.personal / 12),
   });
   let nextConditions = conditions.map((c) => progressCondition(c, turn));
   const hasActive = nextConditions.some(
@@ -179,6 +184,12 @@ export function applyOutcomes(
     nextConditions = [
       ...nextConditions,
       createCondition(`cond-${turn}`, 'burnout', wellbeing.sleep < 15 ? 'severe' : 'moderate', turn),
+    ];
+  } else if (wellbeing.stress >= 85 && !hasActive && rng() < 0.4) {
+    // Sustained high stress can tip into anxiety.
+    nextConditions = [
+      ...nextConditions,
+      createCondition(`cond-${turn}`, 'anxiety', 'moderate', turn),
     ];
   }
 

@@ -15,6 +15,9 @@ export interface Wellbeing {
   sleep: number;
   mood: number;
   physical: number;
+  // Emotional state / anxiety (0..100). Rises with intense work and missed
+  // commitments; falls with rest. High stress drags on mood and productivity.
+  stress: number;
 }
 
 export interface Expertise {

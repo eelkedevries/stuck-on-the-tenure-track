@@ -77,7 +77,7 @@ try {
       gender: 'unspecified',
       broad_discipline: 'psychology',
       funds: { personal: 1000, research: 5000 },
-      wellbeing: { sleep: 60, mood: 60, physical: 60 },
+      wellbeing: { sleep: 60, mood: 60, physical: 60, stress: 30 },
       expertise: { methods: 30, theory: 25, writing: 20, statistics: 25, teaching: 15, politics: 10 },
       standing: { rank: 'assistant_professor', reputation: 40, affiliation_prestige: 50 },
       specialisation: { status: 'committed', current_sub_discipline: 'cognitive', commitment_turn: 6 },

@@ -14,7 +14,7 @@ import { runTurn } from '../engine/turn';
 import { stageForTurn, totalTurns, type Stage } from '../calendar/stages';
 import { loadGame, saveGame, clearSave, hasSave } from '../state/storage';
 import { createNewGame } from '../state/newgame';
-import { decideTenure, applyTenure } from '../milestones/tenure';
+import { decideTenure, applyTenure, tenureScore, TENURE_THRESHOLD } from '../milestones/tenure';
 import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
@@ -75,6 +75,12 @@ export class Game {
   // Cost of the next move this turn, rising with each move already made.
   get moveCost(): number {
     return MOVE_COST_BASE + MOVE_COST_STEP * this.movesThisTurn;
+  }
+
+  // Progress toward tenure (0..100%), the player's headline progression bar.
+  get tenureProgress(): number {
+    if (!this.state) return 0;
+    return Math.max(0, Math.min(100, Math.round((tenureScore(this.state) / TENURE_THRESHOLD) * 100)));
   }
 
   get currentLocation(): LocationId {
