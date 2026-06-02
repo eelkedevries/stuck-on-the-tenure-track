@@ -1,6 +1,6 @@
 # Stuck on the Tenure Track — Specification
 
-Version: 1.6
+Version: 1.7
 Last updated: 2026-06-02
 Status: Binding project specification
 
@@ -353,7 +353,7 @@ The board should communicate: where the player is, where they can go and at what
 
 **Location memory.** The game records where the player spends time and applies readable consequences over a window — for example, never appearing in visibility-relevant locations lowers visibility (the ghost penalty), always staying in the lab improves output but weakens reputation, and never going home erodes sleep. A ghost penalty applies to players who never appear in visibility-relevant social locations.
 
-**Career-stage variation.** The same locations persist across career stages, but their available actions and pressures change (e.g. the lab moves from running a study, to analysing data and supervising, to managing a lab and chasing ethics).
+**Career-stage variation.** The same locations persist across career stages, but their available actions and pressures change. Each location offers concrete, named activities appropriate to the stage (e.g. the lab moves from running a study, to analysing data and supervising, to managing a lab and chasing ethics). During the student stages (undergraduate, MSc) the academic locations are for studying, attending lectures, sitting exams, and thesis work; students build expertise but do not publish papers or win grants. The research career — and publishing — begins at the PhD.
 
 ### 4.11a Deadlines and pressure
 

@@ -9,13 +9,14 @@
   import LocationList from './LocationList.svelte';
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
   import { TURN_TIME_POINTS, type ActionCategory, type Allocation } from '../engine/actions';
+  import type { Activity } from '../locations/stages';
 
   interface Props {
     currentLocation: LocationId;
     focus: string;
     timeRemaining: number;
     moveCost: number;
-    availableActions: ActionCategory[];
+    activities: Activity[];
     spent: Allocation;
     onMove?: (id: LocationId) => void;
     onAct?: (category: ActionCategory, points: number) => void;
@@ -29,7 +30,7 @@
     focus,
     timeRemaining,
     moveCost,
-    availableActions,
+    activities,
     spent,
     onMove,
     onAct,
@@ -37,16 +38,6 @@
     onEndTurn,
     onCohort,
   }: Props = $props();
-
-  const LABELS: Record<ActionCategory, string> = {
-    research: 'Research',
-    teaching: 'Teaching',
-    service: 'Service',
-    networking: 'Networking',
-    funding: 'Funding',
-    personal: 'Personal',
-    misconduct: 'Misconduct',
-  };
 
   const currentName = $derived(
     ALL_LOCATIONS.find((l) => l.id === currentLocation)?.name ?? currentLocation,
@@ -72,17 +63,17 @@
     <LocationList selected={currentLocation} onSelect={(id) => onMove?.(id)} />
   </div>
 
-  <h3>Actions here</h3>
-  {#if availableActions.length > 0}
+  <h3>Activities here</h3>
+  {#if activities.length > 0}
     <ul class="actions">
-      {#each availableActions as category (category)}
+      {#each activities as activity, i (activity.label + i)}
         <li>
-          <span class="action-label">{LABELS[category]}</span>
-          {#if spent[category] > 0}<span class="spent">{spent[category]} spent</span>{/if}
+          <span class="action-label">{activity.label}</span>
+          {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]} on {activity.category}</span>{/if}
           <span class="buttons">
-            <button type="button" disabled={timeRemaining < 10} onclick={() => onAct?.(category, 10)}>+10</button>
-            <button type="button" disabled={timeRemaining < 25} onclick={() => onAct?.(category, 25)}>+25</button>
-            <button type="button" disabled={timeRemaining <= 0} onclick={() => onActMax?.(category)}>All</button>
+            <button type="button" disabled={timeRemaining < 10} onclick={() => onAct?.(activity.category, 10)}>+10</button>
+            <button type="button" disabled={timeRemaining < 25} onclick={() => onAct?.(activity.category, 25)}>+25</button>
+            <button type="button" disabled={timeRemaining <= 0} onclick={() => onActMax?.(activity.category)}>All</button>
           </span>
         </li>
       {/each}

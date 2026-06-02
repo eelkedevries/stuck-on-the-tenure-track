@@ -1,21 +1,36 @@
-// Career-stage variation of the board (specification §3, §4.11; prompt 083).
+// Career-stage variation of the board (specification §3, §4.11; prompts 083, 084).
 //
-// The locations stay the same across the career, but what you do there and the
-// pressures change: the lab moves from running a study, to analysing data and
-// supervising, to managing a lab and chasing ethics. This is a data-driven map
-// (stage × location → actions + focus label); unmapped stage/location pairs fall
-// back to the location's base actions and a default focus.
+// The locations stay the same across the career, but what you do there changes:
+// a student attends lectures, sits exams, and studies; a PhD runs studies and
+// writes a thesis; a professor manages a lab and chases grants. Each location
+// offers named activities, every one mapping to an existing internal action
+// category. Unmapped stage/location pairs fall back to the location's base
+// categories with generic labels.
 
 import type { Stage } from '../calendar/stages';
 import { LOCATIONS, type LocationId } from './types';
 import type { ActionCategory } from '../engine/actions';
 
-interface StageLocation {
-  actions: ActionCategory[];
-  focus: string;
+export interface Activity {
+  label: string;
+  category: ActionCategory;
 }
 
-// Default focus shown when a stage does not override a location.
+interface StageLocation {
+  focus: string;
+  activities: Activity[];
+}
+
+const DEFAULT_VERB: Record<ActionCategory, string> = {
+  research: 'Do research',
+  teaching: 'Teach',
+  service: 'Service work',
+  networking: 'Network',
+  funding: 'Work on grants',
+  personal: 'Rest',
+  misconduct: 'Cut corners',
+};
+
 const DEFAULT_FOCUS: Record<LocationId, string> = {
   office: 'Write, admin, and grants',
   lab: 'Run studies',
@@ -30,40 +45,276 @@ const DEFAULT_FOCUS: Record<LocationId, string> = {
   health_centre: 'Look after yourself',
 };
 
-const OVERRIDES: Partial<Record<Stage, Partial<Record<LocationId, StageLocation>>>> = {
+const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocation>>>> = {
+  undergraduate: {
+    classroom: {
+      focus: 'Lectures and exams',
+      activities: [
+        { label: 'Attend a lecture', category: 'research' },
+        { label: 'Sit an exam', category: 'research' },
+      ],
+    },
+    library: {
+      focus: 'Study and revise',
+      activities: [
+        { label: 'Study', category: 'research' },
+        { label: 'Revise for exams', category: 'research' },
+      ],
+    },
+    seminar_room: {
+      focus: 'Attend seminars',
+      activities: [{ label: 'Attend a seminar', category: 'networking' }],
+    },
+    lab: {
+      focus: 'Lab practicals',
+      activities: [{ label: 'Do a lab practical', category: 'research' }],
+    },
+    office: {
+      focus: 'Coursework and supervision',
+      activities: [
+        { label: 'Write coursework', category: 'research' },
+        { label: 'See your tutor', category: 'networking' },
+      ],
+    },
+    funder_portal: {
+      focus: 'Scholarships',
+      activities: [{ label: 'Look up scholarships', category: 'networking' }],
+    },
+    home: {
+      focus: 'Rest and study',
+      activities: [
+        { label: 'Rest', category: 'personal' },
+        { label: 'Study at home', category: 'research' },
+      ],
+    },
+    cafe_pub: {
+      focus: 'Student life',
+      activities: [
+        { label: 'Socialise', category: 'networking' },
+        { label: 'Unwind', category: 'personal' },
+      ],
+    },
+  },
+  msc: {
+    classroom: {
+      focus: 'Advanced courses',
+      activities: [
+        { label: 'Attend a lecture', category: 'research' },
+        { label: 'Sit an exam', category: 'research' },
+        { label: 'Tutor first-years', category: 'teaching' },
+      ],
+    },
+    library: {
+      focus: 'Read and revise',
+      activities: [
+        { label: 'Read for your thesis', category: 'research' },
+        { label: 'Revise for exams', category: 'research' },
+      ],
+    },
+    seminar_room: {
+      focus: 'Seminars and lab meetings',
+      activities: [
+        { label: 'Attend a seminar', category: 'networking' },
+        { label: 'Present in lab meeting', category: 'networking' },
+      ],
+    },
+    lab: {
+      focus: 'Thesis study',
+      activities: [{ label: 'Run your thesis study', category: 'research' }],
+    },
+    office: {
+      focus: 'Thesis and supervision',
+      activities: [
+        { label: 'Write your thesis', category: 'research' },
+        { label: 'See your supervisor', category: 'networking' },
+      ],
+    },
+    funder_portal: {
+      focus: 'PhD funding',
+      activities: [{ label: 'Look up PhD funding', category: 'networking' }],
+    },
+    home: {
+      focus: 'Rest and write',
+      activities: [
+        { label: 'Rest', category: 'personal' },
+        { label: 'Write at home', category: 'research' },
+      ],
+    },
+    cafe_pub: {
+      focus: 'Peer support',
+      activities: [
+        { label: 'Peer support', category: 'networking' },
+        { label: 'Unwind', category: 'personal' },
+      ],
+    },
+  },
   phd: {
-    lab: { actions: ['research'], focus: 'Run studies' },
-    office: { actions: ['research', 'service'], focus: 'Write your thesis' },
-    classroom: { actions: ['teaching'], focus: 'TA work' },
-    seminar_room: { actions: ['networking'], focus: 'Attend talks' },
-    funder_portal: { actions: ['funding'], focus: 'Small grants' },
-    cafe_pub: { actions: ['networking', 'personal'], focus: 'Peer support' },
-    home: { actions: ['personal', 'research'], focus: 'Recover, and feel thesis guilt' },
+    lab: {
+      focus: 'Run studies',
+      activities: [
+        { label: 'Run a study', category: 'research' },
+        { label: 'Collect data', category: 'research' },
+      ],
+    },
+    office: {
+      focus: 'Write your thesis',
+      activities: [
+        { label: 'Write your thesis', category: 'research' },
+        { label: 'Departmental admin', category: 'service' },
+      ],
+    },
+    library: {
+      focus: 'Read the literature',
+      activities: [{ label: 'Read the literature', category: 'research' }],
+    },
+    classroom: {
+      focus: 'TA work',
+      activities: [
+        { label: 'Run a tutorial', category: 'teaching' },
+        { label: 'Mark coursework', category: 'teaching' },
+      ],
+    },
+    seminar_room: {
+      focus: 'Attend talks',
+      activities: [{ label: 'Attend a talk', category: 'networking' }],
+    },
+    funder_portal: {
+      focus: 'Small grants',
+      activities: [{ label: 'Apply for a small grant', category: 'funding' }],
+    },
+    cafe_pub: {
+      focus: 'Peer support',
+      activities: [
+        { label: 'Peer support', category: 'networking' },
+        { label: 'Unwind', category: 'personal' },
+      ],
+    },
+    home: {
+      focus: 'Recover, and feel thesis guilt',
+      activities: [
+        { label: 'Rest', category: 'personal' },
+        { label: 'Write at home', category: 'research' },
+      ],
+    },
   },
   postdoc: {
-    lab: { actions: ['research'], focus: 'Analyse data, supervise an RA' },
-    office: { actions: ['research', 'funding', 'service'], focus: 'Papers and fellowships' },
-    classroom: { actions: ['teaching'], focus: 'Guest lecture' },
-    seminar_room: { actions: ['networking', 'service'], focus: 'Present your work' },
-    funder_portal: { actions: ['funding'], focus: 'Fellowships' },
-    cafe_pub: { actions: ['networking', 'personal'], focus: 'Collaborations' },
-    home: { actions: ['personal', 'research'], focus: 'Relocation stress' },
+    lab: {
+      focus: 'Analyse data, supervise an RA',
+      activities: [
+        { label: 'Analyse data', category: 'research' },
+        { label: 'Supervise an RA', category: 'service' },
+      ],
+    },
+    office: {
+      focus: 'Papers and fellowships',
+      activities: [
+        { label: 'Write a paper', category: 'research' },
+        { label: 'Draft a fellowship', category: 'funding' },
+        { label: 'Reviewer reports', category: 'service' },
+      ],
+    },
+    library: {
+      focus: 'Read the literature',
+      activities: [{ label: 'Read the literature', category: 'research' }],
+    },
+    classroom: {
+      focus: 'Guest lecture',
+      activities: [{ label: 'Give a guest lecture', category: 'teaching' }],
+    },
+    seminar_room: {
+      focus: 'Present your work',
+      activities: [
+        { label: 'Present your work', category: 'networking' },
+        { label: 'Committee work', category: 'service' },
+      ],
+    },
+    funder_portal: {
+      focus: 'Fellowships',
+      activities: [{ label: 'Apply for a fellowship', category: 'funding' }],
+    },
+    cafe_pub: {
+      focus: 'Collaborations',
+      activities: [
+        { label: 'Meet a collaborator', category: 'networking' },
+        { label: 'Unwind', category: 'personal' },
+      ],
+    },
+    home: {
+      focus: 'Relocation stress',
+      activities: [
+        { label: 'Rest', category: 'personal' },
+        { label: 'Write at home', category: 'research' },
+      ],
+    },
   },
   assistant_professor: {
-    lab: { actions: ['research', 'service'], focus: 'Manage the lab, chase ethics' },
-    office: { actions: ['service', 'funding', 'research'], focus: 'Admin, grants, reviewer reports' },
-    classroom: { actions: ['teaching'], focus: 'Teach a module' },
-    seminar_room: { actions: ['networking', 'service'], focus: 'Committees and recruitment' },
-    funder_portal: { actions: ['funding'], focus: 'ERC / NWO-style grants' },
-    cafe_pub: { actions: ['networking', 'personal'], focus: 'Department politics' },
-    home: { actions: ['personal', 'research'], focus: 'Manage the work–life collapse' },
+    lab: {
+      focus: 'Manage the lab, chase ethics',
+      activities: [
+        { label: 'Manage the lab', category: 'service' },
+        { label: 'Push a study forward', category: 'research' },
+        { label: 'Chase ethics approval', category: 'service' },
+      ],
+    },
+    office: {
+      focus: 'Admin, grants, reviewer reports',
+      activities: [
+        { label: 'Write a grant', category: 'funding' },
+        { label: 'Admin', category: 'service' },
+        { label: 'Write a paper', category: 'research' },
+      ],
+    },
+    library: {
+      focus: 'Read the literature',
+      activities: [{ label: 'Read the literature', category: 'research' }],
+    },
+    classroom: {
+      focus: 'Teach a module',
+      activities: [
+        { label: 'Teach your module', category: 'teaching' },
+        { label: 'Mark exams', category: 'teaching' },
+      ],
+    },
+    seminar_room: {
+      focus: 'Committees and recruitment',
+      activities: [
+        { label: 'Committee work', category: 'service' },
+        { label: 'Recruitment', category: 'networking' },
+      ],
+    },
+    funder_portal: {
+      focus: 'ERC / NWO-style grants',
+      activities: [{ label: 'Submit a major grant', category: 'funding' }],
+    },
+    cafe_pub: {
+      focus: 'Department politics',
+      activities: [
+        { label: 'Department politics', category: 'networking' },
+        { label: 'Unwind', category: 'personal' },
+      ],
+    },
+    home: {
+      focus: 'Manage the work–life collapse',
+      activities: [
+        { label: 'Rest', category: 'personal' },
+        { label: 'Catch up on email', category: 'service' },
+      ],
+    },
   },
 };
 
-export function actionsAtStage(stage: Stage, id: LocationId): ActionCategory[] {
-  return OVERRIDES[stage]?.[id]?.actions ?? [...LOCATIONS[id].actions];
+function defaultActivities(id: LocationId): Activity[] {
+  return LOCATIONS[id].actions.map((category) => ({ label: DEFAULT_VERB[category], category }));
+}
+
+export function activitiesAtStage(stage: Stage, id: LocationId): Activity[] {
+  return STAGE_BOARD[stage]?.[id]?.activities ?? defaultActivities(id);
 }
 
 export function focusAtStage(stage: Stage, id: LocationId): string {
-  return OVERRIDES[stage]?.[id]?.focus ?? DEFAULT_FOCUS[id];
+  return STAGE_BOARD[stage]?.[id]?.focus ?? DEFAULT_FOCUS[id];
+}
+
+export function actionsAtStage(stage: Stage, id: LocationId): ActionCategory[] {
+  return [...new Set(activitiesAtStage(stage, id).map((a) => a.category))];
 }

@@ -19,7 +19,7 @@ import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, type SelectedEvent } from '../engine/events';
 import { type LocationId } from '../locations/types';
-import { actionsAtStage, focusAtStage } from '../locations/stages';
+import { actionsAtStage, focusAtStage, activitiesAtStage, type Activity } from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
@@ -85,8 +85,13 @@ export class Game {
     return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.movementSpent;
   }
 
-  // The action categories bound to the current location, which vary by career
-  // stage (§4.11, §3).
+  // The named activities available at the current location for the current
+  // stage (§4.11, §3). The board shows these; each maps to an internal category.
+  get activities(): Activity[] {
+    return activitiesAtStage(this.stage, this.currentLocation);
+  }
+
+  // The underlying action categories available here (used to validate spending).
   get availableActions(): ActionCategory[] {
     return actionsAtStage(this.stage, this.currentLocation);
   }

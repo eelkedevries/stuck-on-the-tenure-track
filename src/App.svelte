@@ -42,7 +42,7 @@
       focus={game.currentFocus}
       timeRemaining={game.timeRemaining}
       moveCost={game.moveCost}
-      availableActions={game.availableActions}
+      activities={game.activities}
       spent={game.allocation}
       onMove={(id) => game.moveTo(id)}
       onAct={(category, points) => game.act(category, points)}

@@ -22,6 +22,7 @@ import {
   type HealthCondition,
 } from '../health/conditions';
 import { decayStep, interact } from '../relationships/decay';
+import { stageForTurn } from '../calendar/stages';
 import { resolveApplication } from '../grants/success';
 
 const VENUE_BY_TIER: Record<number, { name: string; impact: number }> = {
@@ -90,30 +91,37 @@ export function applyOutcomes(
   const research = allocation.research * yield_;
   const funding = allocation.funding * yield_;
 
+  // Students (undergraduate, MSc) build expertise by studying but do not publish
+  // papers or win grants; the research career begins at the PhD (§3, §4.11).
+  const stage = stageForTurn(state.calendar.turn_number);
+  const researchCareer = stage === 'phd' || stage === 'postdoc' || stage === 'assistant_professor';
+
   // --- Papers (research) -------------------------------------------------
   let papers = (state.player.papers ?? []) as unknown as Paper[];
   // Citations accrue on everything already published.
   papers = papers.map((p) => accrueCitations(p, date));
-  // Advance the pipeline: publish submitted work, submit prepared work.
-  papers = papers.map((p) => {
-    if (p.status === 'submitted' && rng() < Math.min(0.6, research / 120 + writing * 0.01)) {
-      return publish(p, date);
+  if (researchCareer) {
+    // Advance the pipeline: publish submitted work, submit prepared work.
+    papers = papers.map((p) => {
+      if (p.status === 'submitted' && rng() < Math.min(0.6, research / 120 + writing * 0.01)) {
+        return publish(p, date);
+      }
+      if (p.status === 'in_preparation' && rng() < Math.min(0.7, research / 80)) {
+        return submit(p, date);
+      }
+      return p;
+    });
+    // Start a new paper when research is sustained and the pipeline is not full.
+    const inPrep = papers.filter((p) => p.status === 'in_preparation').length;
+    if (research >= 25 && inPrep < 2 && rng() < research / 150) {
+      papers = [...papers, newPaper(state, papers.length)];
     }
-    if (p.status === 'in_preparation' && rng() < Math.min(0.7, research / 80)) {
-      return submit(p, date);
-    }
-    return p;
-  });
-  // Start a new paper when research is sustained and the pipeline is not full.
-  const inPrep = papers.filter((p) => p.status === 'in_preparation').length;
-  if (research >= 25 && inPrep < 2 && rng() < research / 150) {
-    papers = [...papers, newPaper(state, papers.length)];
   }
 
   // --- Grants (funding) --------------------------------------------------
   let grantsHeld = (state.player.grants_held ?? []) as unknown as Record<string, unknown>[];
   let grantsApplied = (state.player.grants_applied ?? []) as unknown as Record<string, unknown>[];
-  if (allocation.funding >= 20) {
+  if (researchCareer && allocation.funding >= 20) {
     const outcome = resolveApplication(
       {
         baseRate: 0.15,
