@@ -13,8 +13,8 @@
   let { entries }: Props = $props();
 
   const RANK_LABELS: Record<Rank, string> = {
-    undergraduate: 'Undergraduate',
-    msc: 'MSc',
+    undergraduate: "Bachelor's",
+    msc: "Master's",
     phd: 'PhD',
     postdoc: 'Postdoc',
     assistant_professor: 'Assistant professor',

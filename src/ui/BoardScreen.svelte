@@ -39,6 +39,18 @@
   const currentName = $derived(
     ALL_LOCATIONS.find((l) => l.id === currentLocation)?.name ?? currentLocation,
   );
+
+  // Plain-language description of what spending time on each category does, so
+  // the player never has to decode an internal name.
+  const CATEGORY_EFFECT: Record<ActionCategory, string> = {
+    research: 'Build your research and skills',
+    teaching: 'Build teaching experience',
+    service: 'Do admin and earn standing',
+    networking: 'Make contacts and keep relationships warm',
+    funding: 'Work towards grants',
+    personal: 'Rest — eases stress, restores mood and sleep',
+    misconduct: 'Cut corners (risky)',
+  };
 </script>
 
 <section class="board" aria-label="Campus board">
@@ -60,8 +72,11 @@
     <ul class="actions">
       {#each activities as activity, i (activity.label + i)}
         <li>
-          <span class="action-label">{activity.label}</span>
-          {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]} on {activity.category}</span>{/if}
+          <span class="action-text">
+            <span class="action-label">{activity.label}</span>
+            <span class="action-effect">{CATEGORY_EFFECT[activity.category]}</span>
+            {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]}t spent</span>{/if}
+          </span>
           <span class="buttons">
             <button type="button" disabled={timeRemaining < 10} onclick={() => onAct?.(activity.category, 10)}>+10</button>
             <button type="button" disabled={timeRemaining < 25} onclick={() => onAct?.(activity.category, 25)}>+25</button>
@@ -128,15 +143,23 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.5rem 0.75rem;
+  }
+  .action-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 12rem;
   }
   .action-label {
     font-weight: bold;
-    min-width: 6rem;
   }
-  .spent {
+  .action-effect {
     color: var(--muted);
     font-size: 0.8rem;
+  }
+  .spent {
+    color: var(--accent);
+    font-size: 0.75rem;
   }
   .buttons {
     margin-left: auto;

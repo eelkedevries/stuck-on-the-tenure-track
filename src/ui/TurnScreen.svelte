@@ -15,8 +15,8 @@
   let { calendar, stage, player }: Props = $props();
 
   const STAGE_LABELS: Record<Stage, string> = {
-    undergraduate: 'Undergraduate',
-    msc: 'MSc',
+    undergraduate: "Bachelor's",
+    msc: "Master's",
     phd: 'PhD',
     postdoc: 'Postdoc',
     assistant_professor: 'Assistant professor',

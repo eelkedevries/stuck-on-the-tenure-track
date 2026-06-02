@@ -8,9 +8,11 @@
   interface Props {
     player: PlayerState;
     tenureProgress: number;
+    subGoalLabel: string;
+    subGoalProgress: number;
   }
 
-  let { player, tenureProgress }: Props = $props();
+  let { player, tenureProgress, subGoalLabel, subGoalProgress }: Props = $props();
 
   const w = $derived(player.wellbeing);
   const stressHigh = $derived(w.stress >= 70);
@@ -41,10 +43,18 @@
     <span class="track"><span class="fill" style="width: {w.physical}%"></span></span>
     <span class="num">{w.physical}</span>
   </div>
-  <div class="bar tenure">
-    <span class="label">Tenure</span>
-    <span class="track"><span class="fill" style="width: {tenureProgress}%"></span></span>
-    <span class="num">{tenureProgress}%</span>
+  <div class="goals">
+    <p class="goalnow">Right now — {subGoalLabel}</p>
+    <div class="bar subgoal">
+      <span class="label">This stage</span>
+      <span class="track"><span class="fill" style="width: {subGoalProgress}%"></span></span>
+      <span class="num">{subGoalProgress}%</span>
+    </div>
+    <div class="bar tenure">
+      <span class="label">Tenure</span>
+      <span class="track"><span class="fill" style="width: {tenureProgress}%"></span></span>
+      <span class="num">{tenureProgress}%</span>
+    </div>
   </div>
 </section>
 
@@ -90,6 +100,22 @@
   }
   .tenure .fill {
     background: #c79a00;
+  }
+  .subgoal .fill {
+    background: #5a9bd4;
+  }
+  .goals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border);
+  }
+  .goalnow {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: bold;
   }
   .warning {
     margin: 0;

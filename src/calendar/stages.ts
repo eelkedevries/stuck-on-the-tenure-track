@@ -50,6 +50,18 @@ export function stageForTurn(turnIndex: number): Stage {
   return STAGE_BUDGET[STAGE_BUDGET.length - 1].stage;
 }
 
+// Fraction (0..1) through the current stage by turns, for the sub-goal bar.
+export function stageProgress(turnIndex: number): number {
+  let start = 0;
+  for (const budget of STAGE_BUDGET) {
+    if (turnIndex < start + budget.turns) {
+      return Math.min(1, (turnIndex - start + 1) / budget.turns);
+    }
+    start += budget.turns;
+  }
+  return 1;
+}
+
 // Advance one turn within the given stage, moving the date by that stage's
 // per-turn interval and incrementing the turn number.
 export function advanceTurn(calendar: Calendar, stage: Stage): Calendar {

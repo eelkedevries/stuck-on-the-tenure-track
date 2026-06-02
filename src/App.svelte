@@ -24,8 +24,8 @@
   const game = new Game();
 
   const STAGE_LABEL: Record<Stage, string> = {
-    undergraduate: 'Undergraduate',
-    msc: 'MSc student',
+    undergraduate: "Bachelor's student",
+    msc: "Master's student",
     phd: 'PhD student',
     postdoc: 'Postdoc',
     assistant_professor: 'Assistant professor',
@@ -58,7 +58,12 @@
     <p class="objective">🎓 Be the first of your cohort to win tenure.</p>
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
     <p class="hint">Move around campus and spend your time; the day ends when your time runs out.</p>
-    <StatusBars player={game.state.player} tenureProgress={game.tenureProgress} />
+    <StatusBars
+      player={game.state.player}
+      tenureProgress={game.tenureProgress}
+      subGoalLabel={game.subGoalLabel}
+      subGoalProgress={game.subGoalProgress}
+    />
     {#if game.nextAppointment}
       <AppointmentBar
         appointment={game.nextAppointment}

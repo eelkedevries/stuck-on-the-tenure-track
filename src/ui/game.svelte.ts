@@ -11,7 +11,7 @@ import type { Rival } from '../rivals/simulation';
 import type { ActionCategory, Allocation } from '../engine/actions';
 import { emptyAllocation, allocationTotal, TURN_TIME_POINTS } from '../engine/actions';
 import { runTurn } from '../engine/turn';
-import { stageForTurn, totalTurns, type Stage } from '../calendar/stages';
+import { stageForTurn, totalTurns, stageProgress, type Stage } from '../calendar/stages';
 import { loadGame, saveGame, clearSave, hasSave } from '../state/storage';
 import { createNewGame } from '../state/newgame';
 import { decideTenure, applyTenure, tenureScore, TENURE_THRESHOLD } from '../milestones/tenure';
@@ -32,6 +32,15 @@ import { scheduleAppointments, type Appointment } from '../appointments/appointm
 // derived from them by sub-discipline at the start of each turn.
 const ALL_PACKS = loadAllPacks();
 const EVENT_TITLE = new Map([...resolveEvents(ALL_PACKS).values()].map((e) => [e.event_id, e.title]));
+
+// The sub-goal shown for each career stage, in plain language.
+const SUBGOAL_LABEL: Record<Stage, string> = {
+  undergraduate: "Bachelor's: pass your courses and defend your thesis",
+  msc: "Master's: finish your courses and defend your thesis",
+  phd: 'PhD: publish, and defend your dissertation',
+  postdoc: 'Postdoc: build a record and land a faculty job',
+  assistant_professor: 'Assistant professor: build the case for tenure',
+};
 
 export type View = 'start' | 'intro' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
 
@@ -104,6 +113,15 @@ export class Game {
       return { ...a, status: 'missed' as const };
     });
     this.state = s;
+  }
+
+  // The current stage's sub-goal: a short description and progress through it.
+  get subGoalLabel(): string {
+    return SUBGOAL_LABEL[this.stage];
+  }
+
+  get subGoalProgress(): number {
+    return Math.round(stageProgress(this.state?.calendar.turn_number ?? 0) * 100);
   }
 
   // Progress toward tenure (0..100%), the player's headline progression bar.
