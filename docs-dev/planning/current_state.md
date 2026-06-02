@@ -61,7 +61,25 @@ The build-prompt files `010`–`072` (63 prompts across milestones M0–M16) now
 
 ## Board interaction redesign (M17)
 
-Milestone M17 is specified and in progress. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
+Milestone M17 is **complete** (`074`–`083`). The campus board is now the primary
+interface: the player has a current location, moves between locations at a
+rising abstract context-switching cost (`src/ui/BoardScreen.svelte`,
+`src/ui/game.svelte.ts`), and spends the 100-point budget on location-bound,
+stage-varying actions (`src/locations/stages.ts`). Committed actions drive the
+real systems — papers, grants, health, relationships
+(`src/engine/outcomes.ts`); context-selected events fire each turn
+(`src/engine/events.ts`) and are logged; a deadline/pressure layer schedules and
+resolves grant-call, milestone, and teaching deadlines with urgency UI
+(`src/deadlines/`, `src/ui/DeadlineBoard.svelte`); location memory generalises
+the ghost penalty (`src/locations/memory.ts`); each turn ends with a dry diary
+recap (`src/ui/recap.ts`, `src/ui/DiaryScreen.svelte`) that includes occasional
+in-world rival sightings (`src/rivals/sightings.ts`); and the save schema was
+extended with a `save_version` bump (now 2) for board, deadline, and visit state
+(`077`). The specification (v1.6) and roadmap describe the redesign as canon.
+
+### Original specification of M17
+
+Milestone M17 was specified in `074`. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
 
 ## Recommended next prompt
 
