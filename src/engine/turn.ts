@@ -12,6 +12,7 @@ import { advanceTurn } from '../calendar/stages';
 import { saveGame } from '../state/storage';
 import { emptyAllocation, type Allocation } from './actions';
 import { resolve, type ResolutionResult } from './resolution';
+import { simulateRivals, type Rival } from '../rivals/simulation';
 
 export type TurnPhase =
   | 'turn_start'
@@ -41,14 +42,17 @@ export interface RunTurnDeps {
   onPhase?: (phase: TurnPhase) => void;
   // Optional observer for the resolution result (effects + checks).
   onResolution?: (result: ResolutionResult) => void;
+  // The cohort's rivals, advanced in parallel during the rival phase.
+  rivals?: Rival[];
+  // Optional observer for the advanced rivals.
+  onRivals?: (rivals: Rival[]) => void;
+  // Randomness for the rival simulation; injectable for determinism.
+  rng?: () => number;
 }
 
 // Stub phases. Later prompts replace these with real behaviour; for now they
 // return the state unchanged so the loop is observable end to end.
 function eventPhase(state: SaveGame): SaveGame {
-  return state;
-}
-function rivalPhase(state: SaveGame): SaveGame {
   return state;
 }
 
@@ -76,7 +80,9 @@ export function runTurn(state: SaveGame, stage: Stage, deps: RunTurnDeps = {}): 
         break;
       }
       case 'rival':
-        next = rivalPhase(next);
+        if (deps.rivals) {
+          deps.onRivals?.(simulateRivals(deps.rivals, deps.rng));
+        }
         break;
       case 'save':
         next = { ...next, last_played_at: new Date().toISOString() };
