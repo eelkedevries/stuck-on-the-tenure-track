@@ -19,16 +19,43 @@ export type JsonValue =
 // sub-discipline → discipline → core (specification §2).
 export type ContentLayer = 'core' | 'discipline' | 'sub-discipline';
 
+// Light, flat effects a choice applies to game state (§4.1, §4.6). Every key is
+// optional and additive; unknown keys are ignored by the engine.
+export interface EventEffects {
+  sleep?: number;
+  mood?: number;
+  physical?: number;
+  reputation?: number;
+  affiliation_prestige?: number;
+  personal_funds?: number;
+  research_funds?: number;
+  methods?: number;
+  theory?: number;
+  writing?: number;
+  statistics?: number;
+  teaching?: number;
+  politics?: number;
+}
+
+// A player choice within an event: a button label, the one-line outcome shown
+// when chosen, and the light effects it applies (specification §4.2, §7).
+export interface EventChoice {
+  label: string;
+  result: string;
+  effects?: EventEffects;
+}
+
 // A content event. `event_id` drives layer override: a higher-layer event with
-// the same id replaces a lower-layer one (specification §2). Gating conditions
-// and effects are kept as open JSON maps until the mechanics that consume them
-// are specified by later prompts, so authoring can proceed without engine changes.
+// the same id replaces a lower-layer one (specification §2). `conditions` may
+// gate by career `stages` (array) and `sub_discipline`. `choices` make the event
+// a decision; an event without choices is simply acknowledged.
 export interface ContentEvent {
   event_id: string;
   title: string;
   body: string;
   conditions?: Record<string, JsonValue>;
   effects?: Record<string, JsonValue>;
+  choices?: EventChoice[];
   tags?: string[];
 }
 

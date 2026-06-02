@@ -5,7 +5,7 @@
 // by a later prompt (`015`); this module only reads and validates packs.
 
 import { load } from 'js-yaml';
-import type { ContentEvent, ContentPack, PackMeta } from './types';
+import type { ContentEvent, ContentPack, EventChoice, EventEffects, PackMeta } from './types';
 
 function asRecord(value: unknown, context: string): Record<string, unknown> {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -57,7 +57,25 @@ function parseEvent(value: unknown): ContentEvent {
     }
     event.tags = record.tags.map((tag) => asString(tag, 'Event.tags entry'));
   }
+  if (record.choices !== undefined) {
+    if (!Array.isArray(record.choices)) {
+      throw new Error('Event.choices must be a list.');
+    }
+    event.choices = record.choices.map(parseChoice);
+  }
   return event;
+}
+
+function parseChoice(value: unknown): EventChoice {
+  const record = asRecord(value, 'Choice');
+  const choice: EventChoice = {
+    label: asString(record.label, 'Choice.label'),
+    result: asString(record.result, 'Choice.result'),
+  };
+  if (record.effects !== undefined) {
+    choice.effects = asRecord(record.effects, 'Choice.effects') as EventEffects;
+  }
+  return choice;
 }
 
 // Parse a single pack YAML document into a typed ContentPack.

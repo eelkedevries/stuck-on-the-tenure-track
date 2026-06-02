@@ -1,95 +1,264 @@
-# Layer-2 (psychology) events (specification §2, §7). Broad across psychology;
-# sub-discipline-only events belong in the Layer-3 packs (067–070). Dry,
-# specific, British English, and conditioned by stage or calendar where it
-# matters. Some ids (replication_failure, methods_dispute, ethics_review) are
-# overridden by sub-discipline packs to show layer precedence.
+# Layer-2 (psychology) events (specification §2, §7; prompts 066, 086). Broad
+# across psychology, gated by career stage and presented as choices with light
+# effects. Sub-discipline-only events live in the Layer-3 packs. Dry, specific,
+# British English, non-moralising.
 meta:
   id: psychology
   name: Psychology
   layer: discipline
 events:
+  # --- Student stages (undergraduate / MSc) ------------------------------
+  - event_id: exam_week
+    title: Exam week
+    body: >-
+      Three exams, four days, and a reading list you have been intending to
+      start since October.
+    conditions: { stages: [undergraduate, msc] }
+    tags: [study]
+    choices:
+      - label: Cram all night
+        result: You scrape through, running on coffee and dread.
+        effects: { methods: 2, statistics: 1, sleep: -12, mood: -3 }
+      - label: Revise sensibly and sleep
+        result: A calmer week and a respectable, unspectacular mark.
+        effects: { methods: 1, sleep: 4, mood: 2 }
+
+  - event_id: group_project
+    title: The group project
+    body: >-
+      Five names on the coversheet, two people doing the work, and one who has
+      "been really busy".
+    conditions: { stages: [undergraduate] }
+    tags: [study, networking]
+    choices:
+      - label: Do it all yourself
+        result: A good mark, and a quiet resentment that will last years.
+        effects: { methods: 2, mood: -4, sleep: -5 }
+      - label: Make everyone contribute
+        result: Awkward, but the work gets shared. You learn to chair a meeting.
+        effects: { methods: 1, politics: 1, mood: 1 }
+
+  - event_id: freshers_temptation
+    title: A night out beckons
+    body: >-
+      Your housemates are going out. There is also a problem set due at nine.
+    conditions: { stages: [undergraduate] }
+    tags: [personal]
+    choices:
+      - label: Go out
+        result: A wonderful night. The problem set remains, judgementally, on your desk.
+        effects: { mood: 7, sleep: -8 }
+      - label: Stay in and study
+        result: Virtuous, a little dull, and quietly ahead.
+        effects: { theory: 2, mood: -2 }
+
+  - event_id: first_supervision
+    title: Meeting your supervisor
+    body: >-
+      Half an hour with someone whose time is, you are repeatedly reminded,
+      extremely valuable.
+    conditions: { stages: [undergraduate, msc] }
+    tags: [networking]
+    choices:
+      - label: Turn up well prepared
+        result: They are pleasantly surprised. You go up in their estimation.
+        effects: { reputation: 2, methods: 1 }
+      - label: Wing it
+        result: You bluff competently. They are not fooled, but they are amused.
+        effects: { reputation: -1, mood: 1 }
+
+  - event_id: lecture_question
+    title: A question forms
+    body: >-
+      You think the lecturer has just contradicted last week's slides. So, it
+      seems, does no one else.
+    conditions: { stages: [undergraduate, msc] }
+    tags: [study]
+    choices:
+      - label: Put your hand up
+        result: You were right. The room notices; so does the lecturer.
+        effects: { reputation: 1, theory: 1, mood: -1 }
+      - label: Keep quiet
+        result: Probably wise. Probably.
+        effects: { mood: 1 }
+
+  - event_id: thesis_topic
+    title: Choosing an MSc thesis topic
+    body: >-
+      A safe project that will certainly work, or an interesting one that
+      certainly might not.
+    conditions: { stages: [msc] }
+    tags: [study, research]
+    choices:
+      - label: Play it safe
+        result: It works. It is also, everyone agrees, perfectly fine.
+        effects: { methods: 2, mood: 1 }
+      - label: Be ambitious
+        result: Riskier, and people are watching with interest.
+        effects: { methods: 1, reputation: 2, mood: -3 }
+
+  - event_id: stats_course
+    title: The dreaded stats module
+    body: >-
+      Mixed-effects models, and the dawning realisation that you will be doing
+      this forever.
+    conditions: { stages: [msc] }
+    tags: [study]
+    choices:
+      - label: Put in the hours
+        result: It clicks, eventually. A genuinely useful skill.
+        effects: { statistics: 3, sleep: -6 }
+      - label: Learn just enough to pass
+        result: You will regret this in precisely two years.
+        effects: { statistics: 1, mood: 2 }
+
+  # --- Research career (PhD onward) ---------------------------------------
   - event_id: replication_failure
     title: A replication fails
     body: >-
       A registered replication of your best-known finding reports a null
       result. The first authors are scrupulously polite about it.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, reputation]
+    choices:
+      - label: Engage graciously
+        result: You thank them and look hard at your own data. It stings, but it lands well.
+        effects: { reputation: 1, mood: -2 }
+      - label: Defend the original
+        result: You write a spirited reply. Opinions, like the effect, are divided.
+        effects: { reputation: -1, mood: 1 }
 
   - event_id: reviewer_two
     title: Reviewer 2 returns
     body: >-
-      Two reviewers recommend minor revisions. The third has not read past the
-      abstract but would like an entirely different study, ideally with their
-      own work cited four more times.
-    tags: [publishing, peer_review]
+      Two reviewers want minor revisions. The third would like a different
+      study, with their own work cited four more times.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [publishing]
+    choices:
+      - label: Revise dutifully
+        result: You add the citations and grit your teeth. It is accepted.
+        effects: { writing: 1, mood: -3 }
+      - label: Push back in the response letter
+        result: A crisp rebuttal. The editor sides with you, this time.
+        effects: { reputation: 1, mood: -1 }
 
   - event_id: methods_dispute
-    title: A methods dispute breaks out
+    title: A methods dispute
     body: >-
-      A commentary questions your analysis pipeline. The exchange is conducted
-      with the icy courtesy psychologists reserve for people they think are
-      wrong about degrees of freedom.
-    tags: [research, methods, reputation]
+      A commentary questions your analysis pipeline, with the icy courtesy
+      psychologists reserve for people they think are wrong.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [research, methods]
+    choices:
+      - label: Reanalyse openly
+        result: You rerun it every way they ask. It mostly holds, and you look rigorous.
+        effects: { methods: 2, mood: -2 }
+      - label: Let it pass
+        result: You say nothing. The commentary circulates anyway.
+        effects: { reputation: -1, mood: 1 }
 
   - event_id: ethics_review
     title: The ethics committee has notes
     body: >-
-      Your application is returned for the second time. The committee is
-      untroubled by the design but deeply concerned about the wording of the
-      debrief leaflet.
+      Your application is returned. The committee is untroubled by the design
+      but deeply concerned about the wording of the debrief leaflet.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, admin]
+    choices:
+      - label: Revise and resubmit
+        result: Two more weeks, one comma, and approval.
+        effects: { mood: -2 }
+      - label: Request a meeting
+        result: You make your case in person. It half works.
+        effects: { politics: 1, mood: -1 }
 
   - event_id: grant_rejection
     title: The panel "could not fund everything"
     body: >-
-      Scored in the top fifteen per cent and funded in the top eight. The panel
-      loved the idea, loved the team, and invites you to resubmit next year.
-    conditions:
-      rank_in: [postdoc, assistant_professor]
+      Scored in the top fifteen per cent, funded in the top eight. They invite
+      you to resubmit next year.
+    conditions: { stages: [postdoc, assistant_professor] }
     tags: [grants, funding]
+    choices:
+      - label: Resubmit, stronger
+        result: You sharpen the case for next round. Grimly determined.
+        effects: { writing: 1, mood: -2 }
+      - label: Let this one go
+        result: You reclaim the weekends you would have spent on it.
+        effects: { mood: 3 }
 
   - event_id: predatory_invite
     title: An "esteemed" invitation
     body: >-
       A journal you have never heard of, with an impact factor it appears to
-      have invented, invites you to submit within ten days for a modest fee.
-    tags: [publishing, spam]
+      have invented, invites you to submit within ten days.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [publishing]
+    choices:
+      - label: Delete it
+        result: A small, clean satisfaction.
+        effects: { mood: 1 }
+      - label: Reply with feeling
+        result: You will not get those ten minutes back.
+        effects: { mood: -1 }
 
   - event_id: teaching_overload
     title: A module lands on your desk
     body: >-
       A colleague's sabbatical leaves a 200-student module without a convener.
-      It is, everyone agrees, a wonderful opportunity for your development.
-    conditions:
-      stage: assistant_professor
+      A wonderful opportunity, everyone agrees, for your development.
+    conditions: { stages: [assistant_professor] }
     tags: [teaching, workload]
-
-  - event_id: preregistration_pays_off
-    title: The preregistration holds
-    body: >-
-      Your preregistered prediction survives contact with the data. It is the
-      least exciting and most reassuring email of the year.
-    tags: [research, open_science]
+    choices:
+      - label: Take it on
+        result: The students like you. Your research does not.
+        effects: { teaching: 2, mood: -4, sleep: -5 }
+      - label: Decline, politely
+        result: You hold the line. The corridor remembers.
+        effects: { reputation: -2, mood: 2 }
 
   - event_id: coauthorship_dispute
     title: An authorship conversation
     body: >-
-      A collaborator feels their contribution merits second authorship. You feel
-      it merits an acknowledgement. The supervisor feels it merits a meeting.
-    tags: [research, relationships]
+      A collaborator feels their contribution merits second authorship. You
+      feel it merits an acknowledgement.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [research]
+    choices:
+      - label: Give them second
+        result: Generous, and a friendship preserved.
+        effects: { mood: 1, reputation: -1 }
+      - label: Hold your ground
+        result: You win the point and lose a little goodwill.
+        effects: { reputation: 1, mood: -2 }
 
   - event_id: press_overreach
     title: The press office improves your findings
     body: >-
-      The university release announces that your modest effect "could transform"
-      something it plainly cannot. A journalist would like a quote by four.
+      The release announces your modest effect "could transform" something it
+      plainly cannot. A journalist would like a quote by four.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [reputation, media]
+    choices:
+      - label: Correct the record
+        result: Accurate, unglamorous, and respected by the people who matter.
+        effects: { reputation: 1, mood: -1 }
+      - label: Enjoy the attention
+        result: The institution is delighted. Your methods friends are not.
+        effects: { affiliation_prestige: 2, mood: -2 }
 
   - event_id: viva_scheduled
     title: The viva is scheduled
     body: >-
-      A date, an external examiner with strong opinions on your second chapter,
-      and a corridor of well-meaning colleagues asking if you feel ready.
-    conditions:
-      stage: phd
-    tags: [milestone, phd]
+      A date, an external with strong views on your second chapter, and a
+      corridor of people asking if you feel ready.
+    conditions: { stages: [phd] }
+    tags: [milestone]
+    choices:
+      - label: Prepare relentlessly
+        result: You know the thesis better than the examiners. As you should.
+        effects: { reputation: 2, sleep: -6 }
+      - label: Trust the work
+        result: It is done; you let it be done. A rare, healthy choice.
+        effects: { mood: 3 }

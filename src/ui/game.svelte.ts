@@ -17,7 +17,7 @@ import { createNewGame } from '../state/newgame';
 import { decideTenure, applyTenure } from '../milestones/tenure';
 import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
-import { selectTurnEvents, type SelectedEvent } from '../engine/events';
+import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
 import { type LocationId } from '../locations/types';
 import { actionsAtStage, focusAtStage, activitiesAtStage, type Activity } from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
@@ -26,9 +26,10 @@ import { buildRecap, type Recap } from './recap';
 import { rivalSighting } from '../rivals/sightings';
 import type { LocationVisit } from '../state/save';
 
-// The resolved content events are static, so load them once.
-const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
-const EVENT_TITLE = new Map(ALL_EVENTS.map((e) => [e.event_id, e.title]));
+// Content packs are static, so load them once; the per-player event pool is
+// derived from them by sub-discipline at the start of each turn.
+const ALL_PACKS = loadAllPacks();
+const EVENT_TITLE = new Map([...resolveEvents(ALL_PACKS).values()].map((e) => [e.event_id, e.title]));
 
 // Abstract context-switching cost of moving (§3, §4.11). The first move of a
 // turn is cheap; each further move costs more, so spreading across many
@@ -190,8 +191,9 @@ export class Game {
       },
     };
     this.state = scheduleDeadlines(refreshed);
+    const pool = eventPoolFor(ALL_PACKS, current.player.specialisation.current_sub_discipline);
     const seen = (this.state.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
-    this.pendingEvents = selectTurnEvents(ALL_EVENTS, {
+    this.pendingEvents = selectTurnEvents(pool, {
       stage: this.stage,
       recentCategories: this.lastCategories,
       seenEventIds: seen,
@@ -199,25 +201,43 @@ export class Game {
     this.view = this.pendingEvents.length > 0 ? 'event' : 'turn';
   }
 
-  // Resolve (acknowledge/engage) one presented event: record it in the history
-  // and advance to the board once all are handled.
-  resolveEvent(eventId: string): void {
+  get allEventsResolved(): boolean {
+    return this.pendingEvents.every((e) => e.resolved != null);
+  }
+
+  // Respond to a presented event: apply the chosen choice's effects, show its
+  // outcome, and record it. `choiceIndex` of -1 means a plain acknowledge.
+  resolveEvent(eventId: string, choiceIndex: number): void {
     const current = this.state;
     if (!current) return;
-    const entry: EventLogEntry = {
+    const entry = this.pendingEvents.find((e) => e.event.event_id === eventId);
+    if (!entry || entry.resolved != null) return;
+
+    const choice = choiceIndex >= 0 ? entry.event.choices?.[choiceIndex] : undefined;
+    let next = current;
+    if (choice) next = applyEventEffects(next, choice.effects);
+    const result = choice ? choice.result : 'Noted, and quietly filed away.';
+
+    const log: EventLogEntry = {
       event_id: eventId,
       turn: current.calendar.turn_number,
       date: current.calendar.current_date,
     };
     this.state = {
-      ...current,
+      ...next,
       events_history: [
-        ...(current.events_history as unknown as EventLogEntry[]),
-        entry,
+        ...(next.events_history as unknown as EventLogEntry[]),
+        log,
       ] as unknown as SaveGame['events_history'],
     };
-    this.pendingEvents = this.pendingEvents.filter((e) => e.event.event_id !== eventId);
-    if (this.pendingEvents.length === 0) this.view = 'turn';
+    this.pendingEvents = this.pendingEvents.map((e) =>
+      e.event.event_id === eventId ? { ...e, resolved: result } : e,
+    );
+  }
+
+  // Proceed to the campus once every event has been answered.
+  continueEvents(): void {
+    if (this.allEventsResolved) this.view = 'turn';
   }
 
   reset(): void {

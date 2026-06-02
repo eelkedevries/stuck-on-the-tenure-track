@@ -1,6 +1,5 @@
-# Layer-3 (clinical) events (specification §2, §7). The first event overrides the
-# psychology Layer-2 `ethics_review` under layer precedence; the rest are
-# clinical-only supplements. No broad-psychology events here.
+# Layer-3 (clinical) events (specification §2, §7; prompts 069, 086). The first
+# overrides the psychology Layer-2 `ethics_review`; the rest are clinical-only.
 meta:
   id: clinical
   name: Clinical psychology
@@ -11,20 +10,44 @@ events:
     title: The ethics committee has notes
     body: >-
       Working with a vulnerable population, the committee wants a revised risk
-      protocol, a clinician on call, and a plan for adverse events. All of it
-      reasonable; all of it another two months.
+      protocol, a clinician on call, and an adverse-events plan. All reasonable;
+      all another two months.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, admin, clinical]
+    choices:
+      - label: Do it properly
+        result: Slower, safer, and the right call. Participants are protected.
+        effects: { mood: -2, reputation: 1 }
+      - label: Trim the scope to speed it up
+        result: Approved faster, with a smaller study to show for it.
+        effects: { mood: 1 }
 
   - event_id: trial_recruitment_stalls
     title: Recruitment has stalled
     body: >-
       Three months in, you have enrolled eleven of the eighty participants the
-      power analysis demands. The funder would like a short note on "mitigations".
+      power analysis demands. The funder would like a note on "mitigations".
+    conditions: { stages: [postdoc, assistant_professor] }
     tags: [research, grants, clinical]
+    choices:
+      - label: Open more sites
+        result: More admin, more partners, more participants. It works, slowly.
+        effects: { politics: 1, sleep: -5 }
+      - label: Relax the criteria
+        result: Numbers rise; the reviewers will have questions later.
+        effects: { mood: 1, reputation: -1 }
 
   - event_id: waitlist_attrition
     title: The waitlist empties itself
     body: >-
       Your control group, asked to wait twelve weeks for treatment, has sensibly
-      gone and got some elsewhere. The comparison is now more philosophical than statistical.
+      gone and got some elsewhere.
+    conditions: { stages: [postdoc, assistant_professor] }
     tags: [research, methods, clinical]
+    choices:
+      - label: Switch to an active control
+        result: A better design, salvaged from the wreckage.
+        effects: { methods: 2, mood: -1 }
+      - label: Report it honestly as a limitation
+        result: A frank paragraph in the discussion. Reviewers respect it.
+        effects: { reputation: 1 }

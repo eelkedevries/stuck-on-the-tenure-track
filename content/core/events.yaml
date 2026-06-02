@@ -1,4 +1,4 @@
-# Example Layer-1 (core) content. Universal across all disciplines (spec §2, §7).
+# Layer-1 (core) content. Universal across disciplines (spec §2, §7; prompt 086).
 meta:
   id: core
   name: Core
@@ -10,4 +10,12 @@ events:
       The editor thanks you for your submission and regrets that it is not a
       priority for the journal at this time. Time from submission to decision:
       nine minutes.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [publishing, peer_review]
+    choices:
+      - label: Send it straight back out
+        result: Same paper, different masthead, fresh hope.
+        effects: { writing: 1, mood: -2 }
+      - label: Shelve it for now
+        result: It goes in the drawer of good intentions.
+        effects: { mood: 1 }

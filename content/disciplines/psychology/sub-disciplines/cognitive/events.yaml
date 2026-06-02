@@ -1,6 +1,6 @@
-# Layer-3 (cognitive) events (specification §2, §7). The first event shares an
-# id with the psychology Layer-2 event and overrides it under layer precedence;
-# the rest are cognitive-only supplements. No broad-psychology events here.
+# Layer-3 (cognitive) events (specification §2, §7; prompts 067, 086). The first
+# overrides the psychology Layer-2 event; the rest are cognitive-only. Gated to
+# the research career and presented as choices.
 meta:
   id: cognitive
   name: Cognitive psychology
@@ -11,20 +11,44 @@ events:
     title: A replication fails
     body: >-
       A multi-laboratory replication of your signature priming effect reports a
-      null result across several thousand undergraduates. The effect size, it
-      emerges, was largely an artefact of testing on Monday mornings.
+      null result. The effect, it emerges, was largely an artefact of testing on
+      Monday mornings.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, reputation, cognitive]
+    choices:
+      - label: Own it publicly
+        result: You write the honest blog post. Painful, and quietly career-saving.
+        effects: { reputation: 1, mood: -3 }
+      - label: Blame the protocol
+        result: You question their methods. Few are convinced.
+        effects: { reputation: -1, mood: 1 }
 
   - event_id: model_recovery_problem
     title: The model won't recover
     body: >-
       A reviewer asks for a parameter-recovery analysis. Your tidy three-parameter
       model recovers two of them, and only on alternate Tuesdays.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, methods, cognitive]
+    choices:
+      - label: Simplify the model
+        result: Fewer parameters, cleaner story, a better paper.
+        effects: { statistics: 2, mood: -1 }
+      - label: Add a caveat and move on
+        result: A footnote nobody reads, and a reviewer who notices.
+        effects: { reputation: -1 }
 
   - event_id: stimulus_set_leak
     title: The stimulus set is everywhere
     body: >-
       Your carefully normed word list turns up, uncredited, in three other labs'
-      experiments. Imitation, flattery, and a citation you will never receive.
+      experiments.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, cognitive]
+    choices:
+      - label: Ask for citations
+        result: Two apologise; one ignores you. A modest win.
+        effects: { reputation: 1, mood: -1 }
+      - label: Open-source it formally
+        result: You release it properly. Goodwill now, citations later.
+        effects: { affiliation_prestige: 1, mood: 1 }

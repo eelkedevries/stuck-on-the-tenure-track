@@ -1,6 +1,6 @@
-# Layer-3 (developmental) events (specification §2, §7). The first event overrides
-# the psychology Layer-2 `press_overreach` under layer precedence; the rest are
-# developmental-only supplements. No broad-psychology events here.
+# Layer-3 (developmental) events (specification §2, §7; prompts 070, 086). The
+# first overrides the psychology Layer-2 `press_overreach`; the rest are
+# developmental-only.
 meta:
   id: developmental
   name: Developmental psychology
@@ -12,19 +12,43 @@ events:
     body: >-
       Your careful correlation between toddlers' screen time and vocabulary
       becomes "SCREENS HARM BABIES' BRAINS, say scientists". A morning programme
-      would like you on the sofa at 07:50.
+      wants you on the sofa at 07:50.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [reputation, media, developmental]
+    choices:
+      - label: Go on and add the nuance
+        result: You caveat it live on air. Half the nuance survives the edit.
+        effects: { affiliation_prestige: 1, mood: -1 }
+      - label: Insist on a corrected release
+        result: Accurate and unwatched. The right thing to do.
+        effects: { reputation: 1, mood: -1 }
 
   - event_id: cohort_attrition
     title: The cohort is shrinking
     body: >-
       The families recruited in infancy have moved, changed numbers, or politely
-      had enough. Your wave-four sample is now smaller than your author list.
+      had enough. Your wave-four sample is smaller than your author list.
+    conditions: { stages: [postdoc, assistant_professor] }
     tags: [research, methods, developmental]
+    choices:
+      - label: Invest in keeping families in
+        result: Birthday cards and bus fares. Retention climbs; so does the budget.
+        effects: { politics: 1, research_funds: -200 }
+      - label: Model the missingness
+        result: A heroic multiple-imputation appendix nobody will read.
+        effects: { statistics: 2, sleep: -4 }
 
   - event_id: testing_room_meltdown
     title: A testing session goes sideways
     body: >-
       Twenty minutes of habituation, perfect calibration, and then a nap, a nappy
       incident, and a firm refusal to look at the left of the screen.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, developmental]
+    choices:
+      - label: Reschedule cheerfully
+        result: You rebook, restock the sticker drawer, and carry on.
+        effects: { mood: -1 }
+      - label: Keep the partial data
+        result: Half a trial is not nothing, you tell yourself, unconvincingly.
+        effects: { methods: -1, mood: 1 }

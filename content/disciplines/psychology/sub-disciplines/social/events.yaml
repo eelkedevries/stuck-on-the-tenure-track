@@ -1,6 +1,5 @@
-# Layer-3 (social) events (specification §2, §7). The first event overrides the
-# psychology Layer-2 `methods_dispute` under layer precedence; the rest are
-# social-only supplements. No broad-psychology events here.
+# Layer-3 (social) events (specification §2, §7; prompts 068, 086). The first
+# overrides the psychology Layer-2 `methods_dispute`; the rest are social-only.
 meta:
   id: social
   name: Social psychology
@@ -10,21 +9,44 @@ events:
   - event_id: methods_dispute
     title: A methods dispute breaks out
     body: >-
-      A blog post takes apart your moderation analysis and your choice of
-      covariates. By lunchtime it has a hashtag; by Friday it has a special
-      issue.
+      A blog post takes apart your moderation analysis and your covariates. By
+      lunchtime it has a hashtag; by Friday, a special issue.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, methods, reputation, social]
+    choices:
+      - label: Post your data and code
+        result: Transparency disarms most of it. You come out ahead.
+        effects: { methods: 2, reputation: 1, mood: -2 }
+      - label: Mute the thread
+        result: It rumbles on without you, which is its own kind of verdict.
+        effects: { reputation: -1, mood: 1 }
 
   - event_id: priming_effect_evaporates
     title: A classic effect evaporates
     body: >-
       A large, preregistered study finds your textbook social-priming effect is,
-      at best, a rounding error. The textbook, alas, has already gone to print.
+      at best, a rounding error. The textbook has already gone to print.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, reputation, social]
+    choices:
+      - label: Pivot your programme
+        result: You retool around what does replicate. Wise, if humbling.
+        effects: { methods: 1, mood: -3 }
+      - label: Hold the line
+        result: You insist the moderators matter. Some agree. Fewer each year.
+        effects: { reputation: -1, mood: 1 }
 
   - event_id: scale_validation_request
-    title: "Reviewers want the scale validated"
+    title: Reviewers want the scale validated
     body: >-
       Your nine-item measure works beautifully. The reviewers would simply like
       a separate paper establishing that, ideally before this one.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [research, methods, social]
+    choices:
+      - label: Run the validation study
+        result: Tedious, thorough, and genuinely useful. Two papers, eventually.
+        effects: { statistics: 2, sleep: -5 }
+      - label: Cite an existing scale instead
+        result: You swap it in. Faster, blander, accepted.
+        effects: { writing: 1, mood: 1 }

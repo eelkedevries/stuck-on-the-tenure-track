@@ -37,7 +37,12 @@
     <IntroScreen onBegin={() => game.beginGame()} />
   {:else if game.view === 'event' && game.state}
     <p class="hint">Things have happened. Read each one and choose how to respond.</p>
-    <EventScreen events={game.pendingEvents} onResolve={(id) => game.resolveEvent(id)} />
+    <EventScreen
+      events={game.pendingEvents}
+      canContinue={game.allEventsResolved}
+      onChoose={(id, i) => game.resolveEvent(id, i)}
+      onContinue={() => game.continueEvents()}
+    />
   {:else if game.view === 'turn' && game.state}
     <p class="objective">🎓 Goal: be the first of your cohort to win tenure.</p>
     <p class="hint">Move around campus and spend your time, then End turn.</p>
