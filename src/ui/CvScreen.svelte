@@ -17,6 +17,17 @@
     amount: number;
   }
 
+  // The secondary list of personal costs recorded across the career
+  // (specification §4.12). Rendered read-only on the CV (`061`).
+  export interface CvCosts {
+    relationshipsEnded: number;
+    hobbiesAbandoned: number;
+    sickLeaveTurns: number;
+    chronicConditions: string[];
+    shortTermCities: number;
+    sleepDeficit: number;
+  }
+
   export interface CvData {
     name: string;
     finalPlacement: string;
@@ -27,6 +38,7 @@
     awards: string[];
     teaching: string[];
     service: string[];
+    costs: CvCosts;
   }
 </script>
 
@@ -106,6 +118,28 @@
   {:else}
     <p class="empty">No service recorded.</p>
   {/if}
+
+  <h3 class="costs-heading">The costs</h3>
+  <dl class="costs">
+    <div><dt>Relationships ended</dt><dd>{cv.costs.relationshipsEnded}</dd></div>
+    <div><dt>Hobbies abandoned</dt><dd>{cv.costs.hobbiesAbandoned}</dd></div>
+    <div>
+      <dt>Sick leave</dt>
+      <dd>{cv.costs.sickLeaveTurns} turn{cv.costs.sickLeaveTurns === 1 ? '' : 's'}</dd>
+    </div>
+    <div><dt>Short-term cities</dt><dd>{cv.costs.shortTermCities}</dd></div>
+    <div><dt>Sleep deficit</dt><dd>{cv.costs.sleepDeficit}</dd></div>
+    <div class="conditions">
+      <dt>Chronic conditions</dt>
+      <dd>
+        {#if cv.costs.chronicConditions.length > 0}
+          {cv.costs.chronicConditions.join(', ')}
+        {:else}
+          None
+        {/if}
+      </dd>
+    </div>
+  </dl>
 </section>
 
 <style>
@@ -186,5 +220,29 @@
   .empty {
     color: var(--muted);
     margin: 0;
+  }
+  .costs-heading {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 2px solid var(--border);
+  }
+  .costs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem 1rem;
+    margin: 0;
+  }
+  .costs dt {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .costs dd {
+    margin: 0;
+    font-weight: bold;
+  }
+  @media (min-width: 32rem) {
+    .costs {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
