@@ -1,0 +1,52 @@
+# Layer-2 psychology pack metadata and skeleton (specification §2, §7).
+#
+# This is the canonical discipline-level meta for psychology. Sub-discipline
+# packs (cognitive, social, clinical, developmental) declare this pack as their
+# parent. Venues and funders are authored in their own files (064); the
+# sub-discipline events are 067–070. The sections below are pack-level skeleton
+# placeholders, deliberately not yet filled with content.
+meta:
+  id: psychology
+  name: Psychology
+  layer: discipline
+  parent: null
+
+# Authorship conventions for the discipline. In psychology, first authorship and
+# last (senior) authorship carry the most weight; middle positions far less.
+authorship_conventions:
+  first_author_weight: 1.0
+  last_author_weight: 0.8
+  middle_author_weight: 0.2
+  corresponding_matters: true
+  notes: First and senior (last) authorship dominate; the long middle is largely invisible.
+
+# The kinds of venue psychology output is published or presented in. Concrete
+# named venues live in journals.yaml and conferences.yaml (064).
+venue_types:
+  - id: journal_article
+    name: Peer-reviewed journal article
+  - id: conference_talk
+    name: Conference talk
+  - id: conference_poster
+    name: Conference poster
+  - id: preprint
+    name: Preprint
+  - id: registered_report
+    name: Registered report
+
+# Typical career-stage durations, in turns, used when seeding a psychology
+# career. Placeholder values pending balancing.
+career_stage_durations:
+  undergraduate: 3
+  msc: 2
+  phd: 4
+  postdoc: 4
+  assistant_professor: 6
+
+# Name-pool placeholders for generating colleagues, rivals, and supervisors.
+# Filled with concrete, non-defamatory placeholder names; no real living
+# academics (specification §7).
+name_pools:
+  given_names: []
+  family_names: []
+  institutions: []
