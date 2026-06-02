@@ -1,5 +1,8 @@
-# Example Layer-2 (psychology) content (spec §2, §7). The cognitive Layer-3 pack
-# overrides `replication_failure` to show same-id override.
+# Layer-2 (psychology) events (specification §2, §7). Broad across psychology;
+# sub-discipline-only events belong in the Layer-3 packs (067–070). Dry,
+# specific, British English, and conditioned by stage or calendar where it
+# matters. Some ids (replication_failure, methods_dispute, ethics_review) are
+# overridden by sub-discipline packs to show layer precedence.
 meta:
   id: psychology
   name: Psychology
@@ -11,3 +14,82 @@ events:
       A registered replication of your best-known finding reports a null
       result. The first authors are scrupulously polite about it.
     tags: [research, reputation]
+
+  - event_id: reviewer_two
+    title: Reviewer 2 returns
+    body: >-
+      Two reviewers recommend minor revisions. The third has not read past the
+      abstract but would like an entirely different study, ideally with their
+      own work cited four more times.
+    tags: [publishing, peer_review]
+
+  - event_id: methods_dispute
+    title: A methods dispute breaks out
+    body: >-
+      A commentary questions your analysis pipeline. The exchange is conducted
+      with the icy courtesy psychologists reserve for people they think are
+      wrong about degrees of freedom.
+    tags: [research, methods, reputation]
+
+  - event_id: ethics_review
+    title: The ethics committee has notes
+    body: >-
+      Your application is returned for the second time. The committee is
+      untroubled by the design but deeply concerned about the wording of the
+      debrief leaflet.
+    tags: [research, admin]
+
+  - event_id: grant_rejection
+    title: The panel "could not fund everything"
+    body: >-
+      Scored in the top fifteen per cent and funded in the top eight. The panel
+      loved the idea, loved the team, and invites you to resubmit next year.
+    conditions:
+      rank_in: [postdoc, assistant_professor]
+    tags: [grants, funding]
+
+  - event_id: predatory_invite
+    title: An "esteemed" invitation
+    body: >-
+      A journal you have never heard of, with an impact factor it appears to
+      have invented, invites you to submit within ten days for a modest fee.
+    tags: [publishing, spam]
+
+  - event_id: teaching_overload
+    title: A module lands on your desk
+    body: >-
+      A colleague's sabbatical leaves a 200-student module without a convener.
+      It is, everyone agrees, a wonderful opportunity for your development.
+    conditions:
+      stage: assistant_professor
+    tags: [teaching, workload]
+
+  - event_id: preregistration_pays_off
+    title: The preregistration holds
+    body: >-
+      Your preregistered prediction survives contact with the data. It is the
+      least exciting and most reassuring email of the year.
+    tags: [research, open_science]
+
+  - event_id: coauthorship_dispute
+    title: An authorship conversation
+    body: >-
+      A collaborator feels their contribution merits second authorship. You feel
+      it merits an acknowledgement. The supervisor feels it merits a meeting.
+    tags: [research, relationships]
+
+  - event_id: press_overreach
+    title: The press office improves your findings
+    body: >-
+      The university release announces that your modest effect "could transform"
+      something it plainly cannot. A journalist would like a quote by four.
+    tags: [reputation, media]
+
+  - event_id: viva_scheduled
+    title: The viva is scheduled
+    body: >-
+      A date, an external examiner with strong opinions on your second chapter,
+      and a corridor of well-meaning colleagues asking if you feel ready.
+    conditions:
+      stage: phd
+    tags: [milestone, phd]
