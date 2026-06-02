@@ -17,8 +17,17 @@
   import { cohortTracker } from './rivals/cohort';
   import { buildCv } from './ui/cv';
   import { Game } from './ui/game.svelte';
+  import type { Stage } from './calendar/stages';
 
   const game = new Game();
+
+  const STAGE_LABEL: Record<Stage, string> = {
+    undergraduate: 'Undergraduate',
+    msc: 'MSc student',
+    phd: 'PhD student',
+    postdoc: 'Postdoc',
+    assistant_professor: 'Assistant professor',
+  };
 </script>
 
 <Shell>
@@ -44,9 +53,9 @@
       onContinue={() => game.continueEvents()}
     />
   {:else if game.view === 'turn' && game.state}
-    <p class="objective">🎓 Goal: be the first of your cohort to win tenure.</p>
+    <p class="objective">🎓 Be the first of your cohort to win tenure.</p>
+    <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
     <p class="hint">Move around campus and spend your time, then End turn.</p>
-    <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
     <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
       currentLocation={game.currentLocation}
@@ -61,6 +70,10 @@
       onEndTurn={() => game.commit()}
       onCohort={() => game.showCohort()}
     />
+    <details class="standing">
+      <summary>Your standing (the numbers)</summary>
+      <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
+    </details>
   {:else if game.view === 'recap' && game.recap}
     <DiaryScreen recap={game.recap} onContinue={() => game.continueFromRecap()} />
   {:else if game.view === 'cohort' && game.state}
@@ -78,13 +91,30 @@
 
 <style>
   .objective {
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.1rem;
     font-weight: bold;
+  }
+  .situation {
+    margin: 0 0 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.8rem;
+    color: var(--muted);
   }
   .hint {
     margin: 0 0 0.5rem;
     color: var(--muted);
     font-size: 0.9rem;
+  }
+  .standing {
+    margin-top: 0.75rem;
+    border-top: 2px solid var(--border);
+    padding-top: 0.5rem;
+  }
+  .standing summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.85rem;
   }
   .actions {
     display: flex;
