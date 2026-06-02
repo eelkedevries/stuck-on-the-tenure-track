@@ -77,6 +77,24 @@ in-world rival sightings (`src/rivals/sightings.ts`); and the save schema was
 extended with a `save_version` bump (now 2) for board, deadline, and visit state
 (`077`). The specification (v1.6) and roadmap describe the redesign as canon.
 
+### Clarity and story pass (085–087)
+
+Following playtest feedback that the game was hard to understand, a clarity pass
+made it playable without effort and shifted emphasis from simulation to story
+and satire: a new-game **intro/onboarding** screen states the premise, the loop,
+and the goal (`src/ui/IntroScreen.svelte`, `085`); the board carries an objective
+line and each screen a short guidance caption. **Events are now legible**: short
+situations with **clear choices**, each showing its outcome and applying light
+effects (`src/content/types.ts` `EventChoice`/`EventEffects`, `src/engine/events.ts`,
+`src/ui/EventScreen.svelte`, `086`); events are gated by **career stage** and
+scoped to the player's **sub-discipline**, so a first-year undergraduate gets
+student events (exams, lectures, supervisions) rather than PhD research events,
+and content was reauthored with stage-tagged, choice-driven events
+(`084_stage_activities.md` also added named per-stage activities, including
+study/lecture/exam activities, and gated publishing to the PhD onward). Finally,
+the in-game screens now **lead with the situation and the board**, with the raw
+resource readout demoted to a collapsible "Your standing" disclosure (`087`).
+
 ### Original specification of M17
 
 Milestone M17 was specified in `074`. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
