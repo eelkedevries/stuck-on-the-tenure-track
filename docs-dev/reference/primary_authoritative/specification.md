@@ -353,6 +353,8 @@ The board should communicate: where the player is, where they can go and at what
 
 **Location memory.** The game records where the player spends time and applies readable consequences over a window — for example, never appearing in visibility-relevant locations lowers visibility (the ghost penalty), always staying in the lab improves output but weakens reputation, and never going home erodes sleep. A ghost penalty applies to players who never appear in visibility-relevant social locations.
 
+**Timed appointments.** Some turns carry a fixed appointment — a lecture, an exam, a grant interview — that requires the player to be at a particular location by a point on the turn clock (§4.2), shown with the location and a time-remaining bar. Being present resolves it favourably; being elsewhere when its time arrives is a miss, which feeds existing systems (stress, reputation/opportunity cost) rather than ending the game. Appointments are scheduled by career stage and tuned to create pressure without constant crisis.
+
 **Career-stage variation.** The same locations persist across career stages, but their available actions and pressures change. Each location offers concrete, named activities appropriate to the stage (e.g. the lab moves from running a study, to analysing data and supervising, to managing a lab and chasing ethics). During the student stages (undergraduate, MSc) the academic locations are for studying, attending lectures, sitting exams, and thesis work; students build expertise but do not publish papers or win grants. The research career — and publishing — begins at the PhD.
 
 ### 4.11a Deadlines and pressure

@@ -11,6 +11,7 @@
   import TurnScreen from './ui/TurnScreen.svelte';
   import BoardScreen from './ui/BoardScreen.svelte';
   import StatusBars from './ui/StatusBars.svelte';
+  import AppointmentBar from './ui/AppointmentBar.svelte';
   import DeadlineBoard from './ui/DeadlineBoard.svelte';
   import DiaryScreen from './ui/DiaryScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
@@ -58,6 +59,13 @@
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
     <p class="hint">Move around campus and spend your time; the day ends when your time runs out.</p>
     <StatusBars player={game.state.player} tenureProgress={game.tenureProgress} />
+    {#if game.nextAppointment}
+      <AppointmentBar
+        appointment={game.nextAppointment}
+        elapsed={game.elapsed}
+        atLocation={game.nextAppointment.location === game.currentLocation}
+      />
+    {/if}
     <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
       currentLocation={game.currentLocation}

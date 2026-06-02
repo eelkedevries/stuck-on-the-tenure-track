@@ -26,6 +26,7 @@ import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
 import { rivalSighting } from '../rivals/sightings';
 import type { LocationVisit } from '../state/save';
+import { scheduleAppointments, type Appointment } from '../appointments/appointments';
 
 // Content packs are static, so load them once; the per-player event pool is
 // derived from them by sub-discipline at the start of each turn.
@@ -46,6 +47,7 @@ export class Game {
   view = $state<View>('start');
   pendingEvents = $state<SelectedEvent[]>([]);
   recap = $state<Recap | null>(null);
+  appointments = $state<Appointment[]>([]);
   // Travel time spent this turn (not an action category).
   movementSpent = $state(0);
   private lastCategories: ActionCategory[] = [];
@@ -68,6 +70,40 @@ export class Game {
   // Time cost to travel from the current location to another, by board distance.
   travelCost(id: LocationId): number {
     return travelCost(this.currentLocation, id);
+  }
+
+  // Time-points elapsed in the current turn.
+  get elapsed(): number {
+    return TURN_TIME_POINTS - this.timeRemaining;
+  }
+
+  // The next appointment still to come this turn (for the time-remaining bar).
+  get nextAppointment(): Appointment | null {
+    return (
+      this.appointments
+        .filter((a) => a.status === 'pending')
+        .sort((a, b) => a.at_tp - b.at_tp)[0] ?? null
+    );
+  }
+
+  // Resolve any appointments whose time has now passed: present → attended,
+  // absent → missed (stress up, reputation cost). Called whenever the clock moves.
+  private resolveAppointments(): void {
+    const cur = this.state;
+    if (!cur) return;
+    const elapsed = this.elapsed;
+    const here = cur.board.current_location;
+    let s = cur;
+    this.appointments = this.appointments.map((a) => {
+      if (a.status !== 'pending' || a.at_tp > elapsed) return a;
+      if (a.location === here) {
+        s = applyEventEffects(s, { reputation: 1, mood: 1 });
+        return { ...a, status: 'attended' as const };
+      }
+      s = applyEventEffects(s, { reputation: -2, stress: 10 });
+      return { ...a, status: 'missed' as const };
+    });
+    this.state = s;
   }
 
   // Progress toward tenure (0..100%), the player's headline progression bar.
@@ -128,6 +164,7 @@ export class Game {
         ],
       },
     };
+    this.resolveAppointments();
     this.endIfTimeUp();
   }
 
@@ -137,6 +174,7 @@ export class Game {
     const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
     if (pts === 0) return;
     this.allocation = { ...this.allocation, [category]: this.allocation[category] + pts };
+    this.resolveAppointments();
     this.endIfTimeUp();
   }
 
@@ -153,6 +191,8 @@ export class Game {
     if (rest > 0) {
       this.allocation = { ...this.allocation, personal: this.allocation.personal + rest };
     }
+    // The day is over; resolve any appointments still outstanding.
+    this.resolveAppointments();
     this.commit();
   }
 
@@ -206,6 +246,7 @@ export class Game {
       },
     };
     this.state = scheduleDeadlines(refreshed);
+    this.appointments = scheduleAppointments(this.stage, current.calendar.turn_number);
     const pool = eventPoolFor(ALL_PACKS, current.player.specialisation.current_sub_discipline);
     const seen = (this.state.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
     this.pendingEvents = selectTurnEvents(pool, {
