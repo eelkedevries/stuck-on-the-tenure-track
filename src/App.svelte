@@ -10,6 +10,7 @@
   import TurnScreen from './ui/TurnScreen.svelte';
   import BoardScreen from './ui/BoardScreen.svelte';
   import DeadlineBoard from './ui/DeadlineBoard.svelte';
+  import DiaryScreen from './ui/DiaryScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
   import CvScreen from './ui/CvScreen.svelte';
   import { cohortTracker } from './rivals/cohort';
@@ -48,6 +49,8 @@
       onEndTurn={() => game.commit()}
       onCohort={() => game.showCohort()}
     />
+  {:else if game.view === 'recap' && game.recap}
+    <DiaryScreen recap={game.recap} onContinue={() => game.continueFromRecap()} />
   {:else if game.view === 'cohort' && game.state}
     <CohortScreen entries={cohortTracker(game.rivals)} />
     <nav class="actions" aria-label="Cohort actions">

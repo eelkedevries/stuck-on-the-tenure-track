@@ -21,9 +21,11 @@ import { selectTurnEvents, type SelectedEvent } from '../engine/events';
 import { LOCATIONS, type LocationId } from '../locations/types';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
+import { buildRecap, type Recap } from './recap';
 
 // The resolved content events are static, so load them once.
 const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
+const EVENT_TITLE = new Map(ALL_EVENTS.map((e) => [e.event_id, e.title]));
 
 // Abstract context-switching cost of moving (§3, §4.11). The first move of a
 // turn is cheap; each further move costs more, so spreading across many
@@ -31,7 +33,7 @@ const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
 export const MOVE_COST_BASE = 6;
 export const MOVE_COST_STEP = 4;
 
-export type View = 'start' | 'event' | 'turn' | 'allocate' | 'cohort' | 'end';
+export type View = 'start' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
 
 interface EventLogEntry {
   event_id: string;
@@ -44,11 +46,13 @@ export class Game {
   allocation = $state<Allocation>(emptyAllocation());
   view = $state<View>('start');
   pendingEvents = $state<SelectedEvent[]>([]);
+  recap = $state<Recap | null>(null);
   // Movement time spent this turn (not an action category), and how many moves
   // have been made this turn (drives the rising movement cost).
   movementSpent = $state(0);
   movesThisTurn = $state(0);
   private lastCategories: ActionCategory[] = [];
+  private pendingEnd = false;
 
   get hasSave(): boolean {
     return hasSave();
@@ -236,6 +240,7 @@ export class Game {
       (c) => committed[c] > 0,
     );
 
+    const movementSpent = this.movementSpent;
     let advanced: Rival[] = this.rivals;
     const next = runTurn(current, this.stage, {
       allocation: this.allocation,
@@ -246,24 +251,33 @@ export class Game {
     });
     let merged: SaveGame = { ...next, rivals: advanced as unknown as SaveGame['rivals'] };
 
-    if (merged.calendar.turn_number >= totalTurns()) {
+    this.pendingEnd = merged.calendar.turn_number >= totalTurns();
+    if (this.pendingEnd) {
       const decision = decideTenure(merged);
       if (decision.offered) merged = applyTenure(merged);
-      this.finish(merged);
-      return;
     }
 
     this.state = merged;
     saveGame(merged);
+
+    // Build the end-of-turn diary from before/after state, then show it.
+    const eventTitles = (current.events_history as unknown as { event_id: string; turn: number }[])
+      .filter((e) => e.turn === current.calendar.turn_number)
+      .map((e) => EVENT_TITLE.get(e.event_id) ?? e.event_id);
+    this.recap = buildRecap({ before: current, after: merged, allocation: committed, movementSpent, eventTitles });
     this.allocation = emptyAllocation();
-    this.beginTurn();
+    this.view = 'recap';
   }
 
-  private finish(state: SaveGame): void {
-    this.state = state;
-    saveGame(state);
-    this.allocation = emptyAllocation();
-    this.view = 'end';
+  // Advance from the diary to the next turn, or to the end screen if the career
+  // is over.
+  continueFromRecap(): void {
+    this.recap = null;
+    if (this.pendingEnd) {
+      this.view = 'end';
+      return;
+    }
+    this.beginTurn();
   }
 
   private isOver(state: SaveGame): boolean {
