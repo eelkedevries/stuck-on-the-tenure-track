@@ -167,6 +167,24 @@ The milestone baseline in `004_author_build_roadmap.md` is followed, with these 
 | `071_performance_budget.md` | Meet the performance budgets (bundle < 5 MB, time-to-interactive < 3 s, turn resolution < 1 s). | 059, 070 | §5 |
 | `072_deploy_github_pages.md` | Add the GitHub Pages deployment workflow that publishes only the build output. | 012, 071 | §6 |
 
+## M17 — Board interaction redesign (spec §3, §4.2, §4.11, §4.11a, §8)
+
+Makes the campus board the primary interface: location-bound actions, abstract movement cost, deadlines, an end-of-turn diary, and in-world rival sightings. Prerequisites (action outcomes, event engine, save state) come before the board so the interface is meaningful.
+
+| Prompt file | One-sentence goal | Depends on | Spec section |
+|---|---|---|---|
+| `073_playable_flow_integration.md` | Wire the engine and existing screens into a single playable flow (numeric-allocation spine). | 055–062, 023–025, 046, 047, 049 | §4.2, §5 |
+| `074_board_spec_and_roadmap.md` | Specify the board redesign in the spec and roadmap; bump spec version. | — | §3, §4.2, §4.11, §8 |
+| `075_wire_action_outcomes.md` | Make committed actions drive papers, grants, health, and relationships. | 025, 027, 033, 035, 040, 074 | §4.2–§4.6 |
+| `076_event_engine.md` | Add a minimal context-driven event engine wired to the event screen. | 014, 015, 023, 056, 066, 074 | §2, §4.2 |
+| `077_save_schema_board_state.md` | Extend the save schema for board/deadline/visit state and bump save version. | 018–020, 074 | §8 |
+| `078_board_vertical_slice.md` | Make the campus board the primary interface (movement + location actions). | 050–052, 073, 075, 076, 077 | §4.2, §4.11 |
+| `079_movement_and_location_memory.md` | Tune movement cost and add location-visit consequences. | 053, 077, 078 | §4.11 |
+| `080_deadline_system.md` | Add the deadline/pressure system with urgency UI and consequences. | 032, 048, 077, 078 | §4.4, §4.10, §4.11a |
+| `081_end_of_turn_diary.md` | Add the end-of-turn diary recap from recorded state. | 076, 078, 079 | §4.2, §5 |
+| `082_rival_sightings.md` | Add lightweight in-world rival sightings extending the cohort. | 046, 047, 078, 081 | §4.9 |
+| `083_stage_variation.md` | Vary location actions and pressures by career stage. | 022, 075, 078 | §3, §4.11 |
+
 ---
 
 ## Out of scope

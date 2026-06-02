@@ -1,7 +1,7 @@
 # Stuck on the Tenure Track — Specification
 
-Version: 1.5
-Last updated: 2026-06-01
+Version: 1.6
+Last updated: 2026-06-02
 Status: Binding project specification
 
 **Audience:** coding-focused LLM tools building this game with the developer.
@@ -154,6 +154,8 @@ Career-stage turn budget, subject to playtesting:
 
 The engine must support calendar-conditional events: exam weeks, summer recruitment difficulty, salary/stipend events, grant-call dates, and conference seasons. Events should use calendar dates or career-stage windows rather than assuming a globally fixed turn length.
 
+Within a turn, the player moves across a campus/life board (§4.11) and spends the turn's time-point budget at locations. A turn remains an abstract, long career step — the per-stage 6–12 month calendar above is unchanged — so movement between locations is an **abstract context-switching cost** against the time budget, not literal travel time. Spreading attention across many locations in a turn costs more than staying focused; a single move is cheap. Movement should create meaningful opportunity costs without becoming a route-optimisation puzzle.
+
 ---
 
 ## 4. Core systems
@@ -187,17 +189,17 @@ The h-index is computed from papers rather than stored independently.
 
 Canonical turn loop:
 
-1. Turn start: advance date, apply automatic effects, determine eligible events.
-2. Event phase: show mandatory and optional events.
-3. Action phase: player allocates time budget and commits.
-4. Resolution phase: resolve outcomes, update state, check milestones and game-end triggers.
-5. Rival phase: AI rivals act and cohort tracker updates.
+1. Turn start: advance date, apply automatic effects, determine eligible events and pending deadlines.
+2. Event phase: show mandatory and optional events, anchored to location, action, deadline, or context where possible.
+3. Action phase: the player moves across the campus board (§4.11) and chooses location-bound actions, spending the time-point budget; movement deducts an abstract context-switching cost. The board is the primary interaction surface.
+4. Resolution phase: resolve outcomes into the substantive systems (papers, grants, health, relationships, reputation), update state, advance/expire deadlines, and check milestones and game-end triggers.
+5. Rival phase: AI rivals act and the cohort tracker updates; rivals may also surface as in-world sightings.
 6. Save game state.
-7. End turn.
+7. End turn, with a concise diary recap of what happened.
 
 Time uses abstract time points. A default of 100 TP per full turn is recommended, independent of the calendar duration represented by that turn.
 
-Action categories: research, teaching, service, networking, funding, personal, and misconduct.
+Action categories: research, teaching, service, networking, funding, personal, and misconduct. These remain the internal effect taxonomy; the player experiences them as concrete, location-bound actions rather than as a global numeric allocation.
 
 ### 4.3 Publication system
 
@@ -343,11 +345,19 @@ Milestones:
 
 The win condition is the first tenured offer in the cohort. All endings produce a CV-style summary including achievements and personal costs.
 
-### 4.11 Campus/map
+### 4.11 Campus/map and board interaction
 
-Actions are taken at locations. Desktop can use a pixel-art campus map; mobile should use a scrollable location list. Locations include office, lab, library, classroom, seminar room, café/pub, home, conference venue, funder portal, gym/outdoors, GP/therapist/occupational health.
+The campus board is the **primary interaction surface**. The player has a current location, moves between locations (at an abstract context-switching time cost, §3), and chooses location-bound actions there, spending the turn's time-point budget. Desktop uses a pixel-art campus map; mobile uses a scrollable location list. Locations include office, lab, library, classroom, seminar room, café/pub, home, conference venue, funder portal, gym/outdoors, GP/therapist/occupational health. Each location binds a subset of the action categories; some actions can consume most of the remaining budget (e.g. running studies in the lab, recovering at home).
 
-A ghost penalty applies to players who never appear in visibility-relevant social locations.
+The board should communicate: where the player is, where they can go and at what time cost, time remaining, available actions, pressing deadlines, recent events, and whether rivals are visible or being discussed. The broad action categories remain the internal effect taxonomy; the player experiences concrete, location-bound actions.
+
+**Location memory.** The game records where the player spends time and applies readable consequences over a window — for example, never appearing in visibility-relevant locations lowers visibility (the ghost penalty), always staying in the lab improves output but weakens reputation, and never going home erodes sleep. A ghost penalty applies to players who never appear in visibility-relevant social locations.
+
+**Career-stage variation.** The same locations persist across career stages, but their available actions and pressures change (e.g. the lab moves from running a study, to analysing data and supervising, to managing a lab and chasing ethics).
+
+### 4.11a Deadlines and pressure
+
+The game maintains a visible deadline-pressure layer that supports the board rather than replacing it. Deadlines are objects tied to the calendar with urgency states — **due now, soon, later, overdue** — seeded from existing calendar-bound systems (grant calls, milestone reviews) and extensible to paper revisions, teaching prep, health, relationship, and admin deadlines. Missed deadlines usually create interesting consequences that feed existing systems — delays, reputation/relationship/health costs, missed opportunities, reduced future options — rather than immediate failure. Deadlines must not introduce win/lose conditions independent of the milestones and tenure decision, and their density and severity should be tuned to avoid constant crisis.
 
 ### 4.12 End-game CV
 
@@ -427,9 +437,16 @@ player:
   grants_applied: array
   relationships: array
   milestones_completed: array
+  location_visits: array        # board interaction: history of visited locations
+board:
+  current_location: string      # the player's current board location id
+  time_remaining: integer       # within-turn time-point budget remaining
+deadlines: array                # scheduled deadlines with type, due date, status
 rivals: array
 events_history: array
 ```
+
+The board interaction (§4.11, §4.11a) adds the `board`, `deadlines`, and `player.location_visits` state. Introducing these bumps `save_version`; because the beta uses a single local slot, incompatible older saves are reset on load rather than partially migrated.
 
 Full sub-object schemas belong in their system modules and should match the reference sections above.
 

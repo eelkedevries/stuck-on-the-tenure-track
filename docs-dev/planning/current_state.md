@@ -59,6 +59,10 @@ Both are tool-agnostic (Claude Code and ChatGPT Codex), reference the specificat
 
 The build-prompt files `010`–`072` (63 prompts across milestones M0–M16) now exist in `docs-dev/agent/prompts/`, authored from `build_roadmap.md`. Each follows the required prompt structure, references its specification section(s), names its dependencies, and commits directly to `main`. No application or content code has been written yet.
 
+## Board interaction redesign (M17)
+
+Milestone M17 is specified and in progress. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
+
 ## Recommended next prompt
 
-Execute the build prompts in order, starting with `010_scaffold_svelte_vite.md` (the Svelte 5 + TypeScript + Vite scaffold). Deployment (`072`) comes last. Run one prompt per session per `prompt_execution_guide.md`.
+Execute the build prompts in order. The original queue (`010`–`072`) is complete and the playable spine (`073`) is wired; the active work is M17 (`074`–`083`), run in order. Run one prompt per session per `prompt_execution_guide.md`.
