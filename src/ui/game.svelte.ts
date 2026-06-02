@@ -36,7 +36,7 @@ const EVENT_TITLE = new Map(ALL_EVENTS.map((e) => [e.event_id, e.title]));
 export const MOVE_COST_BASE = 6;
 export const MOVE_COST_STEP = 4;
 
-export type View = 'start' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
+export type View = 'start' | 'intro' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
 
 interface EventLogEntry {
   event_id: string;
@@ -150,7 +150,13 @@ export class Game {
     this.state = state;
     this.allocation = emptyAllocation();
     this.lastCategories = [];
-    this.beginTurn();
+    // Show the intro/onboarding before the first turn.
+    this.view = 'intro';
+  }
+
+  // Leave the intro and start the first turn.
+  beginGame(): void {
+    if (this.state) this.beginTurn();
   }
 
   resume(): void {

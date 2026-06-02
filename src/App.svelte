@@ -6,6 +6,7 @@
   // later prompt.
   import Shell from './ui/Shell.svelte';
   import SaveLoadControls from './ui/SaveLoadControls.svelte';
+  import IntroScreen from './ui/IntroScreen.svelte';
   import EventScreen from './ui/EventScreen.svelte';
   import TurnScreen from './ui/TurnScreen.svelte';
   import BoardScreen from './ui/BoardScreen.svelte';
@@ -32,9 +33,14 @@
       onResume={() => game.resume()}
       onReset={() => game.reset()}
     />
+  {:else if game.view === 'intro'}
+    <IntroScreen onBegin={() => game.beginGame()} />
   {:else if game.view === 'event' && game.state}
+    <p class="hint">Things have happened. Read each one and choose how to respond.</p>
     <EventScreen events={game.pendingEvents} onResolve={(id) => game.resolveEvent(id)} />
   {:else if game.view === 'turn' && game.state}
+    <p class="objective">🎓 Goal: be the first of your cohort to win tenure.</p>
+    <p class="hint">Move around campus and spend your time, then End turn.</p>
     <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
     <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
@@ -66,6 +72,15 @@
 </Shell>
 
 <style>
+  .objective {
+    margin: 0 0 0.25rem;
+    font-weight: bold;
+  }
+  .hint {
+    margin: 0 0 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
   .actions {
     display: flex;
     flex-wrap: wrap;
