@@ -8,10 +8,11 @@
 
 import type { SaveGame } from '../state/save';
 import type { Allocation } from './actions';
+import { applyOutcomes } from './outcomes';
 
-// Apply generic, proportional effects of the time invested this turn. Whole
-// points convert to small skill and wellbeing changes; detailed outcomes are
-// layered on by later prompts.
+// Apply the generic skill gains of the time invested this turn. Whole points
+// convert to small expertise changes; the substantive system outcomes (papers,
+// grants, health, relationships) are applied by `applyOutcomes`.
 export function applyActions(state: SaveGame, allocation: Allocation): SaveGame {
   const expertise = { ...state.player.expertise };
   expertise.methods += Math.floor(allocation.research / 25);
@@ -19,10 +20,7 @@ export function applyActions(state: SaveGame, allocation: Allocation): SaveGame 
   expertise.politics += Math.floor((allocation.networking + allocation.service) / 50);
   expertise.writing += Math.floor(allocation.funding / 50);
 
-  const wellbeing = { ...state.player.wellbeing };
-  wellbeing.mood += Math.floor(allocation.personal / 25);
-
-  return { ...state, player: { ...state.player, expertise, wellbeing } };
+  return { ...state, player: { ...state.player, expertise } };
 }
 
 // Milestones reached this turn. Real milestone logic arrives in `048`.
@@ -42,8 +40,12 @@ export interface ResolutionResult {
   gameOver: boolean;
 }
 
-export function resolve(state: SaveGame, allocation: Allocation): ResolutionResult {
-  const applied = applyActions(state, allocation);
+export function resolve(
+  state: SaveGame,
+  allocation: Allocation,
+  rng: () => number = Math.random,
+): ResolutionResult {
+  const applied = applyOutcomes(applyActions(state, allocation), allocation, rng);
   return {
     state: applied,
     newMilestones: checkMilestones(applied),

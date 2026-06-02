@@ -7,7 +7,28 @@
 
 import type { SaveGame } from './save';
 import type { Rival } from '../rivals/simulation';
+import type { Npc } from '../relationships/types';
 import { RIVAL_ARCHETYPES } from '../rivals/archetypes';
+
+// The starting relationships a career opens with. They decay if neglected
+// (specification §4.5), giving the personal/networking actions something to
+// maintain.
+function createInitialRelationships(): Npc[] {
+  const base = {
+    relationship_score: 70,
+    relationship_status: 'active' as const,
+    last_interaction_turn: 0,
+    persistent: true,
+    shared_papers: [] as string[],
+    notes: '',
+  };
+  return [
+    { npc_id: 'npc-supervisor', name: 'Prof. E. Visser', gender: 'unspecified', role_relative_to_player: 'supervisor', ...base },
+    { npc_id: 'npc-partner', name: 'Sam', gender: 'unspecified', role_relative_to_player: 'partner', ...base },
+    { npc_id: 'npc-collaborator', name: 'Dr K. Lindqvist', gender: 'unspecified', role_relative_to_player: 'collaborator', ...base },
+    { npc_id: 'npc-friend', name: 'Niamh', gender: 'unspecified', role_relative_to_player: 'friend', ...base },
+  ];
+}
 
 // A small deterministic PRNG (FNV-1a seed → Lehmer generator), so a seed string
 // yields a repeatable sequence without pulling in a dependency.
@@ -74,7 +95,7 @@ export function createNewGame(seed: string = `beta-${Date.now()}`): NewGame {
       papers: [],
       grants_held: [],
       grants_applied: [],
-      relationships: [],
+      relationships: createInitialRelationships() as unknown as SaveGame['player']['relationships'],
       milestones_completed: [],
     },
     rivals: rivals as unknown as SaveGame['rivals'],

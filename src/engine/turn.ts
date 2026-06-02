@@ -74,7 +74,7 @@ export function runTurn(state: SaveGame, stage: Stage, deps: RunTurnDeps = {}): 
         // its effects are applied in the resolution phase.
         break;
       case 'resolution': {
-        const result = resolve(next, deps.allocation ?? emptyAllocation());
+        const result = resolve(next, deps.allocation ?? emptyAllocation(), deps.rng);
         next = result.state;
         deps.onResolution?.(result);
         break;
