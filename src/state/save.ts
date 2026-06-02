@@ -20,6 +20,19 @@ export interface Settings {
   light_narrative_mode: boolean;
 }
 
+// Board-interaction state (specification §4.11): the player's current board
+// location and the time points remaining within the current turn.
+export interface BoardState {
+  current_location: string;
+  time_remaining: number;
+}
+
+// One recorded visit, for location memory and the ghost penalty (§4.11).
+export interface LocationVisit {
+  location: string;
+  turn: number;
+}
+
 // The persisted player: the in-game player state (§4.1, §4.6, §4.7) plus the
 // collections recorded across a career (specification §8).
 export interface SavePlayer extends PlayerState {
@@ -29,6 +42,8 @@ export interface SavePlayer extends PlayerState {
   grants_applied: JsonValue[];
   relationships: JsonValue[];
   milestones_completed: string[];
+  // Board interaction (§4.11): where the player has spent time.
+  location_visits: LocationVisit[];
 }
 
 export interface SaveGame {
@@ -39,6 +54,10 @@ export interface SaveGame {
   calendar: Calendar;
   settings: Settings;
   player: SavePlayer;
+  // Board interaction (§4.11) and deadlines (§4.11a). Deadline element schema is
+  // a placeholder tightened by the deadline system (`080`).
+  board: BoardState;
+  deadlines: JsonValue[];
   rivals: JsonValue[];
   events_history: JsonValue[];
 }

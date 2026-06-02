@@ -9,6 +9,8 @@ import type { SaveGame } from './save';
 import type { Rival } from '../rivals/simulation';
 import type { Npc } from '../relationships/types';
 import { RIVAL_ARCHETYPES } from '../rivals/archetypes';
+import { TURN_TIME_POINTS } from '../engine/actions';
+import { SAVE_VERSION } from './serialise';
 
 // The starting relationships a career opens with. They decay if neglected
 // (specification §4.5), giving the personal/networking actions something to
@@ -75,7 +77,7 @@ export function createNewGame(seed: string = `beta-${Date.now()}`): NewGame {
   const now = new Date().toISOString();
   const rivals = createInitialRivals(seed);
   const state: SaveGame = {
-    save_version: 1,
+    save_version: SAVE_VERSION,
     game_seed: seed,
     created_at: now,
     last_played_at: now,
@@ -97,7 +99,10 @@ export function createNewGame(seed: string = `beta-${Date.now()}`): NewGame {
       grants_applied: [],
       relationships: createInitialRelationships() as unknown as SaveGame['player']['relationships'],
       milestones_completed: [],
+      location_visits: [],
     },
+    board: { current_location: 'office', time_remaining: TURN_TIME_POINTS },
+    deadlines: [],
     rivals: rivals as unknown as SaveGame['rivals'],
     events_history: [],
   };
