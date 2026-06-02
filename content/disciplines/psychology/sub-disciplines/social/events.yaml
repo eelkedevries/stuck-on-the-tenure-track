@@ -1,5 +1,6 @@
-# Layer-3 (social) events (specification §2, §7; prompts 068, 086). The first
-# overrides the psychology Layer-2 `methods_dispute`; the rest are social-only.
+# Layer-3 (social) events (specification §2, §7; prompts 068, 086, 093). The
+# first overrides the psychology Layer-2 `methods_dispute`; the rest are
+# social-only. Each choice is a simple dilemma.
 meta:
   id: social
   name: Social psychology
@@ -15,11 +16,11 @@ events:
     tags: [research, methods, reputation, social]
     choices:
       - label: Post your data and code
-        result: Transparency disarms most of it. You come out ahead.
-        effects: { methods: 2, reputation: 1, mood: -2 }
+        result: Transparency disarms most of it — at a price in nerves.
+        effects: { reputation: 3, stress: 5 }
       - label: Mute the thread
-        result: It rumbles on without you, which is its own kind of verdict.
-        effects: { reputation: -1, mood: 1 }
+        result: It rumbles on without you, which is its own verdict.
+        effects: { mood: 2, reputation: -3 }
 
   - event_id: priming_effect_evaporates
     title: A classic effect evaporates
@@ -30,11 +31,11 @@ events:
     tags: [research, reputation, social]
     choices:
       - label: Pivot your programme
-        result: You retool around what does replicate. Wise, if humbling.
-        effects: { methods: 1, mood: -3 }
+        result: Wise, if humbling.
+        effects: { methods: 2, mood: -3 }
       - label: Hold the line
-        result: You insist the moderators matter. Some agree. Fewer each year.
-        effects: { reputation: -1, mood: 1 }
+        result: You insist the moderators matter; fewer agree each year.
+        effects: { mood: 1, reputation: -3 }
 
   - event_id: scale_validation_request
     title: Reviewers want the scale validated
@@ -45,8 +46,8 @@ events:
     tags: [research, methods, social]
     choices:
       - label: Run the validation study
-        result: Tedious, thorough, and genuinely useful — and another month gone.
-        effects: { statistics: 2, sleep: -5, stress: 3 }
+        result: Thorough, and another month gone.
+        effects: { statistics: 3, sleep: -6 }
       - label: Cite an existing scale instead
-        result: Faster and blander; it never quite measures what you meant.
-        effects: { writing: 1, mood: 1, methods: -1 }
+        result: Faster; it never quite measures what you meant.
+        effects: { mood: 2, methods: -2 }

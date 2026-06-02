@@ -14,8 +14,8 @@ events:
     tags: [publishing, peer_review]
     choices:
       - label: Send it straight back out
-        result: Momentum kept, morale dented; onto the next masthead.
-        effects: { writing: 1, mood: -2, stress: 3 }
+        result: Momentum kept, morale dented.
+        effects: { writing: 2, mood: -2 }
       - label: Shelve it for now
-        result: A kinder evening, and a paper that loses its momentum.
+        result: A kinder evening, and a paper losing momentum.
         effects: { mood: 2, writing: -1 }

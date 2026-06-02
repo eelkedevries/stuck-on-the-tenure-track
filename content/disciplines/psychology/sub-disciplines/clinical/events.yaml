@@ -1,5 +1,6 @@
-# Layer-3 (clinical) events (specification §2, §7; prompts 069, 086). The first
-# overrides the psychology Layer-2 `ethics_review`; the rest are clinical-only.
+# Layer-3 (clinical) events (specification §2, §7; prompts 069, 086, 093). The
+# first overrides the psychology Layer-2 `ethics_review`; the rest are
+# clinical-only. Each choice is a simple dilemma.
 meta:
   id: clinical
   name: Clinical psychology
@@ -16,11 +17,11 @@ events:
     tags: [research, admin, clinical]
     choices:
       - label: Do it properly
-        result: Slower and safer; participants protected, evenings lost.
-        effects: { reputation: 1, mood: -2, stress: 3 }
+        result: Participants protected; evenings lost.
+        effects: { reputation: 2, mood: -2 }
       - label: Trim the scope to speed it up
-        result: Approved faster, with a smaller, weaker study to show for it.
-        effects: { mood: 1, reputation: -1 }
+        result: Approved faster, with a weaker study to show for it.
+        effects: { mood: 2, reputation: -2 }
 
   - event_id: trial_recruitment_stalls
     title: Recruitment has stalled
@@ -31,11 +32,11 @@ events:
     tags: [research, grants, clinical]
     choices:
       - label: Open more sites
-        result: More admin, more partners, more participants. It works, slowly.
-        effects: { politics: 1, sleep: -5 }
+        result: It works, slowly, and eats your week.
+        effects: { politics: 2, sleep: -5 }
       - label: Relax the criteria
-        result: Numbers rise; the reviewers will have questions later.
-        effects: { mood: 1, reputation: -1 }
+        result: Numbers rise; the reviewers will have questions.
+        effects: { mood: 2, reputation: -2 }
 
   - event_id: waitlist_attrition
     title: The waitlist empties itself
@@ -46,8 +47,8 @@ events:
     tags: [research, methods, clinical]
     choices:
       - label: Switch to an active control
-        result: A better design, salvaged from the wreckage — at a price in time.
-        effects: { methods: 2, mood: -1, stress: 4 }
+        result: A better design, salvaged from the wreckage.
+        effects: { methods: 3, stress: 4 }
       - label: Report it honestly as a limitation
         result: Reviewers respect the candour; the study is visibly weaker.
-        effects: { reputation: 1, methods: -1 }
+        effects: { reputation: 2, methods: -2 }

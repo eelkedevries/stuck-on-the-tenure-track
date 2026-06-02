@@ -1,6 +1,6 @@
-# Layer-3 (developmental) events (specification §2, §7; prompts 070, 086). The
-# first overrides the psychology Layer-2 `press_overreach`; the rest are
-# developmental-only.
+# Layer-3 (developmental) events (specification §2, §7; prompts 070, 086, 093).
+# The first overrides the psychology Layer-2 `press_overreach`; the rest are
+# developmental-only. Each choice is a simple dilemma.
 meta:
   id: developmental
   name: Developmental psychology
@@ -17,11 +17,11 @@ events:
     tags: [reputation, media, developmental]
     choices:
       - label: Go on and add the nuance
-        result: You caveat it live on air. Half the nuance survives the edit.
-        effects: { affiliation_prestige: 1, mood: -1 }
+        result: Half the nuance survives the edit.
+        effects: { affiliation_prestige: 2, mood: -2 }
       - label: Insist on a corrected release
         result: Accurate and unwatched. The right thing to do.
-        effects: { reputation: 1, mood: -1 }
+        effects: { reputation: 2, affiliation_prestige: -2 }
 
   - event_id: cohort_attrition
     title: The cohort is shrinking
@@ -32,11 +32,11 @@ events:
     tags: [research, methods, developmental]
     choices:
       - label: Invest in keeping families in
-        result: Birthday cards and bus fares. Retention climbs; so does the budget.
-        effects: { politics: 1, research_funds: -200 }
+        result: Birthday cards and bus fares. Retention climbs; the budget falls.
+        effects: { politics: 2, research_funds: -200 }
       - label: Model the missingness
-        result: A heroic multiple-imputation appendix nobody will read.
-        effects: { statistics: 2, sleep: -4 }
+        result: A heroic imputation appendix nobody will read.
+        effects: { statistics: 3, sleep: -4 }
 
   - event_id: testing_room_meltdown
     title: A testing session goes sideways
@@ -47,8 +47,8 @@ events:
     tags: [research, developmental]
     choices:
       - label: Reschedule cheerfully
-        result: Clean data kept; another booking, another afternoon gone.
-        effects: { methods: 1, mood: -1 }
+        result: Clean data kept; another afternoon gone.
+        effects: { methods: 1, mood: -2 }
       - label: Keep the partial data
-        result: Half a trial is not nothing, you tell yourself, unconvincingly.
-        effects: { methods: -1, mood: 1 }
+        result: Half a trial is not nothing, you tell yourself.
+        effects: { mood: 2, methods: -2 }
