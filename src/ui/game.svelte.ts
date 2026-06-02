@@ -22,6 +22,8 @@ import { LOCATIONS, type LocationId } from '../locations/types';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
+import { rivalSighting } from '../rivals/sightings';
+import type { LocationVisit } from '../state/save';
 
 // The resolved content events are static, so load them once.
 const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
@@ -264,7 +266,14 @@ export class Game {
     const eventTitles = (current.events_history as unknown as { event_id: string; turn: number }[])
       .filter((e) => e.turn === current.calendar.turn_number)
       .map((e) => EVENT_TITLE.get(e.event_id) ?? e.event_id);
-    this.recap = buildRecap({ before: current, after: merged, allocation: committed, movementSpent, eventTitles });
+    const recap = buildRecap({ before: current, after: merged, allocation: committed, movementSpent, eventTitles });
+    // Append an occasional in-world rival sighting tied to where the turn was
+    // spent (the cohort tracker remains the full comparison view).
+    const visitedThisTurn = (merged.player.location_visits as LocationVisit[])
+      .filter((v) => v.turn === current.calendar.turn_number)
+      .map((v) => v.location as LocationId);
+    const sighting = rivalSighting(advanced, visitedThisTurn);
+    this.recap = sighting ? { ...recap, lines: [...recap.lines, sighting.text] } : recap;
     this.allocation = emptyAllocation();
     this.view = 'recap';
   }

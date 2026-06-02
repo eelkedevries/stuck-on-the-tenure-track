@@ -110,11 +110,7 @@ export function buildRecap(input: RecapInput): Recap {
   const repDelta = after.player.standing.reputation - before.player.standing.reputation;
   if (repDelta <= -3) lines.push('Reputation took a knock.');
 
-  // Rivals.
-  const flurry = (after.rivals as unknown as { recent_event: string | null }[]).some(
-    (r) => r.recent_event === 'a flurry of new papers',
-  );
-  if (flurry) lines.push('A rival has been publishing again. Of course they have.');
+  // Rival sightings (`082`) are appended by the orchestration layer.
 
   return { turn: turnNo, lines };
 }
