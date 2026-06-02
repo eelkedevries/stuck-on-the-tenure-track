@@ -6,6 +6,7 @@
   // later prompt.
   import Shell from './ui/Shell.svelte';
   import SaveLoadControls from './ui/SaveLoadControls.svelte';
+  import EventScreen from './ui/EventScreen.svelte';
   import TurnScreen from './ui/TurnScreen.svelte';
   import ActionAllocationScreen from './ui/ActionAllocationScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
@@ -29,6 +30,8 @@
       onResume={() => game.resume()}
       onReset={() => game.reset()}
     />
+  {:else if game.view === 'event' && game.state}
+    <EventScreen events={game.pendingEvents} onResolve={(id) => game.resolveEvent(id)} />
   {:else if game.view === 'turn' && game.state}
     <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
     <nav class="actions" aria-label="Turn actions">

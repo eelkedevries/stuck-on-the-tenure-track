@@ -50,8 +50,10 @@ export interface RunTurnDeps {
   rng?: () => number;
 }
 
-// Stub phases. Later prompts replace these with real behaviour; for now they
-// return the state unchanged so the loop is observable end to end.
+// The event phase is interactive: events are selected by `engine/events.ts` and
+// presented by the UI orchestration layer at the start of a turn, before the
+// player acts, with resolutions recorded in `events_history`. Within the
+// synchronous turn loop there is therefore nothing to apply here.
 function eventPhase(state: SaveGame): SaveGame {
   return state;
 }

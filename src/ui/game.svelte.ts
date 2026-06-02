@@ -15,13 +15,27 @@ import { stageForTurn, totalTurns, type Stage } from '../calendar/stages';
 import { loadGame, saveGame, clearSave, hasSave } from '../state/storage';
 import { createNewGame } from '../state/newgame';
 import { decideTenure, applyTenure } from '../milestones/tenure';
+import { loadAllPacks } from '../content/loader';
+import { resolveEvents } from '../content/inheritance';
+import { selectTurnEvents, type SelectedEvent } from '../engine/events';
 
-export type View = 'start' | 'turn' | 'allocate' | 'cohort' | 'end';
+// The resolved content events are static, so load them once.
+const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
+
+export type View = 'start' | 'event' | 'turn' | 'allocate' | 'cohort' | 'end';
+
+interface EventLogEntry {
+  event_id: string;
+  turn: number;
+  date: string;
+}
 
 export class Game {
   state = $state<SaveGame | null>(null);
   allocation = $state<Allocation>(emptyAllocation());
   view = $state<View>('start');
+  pendingEvents = $state<SelectedEvent[]>([]);
+  private lastCategories: ActionCategory[] = [];
 
   get hasSave(): boolean {
     return hasSave();
@@ -42,7 +56,8 @@ export class Game {
     saveGame(state);
     this.state = state;
     this.allocation = emptyAllocation();
-    this.view = 'turn';
+    this.lastCategories = [];
+    this.beginTurn();
   }
 
   resume(): void {
@@ -50,7 +65,44 @@ export class Game {
     if (!loaded) return;
     this.state = loaded;
     this.allocation = emptyAllocation();
-    this.view = this.isOver(loaded) ? 'end' : 'turn';
+    this.lastCategories = [];
+    if (this.isOver(loaded)) this.view = 'end';
+    else this.beginTurn();
+  }
+
+  // Start-of-turn: select the turn's events from content by context and present
+  // them; if there are none, go straight to the board.
+  private beginTurn(): void {
+    const current = this.state;
+    if (!current) return;
+    const seen = (current.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
+    this.pendingEvents = selectTurnEvents(ALL_EVENTS, {
+      stage: this.stage,
+      recentCategories: this.lastCategories,
+      seenEventIds: seen,
+    });
+    this.view = this.pendingEvents.length > 0 ? 'event' : 'turn';
+  }
+
+  // Resolve (acknowledge/engage) one presented event: record it in the history
+  // and advance to the board once all are handled.
+  resolveEvent(eventId: string): void {
+    const current = this.state;
+    if (!current) return;
+    const entry: EventLogEntry = {
+      event_id: eventId,
+      turn: current.calendar.turn_number,
+      date: current.calendar.current_date,
+    };
+    this.state = {
+      ...current,
+      events_history: [
+        ...(current.events_history as unknown as EventLogEntry[]),
+        entry,
+      ] as unknown as SaveGame['events_history'],
+    };
+    this.pendingEvents = this.pendingEvents.filter((e) => e.event.event_id !== eventId);
+    if (this.pendingEvents.length === 0) this.view = 'turn';
   }
 
   reset(): void {
@@ -86,6 +138,13 @@ export class Game {
     const current = this.state;
     if (!current) return;
 
+    // Remember which categories the player leaned into, to bias next turn's
+    // events towards what they were doing.
+    const committed = this.allocation;
+    this.lastCategories = (Object.keys(committed) as ActionCategory[]).filter(
+      (c) => committed[c] > 0,
+    );
+
     let advanced: Rival[] = this.rivals;
     const next = runTurn(current, this.stage, {
       allocation: this.allocation,
@@ -106,7 +165,7 @@ export class Game {
     this.state = merged;
     saveGame(merged);
     this.allocation = emptyAllocation();
-    this.view = 'turn';
+    this.beginTurn();
   }
 
   private finish(state: SaveGame): void {
