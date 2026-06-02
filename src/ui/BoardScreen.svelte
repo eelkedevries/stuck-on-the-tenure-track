@@ -12,6 +12,7 @@
 
   interface Props {
     currentLocation: LocationId;
+    focus: string;
     timeRemaining: number;
     moveCost: number;
     availableActions: ActionCategory[];
@@ -25,6 +26,7 @@
 
   let {
     currentLocation,
+    focus,
     timeRemaining,
     moveCost,
     availableActions,
@@ -60,6 +62,8 @@
     </p>
     <p class="movecost">Moving costs {moveCost} time</p>
   </header>
+
+  <p class="focus">{focus}</p>
 
   <div class="board-desktop">
     <CampusMap selected={currentLocation} onSelect={(id) => onMove?.(id)} />
@@ -118,6 +122,11 @@
   .movecost {
     color: var(--muted);
     font-size: 0.8rem;
+  }
+  .focus {
+    margin: 0;
+    font-style: italic;
+    color: var(--muted);
   }
   .actions {
     list-style: none;

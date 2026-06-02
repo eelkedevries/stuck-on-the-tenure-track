@@ -39,6 +39,7 @@
     <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
       currentLocation={game.currentLocation}
+      focus={game.currentFocus}
       timeRemaining={game.timeRemaining}
       moveCost={game.moveCost}
       availableActions={game.availableActions}

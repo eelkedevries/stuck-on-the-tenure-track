@@ -18,7 +18,8 @@ import { decideTenure, applyTenure } from '../milestones/tenure';
 import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, type SelectedEvent } from '../engine/events';
-import { LOCATIONS, type LocationId } from '../locations/types';
+import { type LocationId } from '../locations/types';
+import { actionsAtStage, focusAtStage } from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
@@ -84,9 +85,15 @@ export class Game {
     return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.movementSpent;
   }
 
-  // The action categories bound to the current location (§4.11).
+  // The action categories bound to the current location, which vary by career
+  // stage (§4.11, §3).
   get availableActions(): ActionCategory[] {
-    return [...LOCATIONS[this.currentLocation].actions];
+    return actionsAtStage(this.stage, this.currentLocation);
+  }
+
+  // A short, stage-specific description of what this location is for now.
+  get currentFocus(): string {
+    return focusAtStage(this.stage, this.currentLocation);
   }
 
   // The pending deadlines, for the pressure board (§4.11a).
