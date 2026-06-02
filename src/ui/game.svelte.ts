@@ -19,6 +19,8 @@ import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, type SelectedEvent } from '../engine/events';
 import { LOCATIONS, type LocationId } from '../locations/types';
+import { scheduleDeadlines } from '../deadlines/deadlines';
+import type { Deadline } from '../deadlines/types';
 
 // The resolved content events are static, so load them once.
 const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
@@ -79,6 +81,13 @@ export class Game {
   // The action categories bound to the current location (§4.11).
   get availableActions(): ActionCategory[] {
     return [...LOCATIONS[this.currentLocation].actions];
+  }
+
+  // The pending deadlines, for the pressure board (§4.11a).
+  get deadlines(): Deadline[] {
+    return ((this.state?.deadlines ?? []) as unknown as Deadline[]).filter(
+      (d) => d.status === 'pending',
+    );
   }
 
   // Move to another location, paying the context-switch cost and recording the
@@ -156,8 +165,8 @@ export class Game {
         ],
       },
     };
-    this.state = refreshed;
-    const seen = (refreshed.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
+    this.state = scheduleDeadlines(refreshed);
+    const seen = (this.state.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
     this.pendingEvents = selectTurnEvents(ALL_EVENTS, {
       stage: this.stage,
       recentCategories: this.lastCategories,

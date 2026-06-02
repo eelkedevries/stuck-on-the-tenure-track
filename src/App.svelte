@@ -9,6 +9,7 @@
   import EventScreen from './ui/EventScreen.svelte';
   import TurnScreen from './ui/TurnScreen.svelte';
   import BoardScreen from './ui/BoardScreen.svelte';
+  import DeadlineBoard from './ui/DeadlineBoard.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
   import CvScreen from './ui/CvScreen.svelte';
   import { cohortTracker } from './rivals/cohort';
@@ -34,6 +35,7 @@
     <EventScreen events={game.pendingEvents} onResolve={(id) => game.resolveEvent(id)} />
   {:else if game.view === 'turn' && game.state}
     <TurnScreen calendar={game.state.calendar} stage={game.stage} player={game.state.player} />
+    <DeadlineBoard deadlines={game.deadlines} currentDate={game.state.calendar.current_date} />
     <BoardScreen
       currentLocation={game.currentLocation}
       timeRemaining={game.timeRemaining}
