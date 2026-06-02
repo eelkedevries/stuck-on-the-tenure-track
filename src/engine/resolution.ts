@@ -9,6 +9,7 @@
 import type { SaveGame } from '../state/save';
 import type { Allocation } from './actions';
 import { applyOutcomes } from './outcomes';
+import { applyLocationMemory } from '../locations/memory';
 
 // Apply the generic skill gains of the time invested this turn. Whole points
 // convert to small expertise changes; the substantive system outcomes (papers,
@@ -45,7 +46,9 @@ export function resolve(
   allocation: Allocation,
   rng: () => number = Math.random,
 ): ResolutionResult {
-  const applied = applyOutcomes(applyActions(state, allocation), allocation, rng);
+  const applied = applyLocationMemory(
+    applyOutcomes(applyActions(state, allocation), allocation, rng),
+  );
   return {
     state: applied,
     newMilestones: checkMilestones(applied),

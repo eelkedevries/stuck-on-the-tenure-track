@@ -23,9 +23,11 @@ import { LOCATIONS, type LocationId } from '../locations/types';
 // The resolved content events are static, so load them once.
 const ALL_EVENTS = [...resolveEvents(loadAllPacks()).values()];
 
-// Abstract context-switching cost of moving to another location (§3, §4.11).
-// Kept small here; tuning is `079`.
-export const MOVE_COST = 10;
+// Abstract context-switching cost of moving (§3, §4.11). The first move of a
+// turn is cheap; each further move costs more, so spreading across many
+// locations has a rising opportunity cost without dominating play.
+export const MOVE_COST_BASE = 6;
+export const MOVE_COST_STEP = 4;
 
 export type View = 'start' | 'event' | 'turn' | 'allocate' | 'cohort' | 'end';
 
@@ -40,8 +42,10 @@ export class Game {
   allocation = $state<Allocation>(emptyAllocation());
   view = $state<View>('start');
   pendingEvents = $state<SelectedEvent[]>([]);
-  // Movement time spent this turn (not an action category).
+  // Movement time spent this turn (not an action category), and how many moves
+  // have been made this turn (drives the rising movement cost).
   movementSpent = $state(0);
+  movesThisTurn = $state(0);
   private lastCategories: ActionCategory[] = [];
 
   get hasSave(): boolean {
@@ -58,8 +62,9 @@ export class Game {
     return stageForTurn(this.state?.calendar.turn_number ?? 0);
   }
 
+  // Cost of the next move this turn, rising with each move already made.
   get moveCost(): number {
-    return MOVE_COST;
+    return MOVE_COST_BASE + MOVE_COST_STEP * this.movesThisTurn;
   }
 
   get currentLocation(): LocationId {
@@ -82,8 +87,10 @@ export class Game {
     const current = this.state;
     if (!current) return;
     if (id === current.board.current_location) return;
-    if (this.timeRemaining < MOVE_COST) return;
-    this.movementSpent += MOVE_COST;
+    const cost = this.moveCost;
+    if (this.timeRemaining < cost) return;
+    this.movementSpent += cost;
+    this.movesThisTurn += 1;
     this.state = {
       ...current,
       board: { ...current.board, current_location: id },
@@ -137,6 +144,7 @@ export class Game {
     if (!current) return;
     this.allocation = emptyAllocation();
     this.movementSpent = 0;
+    this.movesThisTurn = 0;
     const refreshed: SaveGame = {
       ...current,
       board: { ...current.board, time_remaining: TURN_TIME_POINTS },
