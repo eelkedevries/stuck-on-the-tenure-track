@@ -1,0 +1,55 @@
+# Layer-2 psychology journals (specification §2, §4.4, §7). Real journal names
+# are used where appropriate; tiers and impact factors are approximate and used
+# only for content flavour and balancing. No real living academics are named.
+meta:
+  id: psychology-journals
+  name: Psychology journals
+  layer: discipline
+  parent: psychology
+
+journals:
+  - id: nature_human_behaviour
+    name: Nature Human Behaviour
+    tier: 1
+    impact_factor: 21.4
+    notes: Glossy, selective, and very keen on a tidy narrative.
+  - id: psychological_science
+    name: Psychological Science
+    tier: 1
+    impact_factor: 6.5
+    notes: The flagship; short papers, big claims, the occasional correction.
+  - id: jpsp
+    name: Journal of Personality and Social Psychology
+    tier: 1
+    impact_factor: 6.4
+  - id: psychological_bulletin
+    name: Psychological Bulletin
+    tier: 1
+    impact_factor: 22.4
+    notes: Reviews and meta-analyses; a citation magnet if you can land one.
+  - id: cognition
+    name: Cognition
+    tier: 2
+    impact_factor: 3.8
+  - id: jep_general
+    name: "Journal of Experimental Psychology: General"
+    tier: 2
+    impact_factor: 3.7
+  - id: developmental_science
+    name: Developmental Science
+    tier: 2
+    impact_factor: 4.2
+  - id: clinical_psychological_science
+    name: Clinical Psychological Science
+    tier: 2
+    impact_factor: 4.6
+  - id: plos_one
+    name: PLOS ONE
+    tier: 3
+    impact_factor: 3.7
+    notes: Sound-science criterion; pays the bills, rarely the reputation.
+  - id: frontiers_in_psychology
+    name: Frontiers in Psychology
+    tier: 3
+    impact_factor: 3.8
+    notes: Fast, voluminous, and forever emailing you to guest-edit.

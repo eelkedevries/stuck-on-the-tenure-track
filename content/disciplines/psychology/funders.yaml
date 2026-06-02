@@ -1,0 +1,66 @@
+# Layer-2 psychology funders (specification §2, §4.4, §7). Real funder and
+# scheme names are used where appropriate. These are catalogue entries only;
+# grant mechanics (calls, eligibility, success model) live in the engine
+# (031–033) and are not defined here. Amounts and success rates are approximate.
+meta:
+  id: psychology-funders
+  name: Psychology funders
+  layer: discipline
+  parent: psychology
+
+funders:
+  - id: erc_starting_grant
+    funder: European Research Council
+    scheme: ERC Starting Grant
+    amount: 1500000
+    currency: EUR
+    typical_success_rate: 0.13
+    prestige: high
+    notes: Career-making if you land it; a two-year sulk if you do not.
+  - id: nwo_veni
+    funder: Dutch Research Council (NWO)
+    scheme: Veni
+    amount: 320000
+    currency: EUR
+    typical_success_rate: 0.15
+    prestige: medium
+    notes: The early-career rite of passage in the Netherlands.
+  - id: nwo_vidi
+    funder: Dutch Research Council (NWO)
+    scheme: Vidi
+    amount: 850000
+    currency: EUR
+    typical_success_rate: 0.16
+    prestige: high
+    notes: For when Veni worked out and you now need your own group.
+  - id: nih_r01
+    funder: National Institutes of Health
+    scheme: R01
+    amount: 2000000
+    currency: USD
+    typical_success_rate: 0.20
+    prestige: high
+    notes: The American workhorse; renewable, and never quite enough.
+  - id: leverhulme_small
+    funder: Leverhulme Trust
+    scheme: Research Project Grant
+    amount: 250000
+    currency: GBP
+    typical_success_rate: 0.25
+    prestige: medium
+  - id: ba_small_grant
+    funder: British Academy
+    scheme: Small Research Grant
+    amount: 10000
+    currency: GBP
+    typical_success_rate: 0.30
+    prestige: low
+    notes: A seed grant; enough for a study and a stack of vouchers.
+  - id: university_seed_fund
+    funder: University internal research fund
+    scheme: Seed Grant
+    amount: 5000
+    currency: GBP
+    typical_success_rate: 0.45
+    prestige: low
+    notes: Departmental pump-priming, paid for with someone else's underspend.

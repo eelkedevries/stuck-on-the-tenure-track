@@ -1,0 +1,44 @@
+# Layer-2 psychology conferences (specification §2, §4.4, §7). Real conference
+# names are used where appropriate; no real living academics are named and no
+# defamatory institution-specific text is included.
+meta:
+  id: psychology-conferences
+  name: Psychology conferences
+  layer: discipline
+  parent: psychology
+
+conferences:
+  - id: aps_convention
+    name: APS Annual Convention
+    organiser: Association for Psychological Science
+    scope: international
+    notes: A vast hotel, a thousand posters, and one lukewarm coffee urn.
+  - id: spsp_convention
+    name: SPSP Annual Convention
+    organiser: Society for Personality and Social Psychology
+    scope: international
+  - id: cogsci
+    name: Annual Meeting of the Cognitive Science Society
+    organiser: Cognitive Science Society
+    scope: international
+  - id: psychonomics
+    name: Psychonomic Society Annual Meeting
+    organiser: Psychonomic Society
+    scope: international
+  - id: escop
+    name: Conference of the European Society for Cognitive Psychology
+    organiser: European Society for Cognitive Psychology
+    scope: regional
+  - id: srcd
+    name: SRCD Biennial Meeting
+    organiser: Society for Research in Child Development
+    scope: international
+  - id: abct
+    name: ABCT Annual Convention
+    organiser: Association for Behavioral and Cognitive Therapies
+    scope: international
+  - id: bps_annual
+    name: BPS Annual Conference
+    organiser: British Psychological Society
+    scope: national
+    notes: Reliably damp, reliably collegial.
