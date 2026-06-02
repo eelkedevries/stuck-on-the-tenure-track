@@ -48,9 +48,76 @@
   }
 
   let { cv }: Props = $props();
+
+  let cvRoot: HTMLElement | undefined = $state();
+
+  // Rasterise the CV to a PNG entirely in the browser (specification §4.12):
+  // serialise the rendered node into an SVG foreignObject, draw it to a canvas,
+  // and download the result. No backend and no shareable URL (out of scope).
+  async function exportPng(): Promise<void> {
+    const node = cvRoot;
+    if (!node || typeof window === 'undefined') return;
+
+    const rect = node.getBoundingClientRect();
+    const width = Math.ceil(rect.width) || 600;
+    const height = Math.ceil(rect.height) || 800;
+
+    const clone = node.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll('.cv-export').forEach((el) => el.remove());
+    const markup = new XMLSerializer().serializeToString(clone);
+
+    const style =
+      '<style>' +
+      '.cv-render{font-family:system-ui,sans-serif;color:#111;background:#fff;' +
+      'padding:1rem;box-sizing:border-box;width:100%;height:100%}' +
+      '.cv-render h2{margin:0 0 .25rem}.cv-render h3{margin:.5rem 0 .25rem}' +
+      '.cv-render dt{color:#555;font-size:.8rem}.cv-render dd{margin:0;font-weight:bold}' +
+      '.cv-render ol,.cv-render ul{margin:0;padding-left:1.25rem}' +
+      '</style>';
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+      '<foreignObject width="100%" height="100%">' +
+      `<div xmlns="http://www.w3.org/1999/xhtml" class="cv-render">${style}${markup}</div>` +
+      '</foreignObject></svg>';
+
+    const svgUrl = URL.createObjectURL(
+      new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
+    );
+    try {
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('CV image failed to render.'));
+        img.src = svgUrl;
+      });
+
+      const scale = window.devicePixelRatio || 1;
+      const canvas = document.createElement('canvas');
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const link = document.createElement('a');
+        const safeName = cv.name.trim().replace(/\s+/g, '_') || 'cv';
+        link.download = `${safeName}_cv.png`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }, 'image/png');
+    } finally {
+      URL.revokeObjectURL(svgUrl);
+    }
+  }
 </script>
 
-<section class="cv-screen" aria-label="Curriculum vitae">
+<section class="cv-screen" aria-label="Curriculum vitae" bind:this={cvRoot}>
   <header class="cv-header">
     <h2>{cv.name}</h2>
     <p class="placement">{cv.finalPlacement}</p>
@@ -140,6 +207,10 @@
       </dd>
     </div>
   </dl>
+
+  <div class="cv-export">
+    <button type="button" onclick={exportPng}>Download as PNG</button>
+  </div>
 </section>
 
 <style>
@@ -244,5 +315,16 @@
     .costs {
       grid-template-columns: repeat(2, 1fr);
     }
+  }
+  .cv-export {
+    margin-top: 0.5rem;
+  }
+  .cv-export button {
+    font-family: inherit;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border);
+    background: var(--accent);
+    color: var(--accent-text);
+    cursor: pointer;
   }
 </style>
