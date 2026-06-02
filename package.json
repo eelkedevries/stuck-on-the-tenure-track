@@ -8,7 +8,8 @@
     "build": "vite build",
     "postbuild": "bash scripts/check-public-build.sh",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json && npm run build"
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json && npm run build",
+    "perf": "npm run build && node scripts/measure-perf.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
