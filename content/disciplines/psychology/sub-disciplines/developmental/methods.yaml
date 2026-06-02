@@ -1,0 +1,27 @@
+# Layer-3 developmental psychology methods (specification §2, §7). Sub-discipline
+# signature methods; supplements the discipline list. British English.
+meta:
+  id: developmental-methods
+  name: Developmental psychology methods
+  layer: sub-discipline
+  parent: developmental
+
+methods:
+  - id: looking_time
+    name: Looking-time / habituation
+    notes: An infant, a screen, and a coder timing glances to the tenth of a second.
+  - id: violation_of_expectation
+    name: Violation-of-expectation
+    notes: Show a baby the impossible; measure the stare; argue for a decade about what it means.
+  - id: longitudinal_cohort
+    name: Longitudinal cohort
+    notes: Recruit at birth, follow for twenty years, publish the wave the reviewers ask for.
+  - id: parent_report
+    name: Parent-report questionnaire
+    notes: Cheap, scalable, and filtered entirely through a tired adult's optimism.
+  - id: naturalistic_observation
+    name: Naturalistic observation
+    notes: A camera in the playroom and a coding scheme that needs three reliable raters.
+  - id: cross_sectional_age
+    name: Cross-sectional age comparison
+    notes: Different children at different ages, mistaken at conferences for development itself.

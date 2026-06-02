@@ -1,0 +1,16 @@
+# Layer-3 developmental psychology pack metadata (specification §2, §7). Parent
+# is the psychology discipline. Sub-discipline skeleton only.
+meta:
+  id: developmental
+  name: Developmental psychology
+  layer: sub-discipline
+  parent: psychology
+
+focus: >-
+  How minds and behaviour change across the lifespan — infancy to ageing —
+  studied through looking times, long cohorts, and a great deal of patience.
+signature_method_ids:
+  - looking_time
+  - violation_of_expectation
+  - longitudinal_cohort
+  - parent_report

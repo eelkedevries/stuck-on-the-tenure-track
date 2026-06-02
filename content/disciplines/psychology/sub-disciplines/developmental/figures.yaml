@@ -1,0 +1,21 @@
+# Layer-3 developmental psychology figures (specification §2, §7). Fictional,
+# archetypal field characters. No real living academics are named. British English.
+meta:
+  id: developmental-figures
+  name: Developmental psychology figures
+  layer: sub-discipline
+  parent: developmental
+
+figures:
+  - id: looking_time_veteran
+    role: The looking-time veteran
+    description: Has watched ten thousand infants stare at screens and trusts none of the effect sizes.
+  - id: longitudinal_lifer
+    role: The longitudinal lifer
+    description: Started a cohort in 1998 and measures success in waves, not papers.
+  - id: stage_theory_holdout
+    role: The stage-theory holdout
+    description: Still teaches the stages as gospel, with a footnote nobody is allowed to read aloud.
+  - id: screen_time_pundit
+    role: The screen-time pundit
+    description: On breakfast television by nine, regretting the quote by noon.

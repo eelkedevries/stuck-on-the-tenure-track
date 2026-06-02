@@ -1,0 +1,29 @@
+# Layer-3 developmental psychology journals (specification §2, §4.4, §7). Real
+# names; approximate tiers. Supplements the discipline journal list.
+meta:
+  id: developmental-journals
+  name: Developmental psychology journals
+  layer: sub-discipline
+  parent: developmental
+
+journals:
+  - id: child_development
+    name: Child Development
+    tier: 1
+    impact_factor: 4.9
+  - id: developmental_psychology
+    name: Developmental Psychology
+    tier: 1
+    impact_factor: 3.9
+  - id: jcpp
+    name: Journal of Child Psychology and Psychiatry
+    tier: 1
+    impact_factor: 7.0
+  - id: infancy
+    name: Infancy
+    tier: 2
+    impact_factor: 2.3
+  - id: cognitive_development
+    name: Cognitive Development
+    tier: 3
+    impact_factor: 2.0

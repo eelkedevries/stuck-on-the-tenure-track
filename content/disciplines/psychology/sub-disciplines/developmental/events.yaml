@@ -1,0 +1,30 @@
+# Layer-3 (developmental) events (specification §2, §7). The first event overrides
+# the psychology Layer-2 `press_overreach` under layer precedence; the rest are
+# developmental-only supplements. No broad-psychology events here.
+meta:
+  id: developmental
+  name: Developmental psychology
+  layer: sub-discipline
+  parent: psychology
+events:
+  - event_id: press_overreach
+    title: The press office improves your findings
+    body: >-
+      Your careful correlation between toddlers' screen time and vocabulary
+      becomes "SCREENS HARM BABIES' BRAINS, say scientists". A morning programme
+      would like you on the sofa at 07:50.
+    tags: [reputation, media, developmental]
+
+  - event_id: cohort_attrition
+    title: The cohort is shrinking
+    body: >-
+      The families recruited in infancy have moved, changed numbers, or politely
+      had enough. Your wave-four sample is now smaller than your author list.
+    tags: [research, methods, developmental]
+
+  - event_id: testing_room_meltdown
+    title: A testing session goes sideways
+    body: >-
+      Twenty minutes of habituation, perfect calibration, and then a nap, a nappy
+      incident, and a firm refusal to look at the left of the screen.
+    tags: [research, developmental]
