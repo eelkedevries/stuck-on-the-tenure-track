@@ -63,7 +63,6 @@
       currentLocation={game.currentLocation}
       focus={game.currentFocus}
       timeRemaining={game.timeRemaining}
-      moveCost={game.moveCost}
       activities={game.activities}
       spent={game.allocation}
       onMove={(id) => game.moveTo(id)}

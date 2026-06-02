@@ -1,68 +1,111 @@
 <script lang="ts">
-  // Desktop pixel-art campus map (specification §4.11, §5). Renders campus
-  // locations as a grid of tiles; clicking a tile selects that location. The
-  // mobile list is `052`; the ghost penalty is `053`.
+  // Square campus board (specification §4.11, §5; prompts 051, 090). Locations sit
+  // on a grid; tapping one travels there at a distance-based time cost (shown on
+  // each tile). A player token marks the current location and animates when you
+  // travel. Works on desktop and mobile (the board scales to width) and is
+  // keyboard-navigable. Travel is emitted via onSelect.
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
+  import { BOARD_SIZE, COORDS, travelCost } from '../locations/board';
 
   interface Props {
-    onSelect?: (id: LocationId) => void;
     selected?: LocationId | null;
+    onSelect?: (id: LocationId) => void;
   }
 
-  let { onSelect, selected = null }: Props = $props();
+  let { selected = null, onSelect }: Props = $props();
 
-  // Fixed pixel-art grid positions (column/row) for the desktop layout.
-  const POSITIONS: Record<LocationId, { x: number; y: number }> = {
-    office: { x: 1, y: 1 },
-    lab: { x: 2, y: 1 },
-    library: { x: 3, y: 1 },
-    classroom: { x: 1, y: 2 },
-    seminar_room: { x: 2, y: 2 },
-    cafe_pub: { x: 3, y: 2 },
-    home: { x: 1, y: 3 },
-    conference_venue: { x: 2, y: 3 },
-    funder_portal: { x: 3, y: 3 },
-    gym_outdoors: { x: 1, y: 4 },
-    health_centre: { x: 2, y: 4 },
-  };
+  const cell = 100 / BOARD_SIZE; // percent per cell
+  const current = $derived((selected ?? 'office') as LocationId);
+  const tokenPos = $derived(COORDS[current]);
 </script>
 
-<div class="campus-map" role="group" aria-label="Campus map">
+<div class="board" role="group" aria-label="Campus board">
   {#each ALL_LOCATIONS as location (location.id)}
+    {@const pos = COORDS[location.id]}
+    {@const here = location.id === current}
+    {@const cost = travelCost(current, location.id)}
     <button
       type="button"
       class="tile"
-      class:selected={selected === location.id}
-      aria-pressed={selected === location.id}
-      style="grid-column: {POSITIONS[location.id].x}; grid-row: {POSITIONS[location.id].y};"
+      class:here
+      style="left: {pos.x * cell}%; top: {pos.y * cell}%; width: {cell}%; height: {cell}%;"
+      aria-label={here ? `${location.name}, you are here` : `${location.name}, travel ${cost} time`}
+      aria-pressed={here}
+      disabled={here}
       onclick={() => onSelect?.(location.id)}
     >
-      {location.name}
+      <span class="name">{location.name}</span>
+      <span class="cost">{here ? 'here' : `${cost}t`}</span>
     </button>
   {/each}
+
+  <div
+    class="token"
+    style="left: {tokenPos.x * cell}%; top: {tokenPos.y * cell}%; width: {cell}%; height: {cell}%;"
+    aria-hidden="true"
+  >
+    <span class="dot">●</span>
+  </div>
 </div>
 
 <style>
-  .campus-map {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(96px, 1fr));
-    gap: 8px;
+  .board {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    border: 2px solid var(--border);
     image-rendering: pixelated;
   }
   .tile {
-    font-family: monospace;
-    padding: 12px 8px;
-    border: 2px solid #333;
-    background: #cfeede;
-    color: #123;
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 2px;
+    font-family: inherit;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
     cursor: pointer;
+    overflow: hidden;
     text-align: center;
   }
-  .tile.selected {
-    background: #6cc89a;
-    outline: 2px solid #036;
+  .tile .name {
+    font-size: 0.6rem;
+    line-height: 1.05;
   }
-  .tile:focus-visible {
-    outline: 2px solid #036;
+  .tile .cost {
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+  .tile.here {
+    background: var(--accent);
+    color: var(--accent-text);
+    cursor: default;
+  }
+  .tile.here .cost {
+    color: var(--accent-text);
+  }
+  .token {
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 2px;
+    pointer-events: none;
+    transition:
+      left 0.4s ease,
+      top 0.4s ease;
+  }
+  .dot {
+    color: #b00020;
+    font-size: 0.9rem;
+    line-height: 1;
+    text-shadow: 0 0 2px #fff;
   }
 </style>

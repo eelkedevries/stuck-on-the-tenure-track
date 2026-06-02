@@ -6,7 +6,6 @@
   // emitted to the store, which owns the time economy. Existing CampusMap and
   // LocationList are reused unchanged.
   import CampusMap from './CampusMap.svelte';
-  import LocationList from './LocationList.svelte';
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
   import { TURN_TIME_POINTS, type ActionCategory, type Allocation } from '../engine/actions';
   import type { Activity } from '../locations/stages';
@@ -15,7 +14,6 @@
     currentLocation: LocationId;
     focus: string;
     timeRemaining: number;
-    moveCost: number;
     activities: Activity[];
     spent: Allocation;
     onMove?: (id: LocationId) => void;
@@ -29,7 +27,6 @@
     currentLocation,
     focus,
     timeRemaining,
-    moveCost,
     activities,
     spent,
     onMove,
@@ -51,17 +48,12 @@
       <span class="label">Time left</span>
       <span class="value">{timeRemaining} / {TURN_TIME_POINTS}</span>
     </p>
-    <p class="movecost">Moving costs {moveCost} time</p>
   </header>
 
   <p class="focus">{focus}</p>
 
-  <div class="board-desktop">
-    <CampusMap selected={currentLocation} onSelect={(id) => onMove?.(id)} />
-  </div>
-  <div class="board-mobile">
-    <LocationList selected={currentLocation} onSelect={(id) => onMove?.(id)} />
-  </div>
+  <CampusMap selected={currentLocation} onSelect={(id) => onMove?.(id)} />
+  <p class="movehint">Tap a place to travel there — further away costs more time.</p>
 
   <h3>Activities here</h3>
   {#if activities.length > 0}
@@ -113,9 +105,11 @@
   .value {
     font-weight: bold;
   }
-  .movecost {
+  .movehint {
+    margin: 0;
     color: var(--muted);
     font-size: 0.8rem;
+    text-align: center;
   }
   .focus {
     margin: 0;
@@ -178,20 +172,5 @@
   }
   .empty {
     color: var(--muted);
-  }
-  /* Desktop shows the pixel-art map; mobile shows the scrollable list. */
-  .board-mobile {
-    display: block;
-  }
-  .board-desktop {
-    display: none;
-  }
-  @media (min-width: 40rem) {
-    .board-mobile {
-      display: none;
-    }
-    .board-desktop {
-      display: block;
-    }
   }
 </style>

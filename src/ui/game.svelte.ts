@@ -19,6 +19,7 @@ import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
 import { type LocationId } from '../locations/types';
+import { travelCost } from '../locations/board';
 import { actionsAtStage, focusAtStage, activitiesAtStage, type Activity } from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
@@ -30,12 +31,6 @@ import type { LocationVisit } from '../state/save';
 // derived from them by sub-discipline at the start of each turn.
 const ALL_PACKS = loadAllPacks();
 const EVENT_TITLE = new Map([...resolveEvents(ALL_PACKS).values()].map((e) => [e.event_id, e.title]));
-
-// Abstract context-switching cost of moving (§3, §4.11). The first move of a
-// turn is cheap; each further move costs more, so spreading across many
-// locations has a rising opportunity cost without dominating play.
-export const MOVE_COST_BASE = 6;
-export const MOVE_COST_STEP = 4;
 
 export type View = 'start' | 'intro' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
 
@@ -51,10 +46,8 @@ export class Game {
   view = $state<View>('start');
   pendingEvents = $state<SelectedEvent[]>([]);
   recap = $state<Recap | null>(null);
-  // Movement time spent this turn (not an action category), and how many moves
-  // have been made this turn (drives the rising movement cost).
+  // Travel time spent this turn (not an action category).
   movementSpent = $state(0);
-  movesThisTurn = $state(0);
   private lastCategories: ActionCategory[] = [];
   private pendingEnd = false;
 
@@ -72,9 +65,9 @@ export class Game {
     return stageForTurn(this.state?.calendar.turn_number ?? 0);
   }
 
-  // Cost of the next move this turn, rising with each move already made.
-  get moveCost(): number {
-    return MOVE_COST_BASE + MOVE_COST_STEP * this.movesThisTurn;
+  // Time cost to travel from the current location to another, by board distance.
+  travelCost(id: LocationId): number {
+    return travelCost(this.currentLocation, id);
   }
 
   // Progress toward tenure (0..100%), the player's headline progression bar.
@@ -121,10 +114,9 @@ export class Game {
     const current = this.state;
     if (!current) return;
     if (id === current.board.current_location) return;
-    const cost = this.moveCost;
+    const cost = travelCost(current.board.current_location as LocationId, id);
     if (this.timeRemaining < cost) return;
     this.movementSpent += cost;
-    this.movesThisTurn += 1;
     this.state = {
       ...current,
       board: { ...current.board, current_location: id },
@@ -202,7 +194,6 @@ export class Game {
     if (!current) return;
     this.allocation = emptyAllocation();
     this.movementSpent = 0;
-    this.movesThisTurn = 0;
     const refreshed: SaveGame = {
       ...current,
       board: { ...current.board, time_remaining: TURN_TIME_POINTS },
