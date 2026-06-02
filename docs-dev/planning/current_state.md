@@ -95,6 +95,23 @@ study/lecture/exam activities, and gated publishing to the PhD onward). Finally,
 the in-game screens now **lead with the situation and the board**, with the raw
 resource readout demoted to a collapsible "Your standing" disclosure (`087`).
 
+### Board-game feel pass (088–091)
+
+A second feel pass turned the turn into a within-turn **clock** and the campus
+into a proper game board: there is **no "end turn" button** — the day ends when
+the time points run out, or when the player **relaxes** to let the rest pass
+(`088`). A live **progression-bars** panel shows what matters — a new
+**stress/anxiety** stat (rises with work, falls with rest; high stress drags mood
+and productivity and can tip into an anxiety condition), plus sleep, mood,
+health, and tenure progress (`089`; `stress` added to `Wellbeing`,
+`save_version` → 3). The campus is now a **square 5×5 board**
+(`src/locations/board.ts`, `src/ui/CampusMap.svelte`) where travel costs time in
+**proportion to distance** and a **player token animates** between locations
+(`090`). Some turns carry **timed appointments** — a lecture, exam, or grant
+interview you must reach by a point on the clock, shown with a time-remaining
+bar; attending helps, missing costs stress/reputation (`091`,
+`src/appointments/`). Specification is at version 1.8.
+
 ### Original specification of M17
 
 Milestone M17 was specified in `074`. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
