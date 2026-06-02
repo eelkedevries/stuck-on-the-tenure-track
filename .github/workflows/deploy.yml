@@ -1,0 +1,66 @@
+name: Deploy to GitHub Pages
+
+# Publishes only the production build output (dist/) to GitHub Pages, using the
+# project base path configured in vite.config.ts (/stuck-on-the-tenure-track/).
+# Specification §6: the beta is a static GitHub Pages site, and no build output
+# may contain secrets, development notes, prompt files, or source maps.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: read the repo, write Pages, and mint the OIDC token the
+# deploy step needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deployment at a time; let an in-progress run finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Public-build safety check
+        run: bash scripts/check-public-build.sh dist
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload build output
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Only dist/ is uploaded, so docs-dev/, prompt files, and other
+          # repository content are never published.
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
