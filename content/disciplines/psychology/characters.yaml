@@ -1,0 +1,34 @@
+# Layer-2 psychology character templates (specification §2, §7). Generic
+# departmental roles used to populate a career; no real living academics are
+# named. British English, dry and specific.
+meta:
+  id: psychology-characters
+  name: Psychology characters
+  layer: discipline
+  parent: psychology
+
+characters:
+  - id: head_of_department
+    role: Head of department
+    description: Keen on "research culture", keener on the workload model spreadsheet.
+  - id: senior_colleague
+    role: Senior colleague
+    description: Has a famous finding from 2009 and a strong view on your methods section.
+  - id: postdoc_peer
+    role: Fellow postdoc
+    description: On their third one-year contract, three cities, and one good idea.
+  - id: phd_peer
+    role: PhD peer
+    description: Shares your office, your supervisor, and your quiet dread of the upgrade viva.
+  - id: lab_technician
+    role: Lab technician
+    description: Knows where everything is and why your EEG cap keeps failing. Buy them coffee.
+  - id: journal_editor
+    role: Journal editor
+    description: Replies in nine minutes to desk-reject and nine months to anything else.
+  - id: grant_panel_chair
+    role: Grant panel chair
+    description: Loved the idea, loved the team, regrets the budget, suggests you reapply.
+  - id: undergraduate_student
+    role: Undergraduate student
+    description: Emails at 02:00 about an extension and cites your lecture slides as a journal.

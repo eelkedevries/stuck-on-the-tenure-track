@@ -1,0 +1,41 @@
+# Layer-2 psychology supervisor-archetype content (specification §2, §4.5, §7).
+# Flavour only; the archetype mechanics live in the engine (036). The six ids
+# match the six defined SupervisorArchetype values exactly. British English.
+meta:
+  id: psychology-supervisors
+  name: Psychology supervisor archetypes
+  layer: discipline
+  parent: psychology
+
+supervisors:
+  - id: supportive_mentor
+    name: The supportive mentor
+    description: >-
+      Reads your drafts within the week, defends you in committee, and somehow
+      finds money for a conference. Rare enough that colleagues assume you are
+      exaggerating.
+  - id: hands_off
+    name: The hands-off supervisor
+    description: >-
+      Believes deeply in your independence, chiefly because it requires nothing
+      of them. You will learn a great deal, mostly the hard way.
+  - id: micromanager
+    name: The micromanager
+    description: >-
+      Wants the analysis script by Friday, the revised script by Saturday, and a
+      meeting about the script on Sunday. Tracked changes as a love language.
+  - id: status_driven
+    name: The status-driven PI
+    description: >-
+      Lives for the high-impact byline and the keynote invitation. Your name
+      drifts steadily rightward in the author list with each revision.
+  - id: absent
+    name: The absent supervisor
+    description: >-
+      On sabbatical, on a plane, or on an editorial board — never on email. You
+      meet twice a year, both times by accident in the corridor.
+  - id: exploitative
+    name: The exploitative supervisor
+    description: >-
+      Your data, your nights, their grant renewal. Generous with deadlines,
+      thrifty with acknowledgement, and surprised you seem tired.

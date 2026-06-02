@@ -43,10 +43,58 @@ career_stage_durations:
   postdoc: 4
   assistant_professor: 6
 
-# Name-pool placeholders for generating colleagues, rivals, and supervisors.
-# Filled with concrete, non-defamatory placeholder names; no real living
-# academics (specification §7).
+# Name pools for generating colleagues, rivals, and supervisors. Concrete,
+# non-defamatory names; institutions are deliberately fictional to avoid
+# real-institution jokes, and no real living academics are named (§7).
 name_pools:
-  given_names: []
-  family_names: []
-  institutions: []
+  given_names:
+    - Amara
+    - Bram
+    - Clara
+    - Dilan
+    - Eszter
+    - Femke
+    - Giulia
+    - Hassan
+    - Ingrid
+    - Joon
+    - Katrien
+    - Lukas
+    - Maria
+    - Niamh
+    - Omar
+    - Priya
+    - Quentin
+    - Rosa
+    - Sanne
+    - Tariq
+  family_names:
+    - Abbas
+    - Bakker
+    - Costa
+    - Demir
+    - Evans
+    - Fischer
+    - Garcia
+    - Horvath
+    - Ivanova
+    - Jansen
+    - Kowalski
+    - Lindqvist
+    - Moreau
+    - Nielsen
+    - O'Brien
+    - Patel
+    - Rossi
+    - Schmidt
+    - Tanaka
+    - Visser
+  institutions:
+    - Marsh College
+    - Northgate University
+    - University of Caldermoor
+    - Eastfen Institute of Psychology
+    - Wreyford University
+    - St Edda's College
+    - Lindholt University
+    - University of Port Haldane

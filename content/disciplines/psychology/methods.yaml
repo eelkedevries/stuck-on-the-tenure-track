@@ -1,0 +1,39 @@
+# Layer-2 psychology research methods (specification §2, §7). Catalogue content
+# only; method mechanics are not defined here. British English throughout.
+meta:
+  id: psychology-methods
+  name: Psychology methods
+  layer: discipline
+  parent: psychology
+
+methods:
+  - id: behavioural_experiment
+    name: Behavioural experiment
+    notes: A lab task, a within-subjects design, and a great deal of counterbalancing.
+  - id: survey_questionnaire
+    name: Survey and questionnaire
+    notes: Cheap, scalable, and quietly haunted by acquiescence bias.
+  - id: reaction_time
+    name: Reaction-time paradigm
+    notes: Millisecond differences, defended to the death at conferences.
+  - id: eye_tracking
+    name: Eye-tracking
+    notes: Expensive kit, calibration woes, and lovely heat-maps for the talk.
+  - id: eeg
+    name: Electroencephalography (EEG)
+    notes: Gel in the hair, a Faraday cage, and a component everyone names differently.
+  - id: fmri
+    name: Functional MRI
+    notes: Hugely costly per hour; the reviewers will still want more participants.
+  - id: longitudinal_study
+    name: Longitudinal study
+    notes: Years of attrition for one beautifully cautious figure.
+  - id: meta_analysis
+    name: Meta-analysis
+    notes: Other people's data, your funnel plot, and a citation windfall.
+  - id: qualitative_interview
+    name: Qualitative interview
+    notes: Rich, careful, and routinely dismissed as "just N of twelve" by the quants.
+  - id: computational_modelling
+    name: Computational modelling
+    notes: A free parameter for every occasion, fit to within an inch of its life.
