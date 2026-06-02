@@ -16,11 +16,11 @@ events:
     tags: [research, admin, clinical]
     choices:
       - label: Do it properly
-        result: Slower, safer, and the right call. Participants are protected.
-        effects: { mood: -2, reputation: 1 }
+        result: Slower and safer; participants protected, evenings lost.
+        effects: { reputation: 1, mood: -2, stress: 3 }
       - label: Trim the scope to speed it up
-        result: Approved faster, with a smaller study to show for it.
-        effects: { mood: 1 }
+        result: Approved faster, with a smaller, weaker study to show for it.
+        effects: { mood: 1, reputation: -1 }
 
   - event_id: trial_recruitment_stalls
     title: Recruitment has stalled
@@ -46,8 +46,8 @@ events:
     tags: [research, methods, clinical]
     choices:
       - label: Switch to an active control
-        result: A better design, salvaged from the wreckage.
-        effects: { methods: 2, mood: -1 }
+        result: A better design, salvaged from the wreckage — at a price in time.
+        effects: { methods: 2, mood: -1, stress: 4 }
       - label: Report it honestly as a limitation
-        result: A frank paragraph in the discussion. Reviewers respect it.
-        effects: { reputation: 1 }
+        result: Reviewers respect the candour; the study is visibly weaker.
+        effects: { reputation: 1, methods: -1 }

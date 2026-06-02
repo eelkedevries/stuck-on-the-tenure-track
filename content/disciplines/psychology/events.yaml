@@ -1,7 +1,6 @@
-# Layer-2 (psychology) events (specification §2, §7; prompts 066, 086). Broad
-# across psychology, gated by career stage and presented as choices with light
-# effects. Sub-discipline-only events live in the Layer-3 packs. Dry, specific,
-# British English, non-moralising.
+# Layer-2 (psychology) events (specification §2, §7; prompts 066, 086, 092).
+# Each choice is a dilemma: every option has an upside and a downside, so there
+# is no "correct" answer. Effects are shown to the player before they choose.
 meta:
   id: psychology
   name: Psychology
@@ -17,11 +16,11 @@ events:
     tags: [study]
     choices:
       - label: Cram all night
-        result: You scrape through, running on coffee and dread.
-        effects: { methods: 2, statistics: 1, sleep: -12, mood: -3 }
+        result: You scrape through, sharper but wrecked.
+        effects: { methods: 3, statistics: 1, sleep: -12, stress: 8, mood: -3 }
       - label: Revise sensibly and sleep
-        result: A calmer week and a respectable, unspectacular mark.
-        effects: { methods: 1, sleep: 4, mood: 2 }
+        result: A calmer week, a respectable but unspectacular mark.
+        effects: { methods: 1, sleep: 5, mood: 2, stress: -3 }
 
   - event_id: group_project
     title: The group project
@@ -32,11 +31,11 @@ events:
     tags: [study, networking]
     choices:
       - label: Do it all yourself
-        result: A good mark, and a quiet resentment that will last years.
-        effects: { methods: 2, mood: -4, sleep: -5 }
+        result: A good mark, a quiet resentment, and a lost weekend.
+        effects: { methods: 2, sleep: -5, stress: 6, mood: -4 }
       - label: Make everyone contribute
-        result: Awkward, but the work gets shared. You learn to chair a meeting.
-        effects: { methods: 1, politics: 1, mood: 1 }
+        result: Awkward, but the work is shared and you learn to chair a room.
+        effects: { politics: 2, mood: 1, methods: -1 }
 
   - event_id: freshers_temptation
     title: A night out beckons
@@ -46,11 +45,11 @@ events:
     tags: [personal]
     choices:
       - label: Go out
-        result: A wonderful night. The problem set remains, judgementally, on your desk.
-        effects: { mood: 7, sleep: -8 }
+        result: A wonderful night; the problem set judges you in the morning.
+        effects: { mood: 7, stress: -5, sleep: -8, methods: -1 }
       - label: Stay in and study
-        result: Virtuous, a little dull, and quietly ahead.
-        effects: { theory: 2, mood: -2 }
+        result: Virtuous, a little lonely, and quietly ahead.
+        effects: { theory: 2, mood: -3, stress: 3 }
 
   - event_id: first_supervision
     title: Meeting your supervisor
@@ -61,11 +60,11 @@ events:
     tags: [networking]
     choices:
       - label: Turn up well prepared
-        result: They are pleasantly surprised. You go up in their estimation.
-        effects: { reputation: 2, methods: 1 }
+        result: They are impressed — but you were up half the night for it.
+        effects: { reputation: 2, methods: 1, sleep: -5, stress: 4 }
       - label: Wing it
-        result: You bluff competently. They are not fooled, but they are amused.
-        effects: { reputation: -1, mood: 1 }
+        result: Relaxed and rested; they were not fooled.
+        effects: { mood: 2, stress: -2, reputation: -1 }
 
   - event_id: lecture_question
     title: A question forms
@@ -76,11 +75,11 @@ events:
     tags: [study]
     choices:
       - label: Put your hand up
-        result: You were right. The room notices; so does the lecturer.
-        effects: { reputation: 1, theory: 1, mood: -1 }
+        result: You were right. The room notices — and so does your pulse.
+        effects: { reputation: 1, theory: 1, stress: 5 }
       - label: Keep quiet
-        result: Probably wise. Probably.
-        effects: { mood: 1 }
+        result: Safe, comfortable, and invisible.
+        effects: { mood: 1, stress: -2 }
 
   - event_id: thesis_topic
     title: Choosing an MSc thesis topic
@@ -92,10 +91,10 @@ events:
     choices:
       - label: Play it safe
         result: It works. It is also, everyone agrees, perfectly fine.
-        effects: { methods: 2, mood: 1 }
+        effects: { methods: 2, mood: 1, reputation: -1 }
       - label: Be ambitious
-        result: Riskier, and people are watching with interest.
-        effects: { methods: 1, reputation: 2, mood: -3 }
+        result: Riskier, sleepless, and people are watching with interest.
+        effects: { reputation: 3, methods: 1, stress: 7, mood: -3 }
 
   - event_id: stats_course
     title: The dreaded stats module
@@ -106,11 +105,11 @@ events:
     tags: [study]
     choices:
       - label: Put in the hours
-        result: It clicks, eventually. A genuinely useful skill.
-        effects: { statistics: 3, sleep: -6 }
+        result: It clicks, eventually — at the cost of your evenings.
+        effects: { statistics: 3, sleep: -6, stress: 5 }
       - label: Learn just enough to pass
-        result: You will regret this in precisely two years.
-        effects: { statistics: 1, mood: 2 }
+        result: Lighter now; you will regret this in precisely two years.
+        effects: { statistics: 1, mood: 2, methods: -1 }
 
   # --- Research career (PhD onward) ---------------------------------------
   - event_id: replication_failure
@@ -122,11 +121,11 @@ events:
     tags: [research, reputation]
     choices:
       - label: Engage graciously
-        result: You thank them and look hard at your own data. It stings, but it lands well.
-        effects: { reputation: 1, mood: -2 }
+        result: Painful, honest, and respected — though it costs you sleep.
+        effects: { reputation: 2, mood: -3, stress: 4 }
       - label: Defend the original
-        result: You write a spirited reply. Opinions, like the effect, are divided.
-        effects: { reputation: -1, mood: 1 }
+        result: You save face for now; the doubters multiply quietly.
+        effects: { mood: 1, reputation: -2 }
 
   - event_id: reviewer_two
     title: Reviewer 2 returns
@@ -137,11 +136,11 @@ events:
     tags: [publishing]
     choices:
       - label: Revise dutifully
-        result: You add the citations and grit your teeth. It is accepted.
-        effects: { writing: 1, mood: -3 }
+        result: Accepted — and a small piece of your soul with it.
+        effects: { writing: 2, mood: -3, stress: 3 }
       - label: Push back in the response letter
-        result: A crisp rebuttal. The editor sides with you, this time.
-        effects: { reputation: 1, mood: -1 }
+        result: A crisp rebuttal that might win, or might sink the paper.
+        effects: { reputation: 1, stress: 5, mood: -1 }
 
   - event_id: methods_dispute
     title: A methods dispute
@@ -152,11 +151,11 @@ events:
     tags: [research, methods]
     choices:
       - label: Reanalyse openly
-        result: You rerun it every way they ask. It mostly holds, and you look rigorous.
-        effects: { methods: 2, mood: -2 }
+        result: You rerun it every way they ask — rigorous, and exhausting.
+        effects: { methods: 2, reputation: 1, mood: -2, stress: 5 }
       - label: Let it pass
-        result: You say nothing. The commentary circulates anyway.
-        effects: { reputation: -1, mood: 1 }
+        result: You keep your evening; the commentary keeps circulating.
+        effects: { mood: 1, reputation: -2 }
 
   - event_id: ethics_review
     title: The ethics committee has notes
@@ -167,11 +166,11 @@ events:
     tags: [research, admin]
     choices:
       - label: Revise and resubmit
-        result: Two more weeks, one comma, and approval.
-        effects: { mood: -2 }
+        result: Two more weeks, one comma, and a thorough reputation.
+        effects: { reputation: 1, mood: -2, stress: 3 }
       - label: Request a meeting
-        result: You make your case in person. It half works.
-        effects: { politics: 1, mood: -1 }
+        result: You make your case in person; some find it pushy.
+        effects: { politics: 1, reputation: -1 }
 
   - event_id: grant_rejection
     title: The panel "could not fund everything"
@@ -182,11 +181,11 @@ events:
     tags: [grants, funding]
     choices:
       - label: Resubmit, stronger
-        result: You sharpen the case for next round. Grimly determined.
-        effects: { writing: 1, mood: -2 }
+        result: Grimly determined — and there go the weekends again.
+        effects: { writing: 1, stress: 6, mood: -2 }
       - label: Let this one go
-        result: You reclaim the weekends you would have spent on it.
-        effects: { mood: 3 }
+        result: Relief now, an opportunity gone.
+        effects: { mood: 3, stress: -4, reputation: -1 }
 
   - event_id: predatory_invite
     title: An "esteemed" invitation
@@ -196,12 +195,12 @@ events:
     conditions: { stages: [phd, postdoc, assistant_professor] }
     tags: [publishing]
     choices:
-      - label: Delete it
-        result: A small, clean satisfaction.
+      - label: Delete it and move on
+        result: A small, clean satisfaction, and nothing learned.
         effects: { mood: 1 }
-      - label: Reply with feeling
-        result: You will not get those ten minutes back.
-        effects: { mood: -1 }
+      - label: Warn your colleagues publicly
+        result: Principled and useful; a few find you preachy.
+        effects: { reputation: 1, politics: -1, stress: 2 }
 
   - event_id: teaching_overload
     title: A module lands on your desk
@@ -212,11 +211,11 @@ events:
     tags: [teaching, workload]
     choices:
       - label: Take it on
-        result: The students like you. Your research does not.
-        effects: { teaching: 2, mood: -4, sleep: -5 }
+        result: The students like you; your research and sleep do not.
+        effects: { teaching: 2, reputation: 1, mood: -4, sleep: -5, stress: 7 }
       - label: Decline, politely
-        result: You hold the line. The corridor remembers.
-        effects: { reputation: -2, mood: 2 }
+        result: You hold the line; the corridor remembers.
+        effects: { reputation: -2, mood: 2, stress: -2 }
 
   - event_id: coauthorship_dispute
     title: An authorship conversation
@@ -227,11 +226,11 @@ events:
     tags: [research]
     choices:
       - label: Give them second
-        result: Generous, and a friendship preserved.
+        result: Generous; a friendship kept, a line on your CV softened.
         effects: { mood: 1, reputation: -1 }
       - label: Hold your ground
         result: You win the point and lose a little goodwill.
-        effects: { reputation: 1, mood: -2 }
+        effects: { reputation: 1, mood: -2, stress: 3 }
 
   - event_id: press_overreach
     title: The press office improves your findings
@@ -243,10 +242,10 @@ events:
     choices:
       - label: Correct the record
         result: Accurate, unglamorous, and respected by the people who matter.
-        effects: { reputation: 1, mood: -1 }
+        effects: { reputation: 1, affiliation_prestige: -1, mood: -1 }
       - label: Enjoy the attention
-        result: The institution is delighted. Your methods friends are not.
-        effects: { affiliation_prestige: 2, mood: -2 }
+        result: The institution is delighted; your methods friends are not.
+        effects: { affiliation_prestige: 2, reputation: -1, mood: -1 }
 
   - event_id: viva_scheduled
     title: The viva is scheduled
@@ -257,8 +256,8 @@ events:
     tags: [milestone]
     choices:
       - label: Prepare relentlessly
-        result: You know the thesis better than the examiners. As you should.
-        effects: { reputation: 2, sleep: -6 }
+        result: You will know it cold — and pay for it in sleep and nerves.
+        effects: { reputation: 2, sleep: -6, stress: 8 }
       - label: Trust the work
-        result: It is done; you let it be done. A rare, healthy choice.
-        effects: { mood: 3 }
+        result: Rested and calm, and rolling the dice a little.
+        effects: { mood: 3, stress: -3, reputation: -1 }

@@ -14,8 +14,8 @@ events:
     tags: [publishing, peer_review]
     choices:
       - label: Send it straight back out
-        result: Same paper, different masthead, fresh hope.
-        effects: { writing: 1, mood: -2 }
+        result: Momentum kept, morale dented; onto the next masthead.
+        effects: { writing: 1, mood: -2, stress: 3 }
       - label: Shelve it for now
-        result: It goes in the drawer of good intentions.
-        effects: { mood: 1 }
+        result: A kinder evening, and a paper that loses its momentum.
+        effects: { mood: 2, writing: -1 }

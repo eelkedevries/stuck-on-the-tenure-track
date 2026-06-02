@@ -45,8 +45,8 @@ events:
     tags: [research, methods, social]
     choices:
       - label: Run the validation study
-        result: Tedious, thorough, and genuinely useful. Two papers, eventually.
-        effects: { statistics: 2, sleep: -5 }
+        result: Tedious, thorough, and genuinely useful — and another month gone.
+        effects: { statistics: 2, sleep: -5, stress: 3 }
       - label: Cite an existing scale instead
-        result: You swap it in. Faster, blander, accepted.
-        effects: { writing: 1, mood: 1 }
+        result: Faster and blander; it never quite measures what you meant.
+        effects: { writing: 1, mood: 1, methods: -1 }

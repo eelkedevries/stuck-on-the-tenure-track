@@ -47,8 +47,8 @@ events:
     tags: [research, developmental]
     choices:
       - label: Reschedule cheerfully
-        result: You rebook, restock the sticker drawer, and carry on.
-        effects: { mood: -1 }
+        result: Clean data kept; another booking, another afternoon gone.
+        effects: { methods: 1, mood: -1 }
       - label: Keep the partial data
         result: Half a trial is not nothing, you tell yourself, unconvincingly.
         effects: { methods: -1, mood: 1 }

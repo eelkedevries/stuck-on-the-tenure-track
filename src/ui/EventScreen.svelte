@@ -3,7 +3,7 @@
   // events as short situations with clear choices. Choosing shows the outcome and
   // (via the store) applies light effects. When every event has been answered,
   // the player continues to the campus. Presentational only.
-  import type { SelectedEvent } from '../engine/events';
+  import { summariseEffects, type SelectedEvent } from '../engine/events';
 
   interface Props {
     events: SelectedEvent[];
@@ -27,9 +27,12 @@
         {:else if entry.event.choices && entry.event.choices.length > 0}
           <div class="choices">
             {#each entry.event.choices as choice, i (choice.label)}
-              <button type="button" onclick={() => onChoose?.(entry.event.event_id, i)}>
-                {choice.label}
-              </button>
+              <div class="choice">
+                <button type="button" onclick={() => onChoose?.(entry.event.event_id, i)}>
+                  {choice.label}
+                </button>
+                <span class="effect">{summariseEffects(choice.effects)}</span>
+              </div>
             {/each}
           </div>
         {:else}
@@ -83,7 +86,17 @@
   .choices {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
+  }
+  .choice {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-width: 100%;
+  }
+  .effect {
+    font-size: 0.75rem;
+    color: var(--muted);
   }
   .event button {
     font-family: inherit;

@@ -32,11 +32,11 @@ events:
     tags: [research, methods, cognitive]
     choices:
       - label: Simplify the model
-        result: Fewer parameters, cleaner story, a better paper.
-        effects: { statistics: 2, mood: -1 }
+        result: Cleaner and more defensible — and a fortnight of refitting.
+        effects: { statistics: 2, mood: -1, stress: 4 }
       - label: Add a caveat and move on
-        result: A footnote nobody reads, and a reviewer who notices.
-        effects: { reputation: -1 }
+        result: You keep your time; a reviewer keeps the receipt.
+        effects: { mood: 1, reputation: -1 }
 
   - event_id: stimulus_set_leak
     title: The stimulus set is everywhere

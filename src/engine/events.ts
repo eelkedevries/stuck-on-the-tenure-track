@@ -86,6 +86,39 @@ function clamp(value: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, value));
 }
 
+// Friendly labels and display order for an effect summary.
+const EFFECT_LABELS: [keyof EventEffects, string][] = [
+  ['sleep', 'Sleep'],
+  ['mood', 'Mood'],
+  ['physical', 'Health'],
+  ['stress', 'Stress'],
+  ['reputation', 'Rep'],
+  ['affiliation_prestige', 'Prestige'],
+  ['methods', 'Methods'],
+  ['theory', 'Theory'],
+  ['writing', 'Writing'],
+  ['statistics', 'Stats'],
+  ['teaching', 'Teaching'],
+  ['politics', 'Politics'],
+  ['personal_funds', 'Cash'],
+  ['research_funds', 'Research £'],
+];
+
+// A short, readable summary of a choice's effects (signed deltas), generated
+// from the effects so it always matches what is applied. Empty effects read as
+// a no-op.
+export function summariseEffects(effects: EventEffects | undefined): string {
+  if (!effects) return 'No real effect';
+  const parts: string[] = [];
+  for (const [key, label] of EFFECT_LABELS) {
+    const v = effects[key];
+    if (typeof v === 'number' && v !== 0) {
+      parts.push(`${v > 0 ? '+' : '−'}${Math.abs(v)} ${label}`);
+    }
+  }
+  return parts.length > 0 ? parts.join(' · ') : 'No real effect';
+}
+
 // Apply a choice's light effects to the game state. Returns a new SaveGame.
 export function applyEventEffects(state: SaveGame, effects: EventEffects | undefined): SaveGame {
   if (!effects) return state;
