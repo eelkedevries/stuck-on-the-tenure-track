@@ -130,6 +130,7 @@ export class Game {
         ],
       },
     };
+    this.endIfTimeUp();
   }
 
   // Spend time on a location-bound action, drawing down the budget.
@@ -138,11 +139,28 @@ export class Game {
     const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
     if (pts === 0) return;
     this.allocation = { ...this.allocation, [category]: this.allocation[category] + pts };
+    this.endIfTimeUp();
   }
 
   // Pour the rest of the turn into one action.
   actMax(category: ActionCategory): void {
     this.act(category, this.timeRemaining);
+  }
+
+  // Let the rest of the day pass as rest, ending the turn. This is how a turn
+  // ends when time remains — there is no "end turn" button.
+  relax(): void {
+    if (!this.state) return;
+    const rest = this.timeRemaining;
+    if (rest > 0) {
+      this.allocation = { ...this.allocation, personal: this.allocation.personal + rest };
+    }
+    this.commit();
+  }
+
+  // The turn ends automatically once its clock is spent.
+  private endIfTimeUp(): void {
+    if (this.state && this.timeRemaining <= 0) this.commit();
   }
 
   newGame(): void {

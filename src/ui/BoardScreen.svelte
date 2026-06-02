@@ -21,7 +21,7 @@
     onMove?: (id: LocationId) => void;
     onAct?: (category: ActionCategory, points: number) => void;
     onActMax?: (category: ActionCategory) => void;
-    onEndTurn?: () => void;
+    onRelax?: () => void;
     onCohort?: () => void;
   }
 
@@ -35,7 +35,7 @@
     onMove,
     onAct,
     onActMax,
-    onEndTurn,
+    onRelax,
     onCohort,
   }: Props = $props();
 
@@ -83,9 +83,12 @@
   {/if}
 
   <nav class="board-actions" aria-label="Turn controls">
-    <button type="button" class="primary" onclick={() => onEndTurn?.()}>End turn</button>
+    <button type="button" class="primary" onclick={() => onRelax?.()}>
+      Relax (let the rest of the day pass)
+    </button>
     <button type="button" onclick={() => onCohort?.()}>Cohort</button>
   </nav>
+  <p class="time-note">The day ends on its own once your time runs out.</p>
 </section>
 
 <style>
@@ -163,6 +166,11 @@
   .board-actions .primary {
     background: var(--accent);
     color: var(--accent-text);
+  }
+  .time-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
   }
   button:disabled {
     opacity: 0.5;

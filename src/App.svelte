@@ -67,7 +67,7 @@
       onMove={(id) => game.moveTo(id)}
       onAct={(category, points) => game.act(category, points)}
       onActMax={(category) => game.actMax(category)}
-      onEndTurn={() => game.commit()}
+      onRelax={() => game.relax()}
       onCohort={() => game.showCohort()}
     />
     <details class="standing">

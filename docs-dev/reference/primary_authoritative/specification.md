@@ -1,6 +1,6 @@
 # Stuck on the Tenure Track — Specification
 
-Version: 1.7
+Version: 1.8
 Last updated: 2026-06-02
 Status: Binding project specification
 
@@ -154,7 +154,7 @@ Career-stage turn budget, subject to playtesting:
 
 The engine must support calendar-conditional events: exam weeks, summer recruitment difficulty, salary/stipend events, grant-call dates, and conference seasons. Events should use calendar dates or career-stage windows rather than assuming a globally fixed turn length.
 
-Within a turn, the player moves across a campus/life board (§4.11) and spends the turn's time-point budget at locations. A turn remains an abstract, long career step — the per-stage 6–12 month calendar above is unchanged — so movement between locations is an **abstract context-switching cost** against the time budget, not literal travel time. Spreading attention across many locations in a turn costs more than staying focused; a single move is cheap. Movement should create meaningful opportunity costs without becoming a route-optimisation puzzle.
+Within a turn, the player moves across a campus/life board (§4.11) and spends the turn's time points at locations. The time points are the turn's **clock**: travelling between locations, doing activities, relaxing, and attending timed appointments (§4.11a) all draw it down, and the turn **resolves automatically when the clock reaches zero** — there is no manual "end turn". A player who wants to stop early can relax to let the rest of the time pass. A turn remains an abstract, long career step — the per-stage 6–12 month calendar above is unchanged — so this within-turn clock is a game abstraction rather than literal hours. Travel between board locations costs time in proportion to distance; relaxing/resting reduces stress (§4.1).
 
 ---
 
