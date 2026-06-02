@@ -1,0 +1,16 @@
+# Layer-3 social psychology pack metadata (specification §2, §7). Parent is the
+# psychology discipline. Sub-discipline skeleton only.
+meta:
+  id: social
+  name: Social psychology
+  layer: sub-discipline
+  parent: psychology
+
+focus: >-
+  Attitudes, the self, groups, prejudice, and influence — studied with vignettes,
+  scales, and the occasional field study that survives peer review.
+signature_method_ids:
+  - vignette_experiment
+  - implicit_association_test
+  - economic_games
+  - field_experiment

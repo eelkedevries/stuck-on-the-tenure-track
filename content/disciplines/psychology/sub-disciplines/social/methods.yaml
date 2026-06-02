@@ -1,0 +1,27 @@
+# Layer-3 social psychology methods (specification §2, §7). Sub-discipline
+# signature methods; supplements the discipline list. British English.
+meta:
+  id: social-methods
+  name: Social psychology methods
+  layer: sub-discipline
+  parent: social
+
+methods:
+  - id: vignette_experiment
+    name: Vignette experiment
+    notes: A short scenario, a manipulation buried in one adjective, and a seven-point scale.
+  - id: implicit_association_test
+    name: Implicit Association Test
+    notes: Measures something quickly; a decade of papers argues about precisely what.
+  - id: economic_games
+    name: Economic games
+    notes: Dictator, ultimatum, and trust — cooperation priced in laboratory pennies.
+  - id: dyadic_interaction
+    name: Dyadic interaction coding
+    notes: Two participants, four cameras, and a coding scheme that takes a term to learn.
+  - id: field_experiment
+    name: Field experiment
+    notes: Real behaviour, real noise, and a reviewer who wants you to run it again indoors.
+  - id: social_network_analysis
+    name: Social network analysis
+    notes: Nodes, edges, and a graph that looks profound at twelve metres.

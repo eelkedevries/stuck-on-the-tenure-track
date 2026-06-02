@@ -1,0 +1,30 @@
+# Layer-3 (social) events (specification §2, §7). The first event overrides the
+# psychology Layer-2 `methods_dispute` under layer precedence; the rest are
+# social-only supplements. No broad-psychology events here.
+meta:
+  id: social
+  name: Social psychology
+  layer: sub-discipline
+  parent: psychology
+events:
+  - event_id: methods_dispute
+    title: A methods dispute breaks out
+    body: >-
+      A blog post takes apart your moderation analysis and your choice of
+      covariates. By lunchtime it has a hashtag; by Friday it has a special
+      issue.
+    tags: [research, methods, reputation, social]
+
+  - event_id: priming_effect_evaporates
+    title: A classic effect evaporates
+    body: >-
+      A large, preregistered study finds your textbook social-priming effect is,
+      at best, a rounding error. The textbook, alas, has already gone to print.
+    tags: [research, reputation, social]
+
+  - event_id: scale_validation_request
+    title: "Reviewers want the scale validated"
+    body: >-
+      Your nine-item measure works beautifully. The reviewers would simply like
+      a separate paper establishing that, ideally before this one.
+    tags: [research, methods, social]

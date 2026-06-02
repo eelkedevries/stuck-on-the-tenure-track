@@ -1,0 +1,29 @@
+# Layer-3 social psychology journals (specification §2, §4.4, §7). Real names;
+# approximate tiers. Supplements the discipline journal list.
+meta:
+  id: social-journals
+  name: Social psychology journals
+  layer: sub-discipline
+  parent: social
+
+journals:
+  - id: pspb
+    name: Personality and Social Psychology Bulletin
+    tier: 1
+    impact_factor: 3.5
+  - id: jesp
+    name: Journal of Experimental Social Psychology
+    tier: 2
+    impact_factor: 3.1
+  - id: spps
+    name: Social Psychological and Personality Science
+    tier: 2
+    impact_factor: 3.9
+  - id: gpir
+    name: Group Processes & Intergroup Relations
+    tier: 2
+    impact_factor: 2.7
+  - id: journal_of_personality
+    name: Journal of Personality
+    tier: 3
+    impact_factor: 3.6

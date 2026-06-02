@@ -1,0 +1,21 @@
+# Layer-3 social psychology figures (specification §2, §7). Fictional, archetypal
+# field characters. No real living academics are named. British English.
+meta:
+  id: social-figures
+  name: Social psychology figures
+  layer: sub-discipline
+  parent: social
+
+figures:
+  - id: implicit_measures_defender
+    role: The implicit-measures defender
+    description: Concedes the reliability is poor, insists the construct is profound.
+  - id: embodiment_enthusiast
+    role: The embodiment enthusiast
+    description: Once asked a room to hold a warm mug; never quite lived it down.
+  - id: field_evangelist
+    role: The field-study evangelist
+    description: Distrusts anything that happens in a cubicle and says so, warmly.
+  - id: registered_report_convert
+    role: The registered-report convert
+    description: Was the problem in 2011, is the solution now, and has slides about both.
