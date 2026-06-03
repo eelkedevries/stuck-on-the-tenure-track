@@ -7,7 +7,7 @@
   // LocationList are reused unchanged.
   import CampusMap from './CampusMap.svelte';
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
-  import { TURN_TIME_POINTS, type ActionCategory, type Allocation } from '../engine/actions';
+  import { TURN_TIME_POINTS, type ActionCategory } from '../engine/actions';
   import type { BoardActivity } from '../locations/stages';
 
   interface Props {
@@ -16,9 +16,9 @@
     personality: string;
     timeRemaining: number;
     activities: BoardActivity[];
-    spent: Allocation;
+    spent: Record<string, number>;
     onMove?: (id: LocationId) => void;
-    onAct?: (category: ActionCategory, points: number) => void;
+    onAct?: (activityId: string, category: ActionCategory, points: number) => void;
     onRelax?: () => void;
     onCohort?: () => void;
   }
@@ -62,23 +62,29 @@
   <h3>Choose an action here</h3>
   {#if activities.length > 0}
     <ul class="actions">
-      {#each activities as activity, i (activity.label + i)}
+      {#each activities as activity (activity.id)}
         <li>
           <button
             type="button"
             class="action-card"
+            class:priority={activity.badge}
             disabled={timeRemaining < activity.timeCost}
             title={activity.flavour}
-            onclick={() => onAct?.(activity.category, activity.timeCost)}
+            onclick={() => onAct?.(activity.id, activity.category, activity.timeCost)}
           >
             <span class="action-main">
+              {#if activity.badge}<span class="action-badge">{activity.badge}</span>{/if}
               <span class="action-label">{activity.label}</span>
               <span class="action-effect">{activity.effectHint}</span>
+              <span class="effect-preview" aria-label="Likely effects">
+                <span class="effect-group"><span class="effect-title">Helps</span> {activity.positiveEffects.join(' · ')}</span>
+                <span class="effect-group"><span class="effect-title">Costs</span> {activity.negativeEffects.join(' · ')}</span>
+              </span>
               {#if activity.flavour}<span class="action-flavour">{activity.flavour}</span>{/if}
             </span>
             <span class="action-meta">
               <span class="cost">{activity.timeCost}t</span>
-              {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]}t spent</span>{/if}
+              {#if (spent[activity.id] ?? 0) > 0}<span class="spent">{spent[activity.id]}t spent</span>{/if}
             </span>
           </button>
         </li>
@@ -162,6 +168,11 @@
     text-align: left;
     cursor: pointer;
   }
+  .action-card.priority {
+    border-style: double;
+    border-width: 4px;
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  }
   .action-main {
     display: flex;
     flex-direction: column;
@@ -171,6 +182,15 @@
   .action-label {
     font-weight: bold;
   }
+  .action-badge {
+    align-self: flex-start;
+    padding: 0.08rem 0.35rem;
+    border: 1px solid var(--border);
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+  }
   .action-effect,
   .action-flavour {
     color: var(--muted);
@@ -178,6 +198,20 @@
   }
   .action-flavour {
     font-style: italic;
+  }
+  .effect-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    margin-top: 0.1rem;
+    font-size: 0.75rem;
+  }
+  .effect-group {
+    color: var(--muted);
+  }
+  .effect-title {
+    color: var(--text);
+    font-weight: bold;
   }
   .action-meta {
     display: flex;

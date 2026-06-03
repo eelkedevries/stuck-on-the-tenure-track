@@ -25,7 +25,7 @@
 <section class="appointment" class:urgent aria-label="Next appointment">
   <p class="line">
     <strong>{appointment.title}</strong> — at the {locationName}
-    {#if atLocation}<span class="ok">· you're here</span>{/if}
+    {#if atLocation}<span class="ok">· activity available here</span>{/if}
   </p>
   <div class="bar">
     <span class="track"><span class="fill" style="width: {pct}%"></span></span>
