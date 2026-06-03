@@ -11,6 +11,8 @@ import type { Stage } from '../calendar/stages';
 import { LOCATIONS, type LocationId } from './types';
 import type { ActionCategory } from '../engine/actions';
 
+type RoutineBoardCategory = Exclude<ActionCategory, 'misconduct'>;
+
 export interface Activity {
   label: string;
   category: ActionCategory;
@@ -37,7 +39,7 @@ const DEFAULT_VERB: Record<ActionCategory, string> = {
   networking: 'Network',
   funding: 'Work on grants',
   personal: 'Rest',
-  misconduct: 'Cut corners',
+  misconduct: 'Risk cutting corners',
 };
 
 const DEFAULT_TIME_COST: Record<ActionCategory, number> = {
@@ -57,7 +59,7 @@ const DEFAULT_EFFECT_HINT: Record<ActionCategory, string> = {
   networking: 'Warm up contacts and reputation',
   funding: 'Improve grant prospects',
   personal: 'Recover mood, sleep, and stress',
-  misconduct: 'Fast progress, serious risk',
+  misconduct: 'Contextual shortcut; serious detection risk',
 };
 
 const DEFAULT_FLAVOUR: Record<ActionCategory, string> = {
@@ -67,7 +69,7 @@ const DEFAULT_FLAVOUR: Record<ActionCategory, string> = {
   networking: 'A useful conversation beats another unread email.',
   funding: 'Somewhere, a budget spreadsheet becomes marginally less hostile.',
   personal: 'The work will still be there after you breathe.',
-  misconduct: 'This may save time now and cost far more later.',
+  misconduct: 'This is cutting corners: faster now, with consequences if anyone looks closely.',
 };
 
 const DEFAULT_FOCUS: Record<LocationId, string> = {
@@ -382,8 +384,14 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
   },
 };
 
+function isRoutineBoardCategory(category: ActionCategory): category is RoutineBoardCategory {
+  return category !== 'misconduct';
+}
+
 function defaultActivities(id: LocationId): Activity[] {
-  return LOCATIONS[id].actions.map((category) => ({ label: DEFAULT_VERB[category], category }));
+  return LOCATIONS[id].actions
+    .filter(isRoutineBoardCategory)
+    .map((category) => ({ label: DEFAULT_VERB[category], category }));
 }
 
 function withActivityDefaults(activity: Activity): BoardActivity {
