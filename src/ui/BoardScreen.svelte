@@ -8,17 +8,16 @@
   import CampusMap from './CampusMap.svelte';
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
   import { TURN_TIME_POINTS, type ActionCategory, type Allocation } from '../engine/actions';
-  import type { Activity } from '../locations/stages';
+  import type { BoardActivity } from '../locations/stages';
 
   interface Props {
     currentLocation: LocationId;
     focus: string;
     timeRemaining: number;
-    activities: Activity[];
+    activities: BoardActivity[];
     spent: Allocation;
     onMove?: (id: LocationId) => void;
     onAct?: (category: ActionCategory, points: number) => void;
-    onActMax?: (category: ActionCategory) => void;
     onRelax?: () => void;
     onCohort?: () => void;
   }
@@ -31,7 +30,6 @@
     spent,
     onMove,
     onAct,
-    onActMax,
     onRelax,
     onCohort,
   }: Props = $props();
@@ -40,17 +38,6 @@
     ALL_LOCATIONS.find((l) => l.id === currentLocation)?.name ?? currentLocation,
   );
 
-  // Plain-language description of what spending time on each category does, so
-  // the player never has to decode an internal name.
-  const CATEGORY_EFFECT: Record<ActionCategory, string> = {
-    research: 'Build your research and skills',
-    teaching: 'Build teaching experience',
-    service: 'Do admin and earn standing',
-    networking: 'Make contacts and keep relationships warm',
-    funding: 'Work towards grants',
-    personal: 'Rest — eases stress, restores mood and sleep',
-    misconduct: 'Cut corners (risky)',
-  };
 </script>
 
 <section class="board" aria-label="Campus board">
@@ -72,16 +59,23 @@
     <ul class="actions">
       {#each activities as activity, i (activity.label + i)}
         <li>
-          <span class="action-text">
-            <span class="action-label">{activity.label}</span>
-            <span class="action-effect">{CATEGORY_EFFECT[activity.category]}</span>
-            {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]}t spent</span>{/if}
-          </span>
-          <span class="buttons">
-            <button type="button" disabled={timeRemaining < 10} onclick={() => onAct?.(activity.category, 10)}>+10</button>
-            <button type="button" disabled={timeRemaining < 25} onclick={() => onAct?.(activity.category, 25)}>+25</button>
-            <button type="button" disabled={timeRemaining <= 0} onclick={() => onActMax?.(activity.category)}>All</button>
-          </span>
+          <button
+            type="button"
+            class="action-card"
+            disabled={timeRemaining < activity.timeCost}
+            title={activity.flavour}
+            onclick={() => onAct?.(activity.category, activity.timeCost)}
+          >
+            <span class="action-main">
+              <span class="action-label">{activity.label}</span>
+              <span class="action-effect">{activity.effectHint}</span>
+              {#if activity.flavour}<span class="action-flavour">{activity.flavour}</span>{/if}
+            </span>
+            <span class="action-meta">
+              <span class="cost">{activity.timeCost}t</span>
+              {#if spent[activity.category] > 0}<span class="spent">{spent[activity.category]}t spent</span>{/if}
+            </span>
+          </button>
         </li>
       {/each}
     </ul>
@@ -139,34 +133,50 @@
     flex-direction: column;
     gap: 0.4rem;
   }
-  .actions li {
+  .action-card {
+    width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.75rem;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
   }
-  .action-text {
+  .action-main {
     display: flex;
     flex-direction: column;
-    flex: 1 1 12rem;
+    gap: 0.15rem;
+    min-width: 0;
   }
   .action-label {
     font-weight: bold;
   }
-  .action-effect {
+  .action-effect,
+  .action-flavour {
     color: var(--muted);
     font-size: 0.8rem;
+  }
+  .action-flavour {
+    font-style: italic;
+  }
+  .action-meta {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+  }
+  .cost {
+    font-weight: bold;
   }
   .spent {
     color: var(--accent);
     font-size: 0.75rem;
   }
-  .buttons {
-    margin-left: auto;
-    display: flex;
-    gap: 0.25rem;
-  }
-  .buttons button,
   .board-actions button {
     font-family: inherit;
     padding: 0.35rem 0.7rem;
@@ -177,6 +187,7 @@
   }
   .board-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 0.5rem;
   }
@@ -189,7 +200,8 @@
     color: var(--muted);
     font-size: 0.8rem;
   }
-  button:disabled {
+  button:disabled,
+  .action-card:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }

@@ -80,7 +80,6 @@
       spent={game.allocation}
       onMove={(id) => game.moveTo(id)}
       onAct={(category, points) => game.act(category, points)}
-      onActMax={(category) => game.actMax(category)}
       onRelax={() => game.relax()}
       onCohort={() => game.showCohort()}
     />

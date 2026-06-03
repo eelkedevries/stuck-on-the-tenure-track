@@ -21,7 +21,7 @@ import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
 import { type LocationId } from '../locations/types';
 import { travelCost } from '../locations/board';
-import { actionsAtStage, focusAtStage, activitiesAtStage, type Activity } from '../locations/stages';
+import { actionsAtStage, focusAtStage, activitiesAtStage, type BoardActivity } from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
@@ -135,7 +135,7 @@ export class Game {
 
   // The named activities available at the current location for the current
   // stage (§4.11, §3). The board shows these; each maps to an internal category.
-  get activities(): Activity[] {
+  get activities(): BoardActivity[] {
     return activitiesAtStage(this.stage, this.currentLocation);
   }
 
