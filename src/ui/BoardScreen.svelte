@@ -46,7 +46,7 @@
   <header class="board-status">
     <p class="here"><span class="label">At</span> <span class="value">{currentName}</span></p>
     <p class="time">
-      <span class="label">Time left</span>
+      <span class="label">Day left</span>
       <span class="value">{timeRemaining} / {TURN_TIME_POINTS}</span>
     </p>
   </header>
@@ -57,9 +57,9 @@
   </div>
 
   <CampusMap selected={currentLocation} onSelect={(id) => onMove?.(id)} />
-  <p class="movehint">Tap a place to travel there — further away costs more time.</p>
+  <p class="movehint">Tap a place to move the red dot. Travel spends time, so nearby choices are cheaper.</p>
 
-  <h3>Activities here</h3>
+  <h3>Choose an action here</h3>
   {#if activities.length > 0}
     <ul class="actions">
       {#each activities as activity, i (activity.label + i)}
@@ -90,11 +90,11 @@
 
   <nav class="board-actions" aria-label="Turn controls">
     <button type="button" class="primary" onclick={() => onRelax?.()}>
-      Relax (let the rest of the day pass)
+      Rest until the day ends
     </button>
     <button type="button" onclick={() => onCohort?.()}>Cohort</button>
   </nav>
-  <p class="time-note">The day ends on its own once your time runs out.</p>
+  <p class="time-note">Keep spending time, or rest to turn what remains into recovery.</p>
 </section>
 
 <style>

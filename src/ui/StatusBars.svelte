@@ -27,7 +27,7 @@
   }
 
   function stressNote(stress: number): string {
-    if (stress >= 75) return 'stress is dominating the week';
+    if (stress >= 75) return 'stress is dragging on work';
     if (stress >= 50) return 'pressure is noticeable';
     if (stress >= 25) return 'pressure is manageable';
     return 'pressure is low';
@@ -82,7 +82,7 @@
     >
       <span class="fill" style="width: {wellbeingScore}%"></span>
     </div>
-    <p>{stressNote(w.stress)}; sleep, mood, and health are {band(average([w.sleep, w.mood, w.physical]))}.</p>
+    <p>{stressNote(w.stress)}; rest protects sleep, mood, health, and productivity.</p>
   </article>
 
   <article class="track-card skill">
@@ -100,7 +100,7 @@
     >
       <span class="fill" style="width: {skillScore}%"></span>
     </div>
-    <p>Methods, theory, writing, statistics, and teaching combined for display.</p>
+    <p>Higher skills make study, papers, teaching, and grants pay off faster.</p>
   </article>
 
   <article class="track-card standing-track">
@@ -118,7 +118,7 @@
     >
       <span class="fill" style="width: {standingScore}%"></span>
     </div>
-    <p>Reputation, institutional signal, and academic politics combined for display.</p>
+    <p>Visibility and politics help opportunities stick when rivals are close.</p>
   </article>
 </section>
 

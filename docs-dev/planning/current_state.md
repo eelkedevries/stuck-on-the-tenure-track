@@ -116,14 +116,18 @@ bar; attending helps, missing costs stress/reputation (`091`,
 
 Milestone M17 was specified in `074`. It made the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn remains an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has since advanced to version 1.8, and the later feel-pass prompts (`085`–`091`) build on the completed M17 foundation rather than reopening it.
 
-## Next planned work: simplification and fun-factor pass
+## Simplification and fun-factor pass complete (098–105)
 
-The M17 board-game feel work is complete. The next planned work is a
-player-facing simplification and fun-factor pass inspired by *Jones in the Fast
-Lane*. It should make the existing game easier to read and more immediately fun
-without replacing the simulation underneath.
+The M17 board-game feel work and the follow-on player-facing simplification pass
+are complete. Prompt `105` playtested the first three turns and made a small
+polish pass: guidance copy now points players towards concrete board choices and
+appointments, the HUD explains why wellbeing/stress matters without opening raw
+numbers, rival headlines avoid unnecessary raw prestige values, and diary recaps
+better acknowledge mixed work/rest turns without changing the underlying
+simulation. The pass preserved the existing action, event, deadline, appointment,
+rival, save, and health/stress systems.
 
-The pass should focus on:
+The completed pass focused on:
 
 - simplifying the default HUD so the player sees only the information needed for
   the immediate decision, with deeper simulation detail still available on
@@ -141,4 +145,5 @@ The pass should focus on:
   health/stress systems beneath the simpler player-facing layer.
 
 Run one prompt per session per `prompt_execution_guide.md`; do not rerun the
-completed M17 prompts (`074`–`091`).
+completed M17 prompts (`074`–`091`) or the completed simplification prompts
+(`098`–`105`).

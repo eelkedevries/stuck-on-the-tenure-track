@@ -192,6 +192,8 @@ function readableConsequence(
     return `${urgent[0].title} still looms. Avoidance remains undefeated.`;
   if (urgent.length > 0 && top === 'personal')
     return `${urgent[0].title} is close enough to appear in dreams; you chose recovery anyway.`;
+  if (top === 'personal' && totalWork >= 20)
+    return 'You made some career progress, then spent the remaining day on recovery before the machinery noticed.';
   if (top && allocation[top] >= 45) return FOCUS_LINES[top][0];
   if (top) return FOCUS_LINES[top][1];
   if (eventTitles.length > 0)
