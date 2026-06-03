@@ -92,6 +92,7 @@
     <BoardScreen
       currentLocation={game.currentLocation}
       focus={game.currentFocus}
+      personality={game.currentPersonality}
       timeRemaining={game.timeRemaining}
       activities={game.activities}
       spent={game.allocation}

@@ -26,6 +26,7 @@ export interface BoardActivity extends Activity {
 
 interface StageLocation {
   focus: string;
+  personality?: string;
   activities: Activity[];
 }
 
@@ -83,6 +84,20 @@ const DEFAULT_FOCUS: Record<LocationId, string> = {
   health_centre: 'Look after yourself',
 };
 
+const DEFAULT_PERSONALITY: Record<LocationId, string> = {
+  office: 'The inbox has tenure; you are merely visiting.',
+  lab: 'Machines hum, protocols drift, and someone has labelled nothing.',
+  library: 'A quiet empire of paywalls, overdue books, and good intentions.',
+  classroom: 'The projector negotiates while thirty faces assess your confidence.',
+  seminar_room: 'Questions begin as comments and end as autobiography.',
+  cafe_pub: 'Collaboration, gossip, and hiring intelligence share a table.',
+  home: 'Recovery is possible, provided you ignore the laptop blinking at you.',
+  conference_venue: 'Name badges, weak coffee, and strategic enthusiasm under strip lighting.',
+  funder_portal: 'Prestige is mandatory; attachments must be both final and resubmitted.',
+  gym_outdoors: 'Fresh air makes a polite case against another hour of email.',
+  health_centre: 'Forms, triage, and the rare relief of being believed by procedure.',
+};
+
 const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocation>>>> = {
   undergraduate: {
     classroom: {
@@ -119,10 +134,12 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'Scholarships',
+      personality: 'The portal explains need in a dialect of eligibility and prestige.',
       activities: [{ label: 'Look up scholarships', category: 'networking' }],
     },
     home: {
       focus: 'Rest and study',
+      personality: 'A duvet, a textbook, and the sense you should be better at both.',
       activities: [
         { label: 'Rest', category: 'personal' },
         { label: 'Study at home', category: 'research' },
@@ -172,10 +189,12 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'PhD funding',
+      personality: 'Every scheme wants potential, excellence, and a PDF named exactly right.',
       activities: [{ label: 'Look up PhD funding', category: 'networking' }],
     },
     home: {
       focus: 'Rest and write',
+      personality: 'The kettle offers care; the thesis offers a tab still open.',
       activities: [
         { label: 'Rest', category: 'personal' },
         { label: 'Write at home', category: 'research' },
@@ -226,6 +245,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'Small grants',
+      personality: 'The portal applauds ambition, then asks for a cost code you do not have.',
       activities: [{ label: 'Apply for a small grant', category: 'funding' }],
     },
     cafe_pub: {
@@ -237,6 +257,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     home: {
       focus: 'Recover, and feel thesis guilt',
+      personality: 'Rest is allowed, though the thesis has filed an objection.',
       activities: [
         { label: 'Rest', category: 'personal' },
         { label: 'Write at home', category: 'research' },
@@ -276,6 +297,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'Fellowships',
+      personality: 'Independence must be proven in three pages and institutional letterhead.',
       activities: [{ label: 'Apply for a fellowship', category: 'funding' }],
     },
     cafe_pub: {
@@ -287,6 +309,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     home: {
       focus: 'Relocation stress',
+      personality: 'Half the boxes are books; the other half are unresolved career moves.',
       activities: [
         { label: 'Rest', category: 'personal' },
         { label: 'Write at home', category: 'research' },
@@ -330,6 +353,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'ERC / NWO-style grants',
+      personality: 'Excellence, impact, feasibility, and one more annex before midnight.',
       activities: [
         {
           label: 'Submit a major grant',
@@ -349,6 +373,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     home: {
       focus: 'Manage the work–life collapse',
+      personality: 'The sofa recognises you, but your calendar has concerns.',
       activities: [
         { label: 'Rest', category: 'personal' },
         { label: 'Catch up on email', category: 'service' },
@@ -377,6 +402,10 @@ export function activitiesAtStage(stage: Stage, id: LocationId): BoardActivity[]
 
 export function focusAtStage(stage: Stage, id: LocationId): string {
   return STAGE_BOARD[stage]?.[id]?.focus ?? DEFAULT_FOCUS[id];
+}
+
+export function personalityAtStage(stage: Stage, id: LocationId): string {
+  return STAGE_BOARD[stage]?.[id]?.personality ?? DEFAULT_PERSONALITY[id];
 }
 
 export function actionsAtStage(stage: Stage, id: LocationId): ActionCategory[] {

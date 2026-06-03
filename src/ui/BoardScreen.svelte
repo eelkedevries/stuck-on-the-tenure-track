@@ -13,6 +13,7 @@
   interface Props {
     currentLocation: LocationId;
     focus: string;
+    personality: string;
     timeRemaining: number;
     activities: BoardActivity[];
     spent: Allocation;
@@ -25,6 +26,7 @@
   let {
     currentLocation,
     focus,
+    personality,
     timeRemaining,
     activities,
     spent,
@@ -49,7 +51,10 @@
     </p>
   </header>
 
-  <p class="focus">{focus}</p>
+  <div class="location-copy">
+    <p class="focus">{focus}</p>
+    <p class="personality">{personality}</p>
+  </div>
 
   <CampusMap selected={currentLocation} onSelect={(id) => onMove?.(id)} />
   <p class="movehint">Tap a place to travel there — further away costs more time.</p>
@@ -120,10 +125,21 @@
     font-size: 0.8rem;
     text-align: center;
   }
-  .focus {
+  .location-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .focus,
+  .personality {
     margin: 0;
-    font-style: italic;
     color: var(--muted);
+  }
+  .focus {
+    font-style: italic;
+  }
+  .personality {
+    font-size: 0.85rem;
   }
   .actions {
     list-style: none;

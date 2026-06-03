@@ -21,7 +21,13 @@ import { resolveEvents } from '../content/inheritance';
 import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
 import { type LocationId } from '../locations/types';
 import { travelCost } from '../locations/board';
-import { actionsAtStage, focusAtStage, activitiesAtStage, type BoardActivity } from '../locations/stages';
+import {
+  actionsAtStage,
+  focusAtStage,
+  personalityAtStage,
+  activitiesAtStage,
+  type BoardActivity,
+} from '../locations/stages';
 import { scheduleDeadlines } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
@@ -147,6 +153,12 @@ export class Game {
   // A short, stage-specific description of what this location is for now.
   get currentFocus(): string {
     return focusAtStage(this.stage, this.currentLocation);
+  }
+
+  // A concise personality line for the current place, keeping the board lively
+  // without changing actions or effects.
+  get currentPersonality(): string {
+    return personalityAtStage(this.stage, this.currentLocation);
   }
 
   // The pending deadlines, for the pressure board (§4.11a).
