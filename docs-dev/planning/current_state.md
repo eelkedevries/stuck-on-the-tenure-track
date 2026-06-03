@@ -130,7 +130,9 @@ The pass should focus on:
   demand;
 - making board actions more concrete and recognisable, so locations feel like
   places where specific academic-life things happen rather than abstract stat
-  controls;
+  controls — prompt `099` replaced the old `+10`/`+25`/`All` allocation controls
+  with concise fixed-cost activity cards backed by per-activity cost, hint, and
+  flavour metadata;
 - making each turn's immediate objective clearer before the player starts moving
   around the board;
 - making rivals and diary recaps more prominent, so the cohort story stays

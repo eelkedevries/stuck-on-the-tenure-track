@@ -14,6 +14,14 @@ import type { ActionCategory } from '../engine/actions';
 export interface Activity {
   label: string;
   category: ActionCategory;
+  timeCost?: number;
+  effectHint?: string;
+  flavour?: string;
+}
+
+export interface BoardActivity extends Activity {
+  timeCost: number;
+  effectHint: string;
 }
 
 interface StageLocation {
@@ -29,6 +37,36 @@ const DEFAULT_VERB: Record<ActionCategory, string> = {
   funding: 'Work on grants',
   personal: 'Rest',
   misconduct: 'Cut corners',
+};
+
+const DEFAULT_TIME_COST: Record<ActionCategory, number> = {
+  research: 25,
+  teaching: 25,
+  service: 20,
+  networking: 15,
+  funding: 30,
+  personal: 20,
+  misconduct: 25,
+};
+
+const DEFAULT_EFFECT_HINT: Record<ActionCategory, string> = {
+  research: 'Build research skill and outputs',
+  teaching: 'Gain teaching experience',
+  service: 'Earn departmental standing',
+  networking: 'Warm up contacts and reputation',
+  funding: 'Improve grant prospects',
+  personal: 'Recover mood, sleep, and stress',
+  misconduct: 'Fast progress, serious risk',
+};
+
+const DEFAULT_FLAVOUR: Record<ActionCategory, string> = {
+  research: 'A small but real step towards the next line on the CV.',
+  teaching: 'Students notice when you are prepared.',
+  service: 'The invisible work is, unfortunately, still work.',
+  networking: 'A useful conversation beats another unread email.',
+  funding: 'Somewhere, a budget spreadsheet becomes marginally less hostile.',
+  personal: 'The work will still be there after you breathe.',
+  misconduct: 'This may save time now and cost far more later.',
 };
 
 const DEFAULT_FOCUS: Record<LocationId, string> = {
@@ -155,8 +193,13 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     lab: {
       focus: 'Run studies',
       activities: [
-        { label: 'Run a study', category: 'research' },
-        { label: 'Collect data', category: 'research' },
+        {
+          label: 'Run a study',
+          category: 'research',
+          timeCost: 35,
+          effectHint: 'Big push towards research output',
+        },
+        { label: 'Collect data', category: 'research', timeCost: 30 },
       ],
     },
     office: {
@@ -262,9 +305,9 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     office: {
       focus: 'Admin, grants, reviewer reports',
       activities: [
-        { label: 'Write a grant', category: 'funding' },
-        { label: 'Admin', category: 'service' },
-        { label: 'Write a paper', category: 'research' },
+        { label: 'Write a grant', category: 'funding', timeCost: 35 },
+        { label: 'Admin', category: 'service', timeCost: 15 },
+        { label: 'Write a paper', category: 'research', timeCost: 30 },
       ],
     },
     library: {
@@ -287,7 +330,15 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     funder_portal: {
       focus: 'ERC / NWO-style grants',
-      activities: [{ label: 'Submit a major grant', category: 'funding' }],
+      activities: [
+        {
+          label: 'Submit a major grant',
+          category: 'funding',
+          timeCost: 40,
+          effectHint: 'Major grant push',
+          flavour: 'Upload, reload, and hope the portal agrees you exist.',
+        },
+      ],
     },
     cafe_pub: {
       focus: 'Department politics',
@@ -310,8 +361,18 @@ function defaultActivities(id: LocationId): Activity[] {
   return LOCATIONS[id].actions.map((category) => ({ label: DEFAULT_VERB[category], category }));
 }
 
-export function activitiesAtStage(stage: Stage, id: LocationId): Activity[] {
-  return STAGE_BOARD[stage]?.[id]?.activities ?? defaultActivities(id);
+function withActivityDefaults(activity: Activity): BoardActivity {
+  return {
+    ...activity,
+    timeCost: activity.timeCost ?? DEFAULT_TIME_COST[activity.category],
+    effectHint: activity.effectHint ?? DEFAULT_EFFECT_HINT[activity.category],
+    flavour: activity.flavour ?? DEFAULT_FLAVOUR[activity.category],
+  };
+}
+
+export function activitiesAtStage(stage: Stage, id: LocationId): BoardActivity[] {
+  const activities = STAGE_BOARD[stage]?.[id]?.activities ?? defaultActivities(id);
+  return activities.map(withActivityDefaults);
 }
 
 export function focusAtStage(stage: Stage, id: LocationId): string {
