@@ -18,6 +18,7 @@
   import CohortScreen from './ui/CohortScreen.svelte';
   import CvScreen from './ui/CvScreen.svelte';
   import { cohortTracker } from './rivals/cohort';
+  import { rivalHeadline } from './rivals/headline';
   import { buildCv } from './ui/cv';
   import { Game } from './ui/game.svelte';
   import type { Stage } from './calendar/stages';
@@ -57,6 +58,10 @@
     />
   {:else if game.view === 'turn' && game.state}
     <p class="objective">🎓 Be the first of your cohort to win tenure.</p>
+    {@const headline = rivalHeadline(cohortTracker(game.rivals), game.state.calendar.turn_number)}
+    {#if headline}
+      <p class="rival-headline">{headline}</p>
+    {/if}
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
     <p class="hint">Move around campus and spend your time; the day ends when your time runs out.</p>
     <ThisTermPanel
@@ -118,6 +123,13 @@
   .objective {
     margin: 0 0 0.1rem;
     font-weight: bold;
+  }
+  .rival-headline {
+    margin: 0 0 0.25rem;
+    border-left: 3px solid var(--accent);
+    padding-left: 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
   }
   .situation {
     margin: 0 0 0.25rem;
