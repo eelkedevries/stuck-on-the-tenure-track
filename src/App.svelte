@@ -13,6 +13,7 @@
   import StatusBars from './ui/StatusBars.svelte';
   import AppointmentBar from './ui/AppointmentBar.svelte';
   import DeadlineBoard from './ui/DeadlineBoard.svelte';
+  import ThisTermPanel from './ui/ThisTermPanel.svelte';
   import DiaryScreen from './ui/DiaryScreen.svelte';
   import CohortScreen from './ui/CohortScreen.svelte';
   import CvScreen from './ui/CvScreen.svelte';
@@ -58,6 +59,17 @@
     <p class="objective">🎓 Be the first of your cohort to win tenure.</p>
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
     <p class="hint">Move around campus and spend your time; the day ends when your time runs out.</p>
+    <ThisTermPanel
+      player={game.state.player}
+      stage={game.stage}
+      subGoal={game.subGoal}
+      deadlines={game.deadlines}
+      currentDate={game.state.calendar.current_date}
+      appointment={game.nextAppointment}
+      elapsed={game.elapsed}
+      currentLocation={game.currentLocation}
+      allocation={game.allocation}
+    />
     <StatusBars
       player={game.state.player}
       tenureProgress={game.tenureProgress}
