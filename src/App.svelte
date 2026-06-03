@@ -61,7 +61,7 @@
     <StatusBars
       player={game.state.player}
       tenureProgress={game.tenureProgress}
-      subGoalLabel={game.subGoalLabel}
+      subGoal={game.subGoal}
       subGoalProgress={game.subGoalProgress}
     />
     {#if game.nextAppointment}

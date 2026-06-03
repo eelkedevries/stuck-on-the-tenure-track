@@ -17,10 +17,15 @@ import { advanceDeadlines } from '../deadlines/deadlines';
 // grants, health, relationships) are applied by `applyOutcomes`.
 export function applyActions(state: SaveGame, allocation: Allocation): SaveGame {
   const expertise = { ...state.player.expertise };
+  // Studying/researching builds a spread of academic skills, so the player can
+  // work toward the stage sub-goals (theory, methods, statistics, writing) by
+  // studying — not only through chance events.
   expertise.methods += Math.floor(allocation.research / 25);
+  expertise.theory += Math.floor(allocation.research / 40);
+  expertise.statistics += Math.floor(allocation.research / 45);
+  expertise.writing += Math.floor(allocation.research / 50) + Math.floor(allocation.funding / 50);
   expertise.teaching += Math.floor(allocation.teaching / 25);
   expertise.politics += Math.floor((allocation.networking + allocation.service) / 50);
-  expertise.writing += Math.floor(allocation.funding / 50);
 
   return { ...state, player: { ...state.player, expertise } };
 }

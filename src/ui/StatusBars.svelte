@@ -4,15 +4,16 @@
   // mood, physical health, and progress toward tenure. Values are shown as text
   // as well as bar width (not colour alone). Presentational.
   import type { PlayerState } from '../state/types';
+  import { criterionMet, type SubGoal } from '../milestones/subgoals';
 
   interface Props {
     player: PlayerState;
     tenureProgress: number;
-    subGoalLabel: string;
+    subGoal: SubGoal;
     subGoalProgress: number;
   }
 
-  let { player, tenureProgress, subGoalLabel, subGoalProgress }: Props = $props();
+  let { player, tenureProgress, subGoal, subGoalProgress }: Props = $props();
 
   const w = $derived(player.wellbeing);
   const stressHigh = $derived(w.stress >= 70);
@@ -44,7 +45,16 @@
     <span class="num">{w.physical}</span>
   </div>
   <div class="goals">
-    <p class="goalnow">Right now — {subGoalLabel}</p>
+    <p class="goalnow">Right now — earn {subGoal.title}</p>
+    <ul class="criteria">
+      {#each subGoal.criteria as c (c.label)}
+        <li class:met={criterionMet(c)}>
+          <span class="tick">{criterionMet(c) ? '✓' : '▢'}</span>
+          {c.label}
+          <span class="cnum">{Math.round(c.current)}/{c.target}</span>
+        </li>
+      {/each}
+    </ul>
     <div class="bar subgoal">
       <span class="label">This stage</span>
       <span class="track"><span class="fill" style="width: {subGoalProgress}%"></span></span>
@@ -116,6 +126,27 @@
     margin: 0;
     font-size: 0.85rem;
     font-weight: bold;
+  }
+  .criteria {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.9rem;
+    font-size: 0.8rem;
+  }
+  .criteria li {
+    color: var(--muted);
+  }
+  .criteria li.met {
+    color: var(--text);
+  }
+  .tick {
+    font-weight: bold;
+  }
+  .cnum {
+    color: var(--muted);
   }
   .warning {
     margin: 0;
