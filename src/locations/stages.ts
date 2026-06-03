@@ -14,6 +14,7 @@ import type { ActionCategory } from '../engine/actions';
 type RoutineBoardCategory = Exclude<ActionCategory, 'misconduct'>;
 
 export interface Activity {
+  id?: string;
   label: string;
   category: ActionCategory;
   timeCost?: number;
@@ -22,8 +23,12 @@ export interface Activity {
 }
 
 export interface BoardActivity extends Activity {
+  id: string;
   timeCost: number;
   effectHint: string;
+  positiveEffects: string[];
+  negativeEffects: string[];
+  badge?: string;
 }
 
 interface StageLocation {
@@ -60,6 +65,26 @@ const DEFAULT_EFFECT_HINT: Record<ActionCategory, string> = {
   funding: 'Improve grant prospects',
   personal: 'Lower stress; protect sleep and mood',
   misconduct: 'Contextual shortcut; serious detection risk',
+};
+
+const DEFAULT_POSITIVE_EFFECTS: Record<ActionCategory, string[]> = {
+  research: ['Skill +', 'Career +'],
+  teaching: ['Teaching +', 'Standing +'],
+  service: ['Standing +'],
+  networking: ['Contacts +', 'Reputation +'],
+  funding: ['Grant chance +', 'Career +'],
+  personal: ['Wellbeing +', 'Stress −'],
+  misconduct: ['Short-term progress +'],
+};
+
+const DEFAULT_NEGATIVE_EFFECTS: Record<ActionCategory, string[]> = {
+  research: ['Stress +', 'Sleep −'],
+  teaching: ['Stress +', 'Prep time −'],
+  service: ['Time −', 'Energy −'],
+  networking: ['Energy −'],
+  funding: ['Stress +', 'Rejection risk'],
+  personal: ['Career pace −'],
+  misconduct: ['Detection risk', 'Standing −'],
 };
 
 const DEFAULT_FLAVOUR: Record<ActionCategory, string> = {
@@ -394,18 +419,28 @@ function defaultActivities(id: LocationId): Activity[] {
     .map((category) => ({ label: DEFAULT_VERB[category], category }));
 }
 
-function withActivityDefaults(activity: Activity): BoardActivity {
+function slug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function withActivityDefaults(activity: Activity, stage: Stage, location: LocationId, index: number): BoardActivity {
   return {
     ...activity,
+    id: activity.id ?? `${stage}:${location}:${slug(activity.label)}:${activity.category}:${index}`,
     timeCost: activity.timeCost ?? DEFAULT_TIME_COST[activity.category],
     effectHint: activity.effectHint ?? DEFAULT_EFFECT_HINT[activity.category],
     flavour: activity.flavour ?? DEFAULT_FLAVOUR[activity.category],
+    positiveEffects: DEFAULT_POSITIVE_EFFECTS[activity.category],
+    negativeEffects: DEFAULT_NEGATIVE_EFFECTS[activity.category],
   };
 }
 
 export function activitiesAtStage(stage: Stage, id: LocationId): BoardActivity[] {
   const activities = STAGE_BOARD[stage]?.[id]?.activities ?? defaultActivities(id);
-  return activities.map(withActivityDefaults);
+  return activities.map((activity, index) => withActivityDefaults(activity, stage, id, index));
 }
 
 export function focusAtStage(stage: Stage, id: LocationId): string {

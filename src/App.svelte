@@ -63,7 +63,7 @@
       <p class="rival-headline">{headline}</p>
     {/if}
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
-    <p class="hint">Choose concrete actions on the campus board; if an appointment appears, be there before its bar empties.</p>
+    <p class="hint">Choose concrete actions on the campus board; if an appointment appears, go there and spend time on its highlighted activity before the bar empties.</p>
     <ThisTermPanel
       player={game.state.player}
       stage={game.stage}
@@ -95,9 +95,9 @@
       personality={game.currentPersonality}
       timeRemaining={game.timeRemaining}
       activities={game.activities}
-      spent={game.allocation}
+      spent={game.activitySpent}
       onMove={(id) => game.moveTo(id)}
-      onAct={(category, points) => game.act(category, points)}
+      onAct={(activityId, category, points) => game.act(activityId, category, points)}
       onRelax={() => game.relax()}
       onCohort={() => game.showCohort()}
     />

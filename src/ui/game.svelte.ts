@@ -22,13 +22,12 @@ import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent }
 import { type LocationId } from '../locations/types';
 import { travelCost } from '../locations/board';
 import {
-  actionsAtStage,
   focusAtStage,
   personalityAtStage,
   activitiesAtStage,
   type BoardActivity,
 } from '../locations/stages';
-import { scheduleDeadlines } from '../deadlines/deadlines';
+import { scheduleDeadlines, urgencyFor } from '../deadlines/deadlines';
 import type { Deadline } from '../deadlines/types';
 import { buildRecap, type Recap } from './recap';
 import { rivalSighting } from '../rivals/sightings';
@@ -40,6 +39,72 @@ import { scheduleAppointments, type Appointment } from '../appointments/appointm
 const ALL_PACKS = loadAllPacks();
 const EVENT_TITLE = new Map([...resolveEvents(ALL_PACKS).values()].map((e) => [e.event_id, e.title]));
 
+function appointmentCategory(type: Appointment['type']): ActionCategory {
+  switch (type) {
+    case 'grant_interview':
+      return 'funding';
+    case 'meeting':
+      return 'networking';
+    case 'lecture':
+    case 'exam':
+      return 'research';
+  }
+}
+
+function appointmentBadge(type: Appointment['type']): string {
+  switch (type) {
+    case 'lecture':
+      return 'Lecture due now';
+    case 'exam':
+      return 'Exam due now';
+    case 'grant_interview':
+      return 'Interview due now';
+    case 'meeting':
+      return 'Meeting due now';
+  }
+}
+
+function deadlineLink(type: Deadline['type']): {
+  location: LocationId;
+  category: ActionCategory;
+  timeCost: number;
+  effectHint: string;
+  positiveEffects: string[];
+  negativeEffects: string[];
+} | null {
+  switch (type) {
+    case 'grant_call':
+      return {
+        location: 'funder_portal',
+        category: 'funding',
+        timeCost: 30,
+        effectHint: 'Push the grant call before it closes',
+        positiveEffects: ['Grant chance +', 'Career +'],
+        negativeEffects: ['Stress +', 'Time −'],
+      };
+    case 'teaching_prep':
+      return {
+        location: 'classroom',
+        category: 'teaching',
+        timeCost: 25,
+        effectHint: 'Prepare teaching before the deadline',
+        positiveEffects: ['Teaching +', 'Standing +'],
+        negativeEffects: ['Stress +', 'Time −'],
+      };
+    case 'milestone':
+      return {
+        location: 'seminar_room',
+        category: 'research',
+        timeCost: 30,
+        effectHint: 'Make a focused push towards this career milestone',
+        positiveEffects: ['Career +', 'Skill +'],
+        negativeEffects: ['Stress +', 'Sleep −'],
+      };
+    default:
+      return null;
+  }
+}
+
 export type View = 'start' | 'intro' | 'event' | 'turn' | 'recap' | 'allocate' | 'cohort' | 'end';
 
 interface EventLogEntry {
@@ -48,6 +113,8 @@ interface EventLogEntry {
   date: string;
 }
 
+export type ActivitySpent = Record<string, number>;
+
 export class Game {
   state = $state<SaveGame | null>(null);
   allocation = $state<Allocation>(emptyAllocation());
@@ -55,6 +122,7 @@ export class Game {
   pendingEvents = $state<SelectedEvent[]>([]);
   recap = $state<Recap | null>(null);
   appointments = $state<Appointment[]>([]);
+  activitySpent = $state<ActivitySpent>({});
   // Travel time spent this turn (not an action category).
   movementSpent = $state(0);
   private lastCategories: ActionCategory[] = [];
@@ -93,22 +161,32 @@ export class Game {
     );
   }
 
-  // Resolve any appointments whose time has now passed: present → attended,
-  // absent → missed (stress up, reputation cost). Called whenever the clock moves.
+  // Resolve appointments whose time has passed without the player explicitly
+  // spending time on the linked activity. Being in the right room is a prompt,
+  // not automatic attendance.
   private resolveAppointments(): void {
     const cur = this.state;
     if (!cur) return;
     const elapsed = this.elapsed;
-    const here = cur.board.current_location;
     let s = cur;
     this.appointments = this.appointments.map((a) => {
       if (a.status !== 'pending' || a.at_tp > elapsed) return a;
-      if (a.location === here) {
-        s = applyEventEffects(s, { reputation: 1, mood: 1 });
-        return { ...a, status: 'attended' as const };
-      }
       s = applyEventEffects(s, { reputation: -2, stress: 10 });
       return { ...a, status: 'missed' as const };
+    });
+    this.state = s;
+  }
+
+  private attendAppointment(activityId: string, elapsedAtStart: number): void {
+    const cur = this.state;
+    if (!cur || !activityId.startsWith('appointment:')) return;
+    const appointmentId = activityId.slice('appointment:'.length);
+    let s = cur;
+    this.appointments = this.appointments.map((a) => {
+      if (a.appointment_id !== appointmentId || a.status !== 'pending') return a;
+      if (a.location !== cur.board.current_location || elapsedAtStart > a.at_tp) return a;
+      s = applyEventEffects(s, { reputation: 1, mood: 1 });
+      return { ...a, status: 'attended' as const };
     });
     this.state = s;
   }
@@ -142,12 +220,58 @@ export class Game {
   // The named activities available at the current location for the current
   // stage (§4.11, §3). The board shows these; each maps to an internal category.
   get activities(): BoardActivity[] {
-    return activitiesAtStage(this.stage, this.currentLocation);
+    const routine = activitiesAtStage(this.stage, this.currentLocation);
+    return [...this.appointmentActivities(), ...this.deadlineActivities(), ...routine];
   }
 
   // The underlying action categories available here (used to validate spending).
   get availableActions(): ActionCategory[] {
-    return actionsAtStage(this.stage, this.currentLocation);
+    return [...new Set(this.activities.map((a) => a.category))];
+  }
+
+  private appointmentActivities(): BoardActivity[] {
+    return this.appointments
+      .filter((a) => a.status === 'pending' && a.location === this.currentLocation)
+      .map((a) => {
+        const category = appointmentCategory(a.type);
+        return {
+          id: `appointment:${a.appointment_id}`,
+          label: a.title,
+          category,
+          timeCost: Math.min(20, Math.max(10, this.timeRemaining)),
+          effectHint: 'Attend this timed commitment before its bar empties',
+          flavour: 'Being here is not enough — spend time on this to count it.',
+          positiveEffects: ['Attendance +', 'Standing +'],
+          negativeEffects: ['Time −', 'Stress if missed'],
+          badge: appointmentBadge(a.type),
+        };
+      });
+  }
+
+  private deadlineActivities(): BoardActivity[] {
+    const currentDate = this.state?.calendar.current_date;
+    if (!currentDate) return [];
+    return this.deadlines
+      .filter((d) => {
+        const linked = deadlineLink(d.type);
+        if (!linked || linked.location !== this.currentLocation) return false;
+        return urgencyFor(d, currentDate) === 'due_now' || urgencyFor(d, currentDate) === 'overdue';
+      })
+      .map((d) => {
+        const linked = deadlineLink(d.type);
+        if (!linked) throw new Error('Deadline link disappeared');
+        return {
+          id: `deadline:${d.deadline_id}`,
+          label: d.title,
+          category: linked.category,
+          timeCost: linked.timeCost,
+          effectHint: linked.effectHint,
+          flavour: 'Spend time on this before the turn resolves, or it may count as missed.',
+          positiveEffects: linked.positiveEffects,
+          negativeEffects: linked.negativeEffects,
+          badge: 'Deadline activity',
+        };
+      });
   }
 
   // A short, stage-specific description of what this location is for now.
@@ -192,19 +316,26 @@ export class Game {
     this.endIfTimeUp();
   }
 
-  // Spend time on a location-bound action, drawing down the budget.
-  act(category: ActionCategory, points: number): void {
+  // Spend time on a visible location activity, drawing down the budget while
+  // tracking the selected card separately from the internal category.
+  act(activityId: string, category: ActionCategory, points: number): void {
     if (!this.availableActions.includes(category)) return;
+    const elapsedAtStart = this.elapsed;
     const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
     if (pts === 0) return;
     this.allocation = { ...this.allocation, [category]: this.allocation[category] + pts };
+    this.activitySpent = {
+      ...this.activitySpent,
+      [activityId]: (this.activitySpent[activityId] ?? 0) + pts,
+    };
+    this.attendAppointment(activityId, elapsedAtStart);
     this.resolveAppointments();
     this.endIfTimeUp();
   }
 
   // Pour the rest of the turn into one action.
-  actMax(category: ActionCategory): void {
-    this.act(category, this.timeRemaining);
+  actMax(activityId: string, category: ActionCategory): void {
+    this.act(activityId, category, this.timeRemaining);
   }
 
   // Let the rest of the day pass as rest, ending the turn. This is how a turn
@@ -230,6 +361,7 @@ export class Game {
     saveGame(state);
     this.state = state;
     this.allocation = emptyAllocation();
+    this.activitySpent = {};
     this.lastCategories = [];
     // Show the intro/onboarding before the first turn.
     this.view = 'intro';
@@ -245,6 +377,7 @@ export class Game {
     if (!loaded) return;
     this.state = loaded;
     this.allocation = emptyAllocation();
+    this.activitySpent = {};
     this.lastCategories = [];
     if (this.isOver(loaded)) this.view = 'end';
     else this.beginTurn();
@@ -257,6 +390,7 @@ export class Game {
     const current = this.state;
     if (!current) return;
     this.allocation = emptyAllocation();
+    this.activitySpent = {};
     this.movementSpent = 0;
     const refreshed: SaveGame = {
       ...current,
@@ -324,6 +458,7 @@ export class Game {
     clearSave();
     this.state = null;
     this.allocation = emptyAllocation();
+    this.activitySpent = {};
     this.view = 'start';
   }
 
