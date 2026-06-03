@@ -34,8 +34,11 @@
   <dl class="resources">
     <dt>Funds (personal / research)</dt>
     <dd>{player.funds.personal} / {player.funds.research}</dd>
-    <dt>Wellbeing (sleep / mood / physical)</dt>
-    <dd>{player.wellbeing.sleep} / {player.wellbeing.mood} / {player.wellbeing.physical}</dd>
+    <dt>Wellbeing (stress / sleep / mood / physical)</dt>
+    <dd>
+      {player.wellbeing.stress} / {player.wellbeing.sleep} / {player.wellbeing.mood} /
+      {player.wellbeing.physical}
+    </dd>
     <dt>Reputation</dt>
     <dd>{player.standing.reputation}</dd>
     <dt>Affiliation prestige</dt>
