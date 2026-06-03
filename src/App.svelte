@@ -63,7 +63,7 @@
       <p class="rival-headline">{headline}</p>
     {/if}
     <p class="situation">{STAGE_LABEL[game.stage]} · {game.state.calendar.current_date}</p>
-    <p class="hint">Choose concrete actions on the campus board; if an appointment appears, go there and spend time on its highlighted activity before the bar empties.</p>
+    <p class="hint">Choose concrete actions on the campus board; if an appointment clock appears, go there, wait if you are early, then spend time on its highlighted activity.</p>
     <ThisTermPanel
       player={game.state.player}
       stage={game.stage}

@@ -64,6 +64,32 @@ function appointmentBadge(type: Appointment['type']): string {
   }
 }
 
+function appointmentWaitLabel(type: Appointment['type']): string {
+  switch (type) {
+    case 'lecture':
+      return 'Wait until lecture starts';
+    case 'exam':
+      return 'Wait for exam';
+    case 'grant_interview':
+      return 'Wait for grant interview';
+    case 'meeting':
+      return 'Wait until meeting starts';
+  }
+}
+
+function appointmentWaitBadge(type: Appointment['type']): string {
+  switch (type) {
+    case 'lecture':
+      return 'Lecture soon';
+    case 'exam':
+      return 'Exam soon';
+    case 'grant_interview':
+      return 'Interview soon';
+    case 'meeting':
+      return 'Meeting soon';
+  }
+}
+
 function deadlineLink(type: Deadline['type']): {
   location: LocationId;
   category: ActionCategory;
@@ -123,6 +149,8 @@ export class Game {
   recap = $state<Recap | null>(null);
   appointments = $state<Appointment[]>([]);
   activitySpent = $state<ActivitySpent>({});
+  // Waiting and travel spend turn time without resolving as a productivity category.
+  waitingSpent = $state(0);
   // Travel time spent this turn (not an action category).
   movementSpent = $state(0);
   private lastCategories: ActionCategory[] = [];
@@ -170,7 +198,7 @@ export class Game {
     const elapsed = this.elapsed;
     let s = cur;
     this.appointments = this.appointments.map((a) => {
-      if (a.status !== 'pending' || a.at_tp > elapsed) return a;
+      if (a.status !== 'pending' || a.at_tp >= elapsed) return a;
       s = applyEventEffects(s, { reputation: -2, stress: 10 });
       return { ...a, status: 'missed' as const };
     });
@@ -184,7 +212,7 @@ export class Game {
     let s = cur;
     this.appointments = this.appointments.map((a) => {
       if (a.appointment_id !== appointmentId || a.status !== 'pending') return a;
-      if (a.location !== cur.board.current_location || elapsedAtStart > a.at_tp) return a;
+      if (a.location !== cur.board.current_location || elapsedAtStart < a.at_tp) return a;
       s = applyEventEffects(s, { reputation: 1, mood: 1 });
       return { ...a, status: 'attended' as const };
     });
@@ -212,16 +240,21 @@ export class Game {
     return (this.state?.board.current_location ?? 'office') as LocationId;
   }
 
-  // Time points left this turn = budget minus actions committed minus movement.
+  // Time points left this turn = budget minus actions committed, waiting, and movement.
   get timeRemaining(): number {
-    return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.movementSpent;
+    return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.waitingSpent - this.movementSpent;
   }
 
   // The named activities available at the current location for the current
   // stage (§4.11, §3). The board shows these; each maps to an internal category.
   get activities(): BoardActivity[] {
     const routine = activitiesAtStage(this.stage, this.currentLocation);
-    return [...this.appointmentActivities(), ...this.deadlineActivities(), ...routine];
+    return [
+      ...this.appointmentWaitActivities(),
+      ...this.appointmentActivities(),
+      ...this.deadlineActivities(),
+      ...routine,
+    ];
   }
 
   // The underlying action categories available here (used to validate spending).
@@ -229,9 +262,33 @@ export class Game {
     return [...new Set(this.activities.map((a) => a.category))];
   }
 
-  private appointmentActivities(): BoardActivity[] {
+  private appointmentWaitActivities(): BoardActivity[] {
     return this.appointments
       .filter((a) => a.status === 'pending' && a.location === this.currentLocation)
+      .filter((a) => this.elapsed < a.at_tp)
+      .map((a) => {
+        const wait = Math.max(0, Math.min(a.at_tp - this.elapsed, this.timeRemaining));
+        return {
+          id: `wait:appointment:${a.appointment_id}`,
+          label: appointmentWaitLabel(a.type),
+          category: 'personal' as const,
+          timeCost: wait,
+          effectHint: `Let ${wait}t pass so the timed activity becomes available`,
+          flavour: 'Waiting only advances the clock; you still need to spend time on the actual activity afterwards.',
+          positiveEffects: ['Ready on time'],
+          negativeEffects: ['Time −'],
+          badge: appointmentWaitBadge(a.type),
+        };
+      })
+      .filter((a) => a.timeCost > 0);
+  }
+
+  private appointmentActivities(): BoardActivity[] {
+    return this.appointments
+      .filter(
+        (a) =>
+          a.status === 'pending' && a.location === this.currentLocation && this.elapsed >= a.at_tp,
+      )
       .map((a) => {
         const category = appointmentCategory(a.type);
         return {
@@ -292,6 +349,28 @@ export class Game {
     );
   }
 
+  private waitForAppointment(activityId: string): boolean {
+    if (!activityId.startsWith('wait:appointment:')) return false;
+    const appointmentId = activityId.slice('wait:appointment:'.length);
+    const appointment = this.appointments.find(
+      (a) =>
+        a.appointment_id === appointmentId &&
+        a.status === 'pending' &&
+        a.location === this.currentLocation,
+    );
+    if (!appointment) return true;
+    const wait = Math.max(0, Math.min(appointment.at_tp - this.elapsed, this.timeRemaining));
+    if (wait <= 0) return true;
+    this.waitingSpent += wait;
+    this.activitySpent = {
+      ...this.activitySpent,
+      [activityId]: (this.activitySpent[activityId] ?? 0) + wait,
+    };
+    this.resolveAppointments();
+    this.endIfTimeUp();
+    return true;
+  }
+
   // Move to another location, paying the context-switch cost and recording the
   // visit for location memory (§4.11).
   moveTo(id: LocationId): void {
@@ -319,6 +398,7 @@ export class Game {
   // Spend time on a visible location activity, drawing down the budget while
   // tracking the selected card separately from the internal category.
   act(activityId: string, category: ActionCategory, points: number): void {
+    if (this.waitForAppointment(activityId)) return;
     if (!this.availableActions.includes(category)) return;
     const elapsedAtStart = this.elapsed;
     const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
@@ -362,6 +442,8 @@ export class Game {
     this.state = state;
     this.allocation = emptyAllocation();
     this.activitySpent = {};
+    this.waitingSpent = 0;
+    this.movementSpent = 0;
     this.lastCategories = [];
     // Show the intro/onboarding before the first turn.
     this.view = 'intro';
@@ -378,6 +460,8 @@ export class Game {
     this.state = loaded;
     this.allocation = emptyAllocation();
     this.activitySpent = {};
+    this.waitingSpent = 0;
+    this.movementSpent = 0;
     this.lastCategories = [];
     if (this.isOver(loaded)) this.view = 'end';
     else this.beginTurn();
@@ -391,6 +475,7 @@ export class Game {
     if (!current) return;
     this.allocation = emptyAllocation();
     this.activitySpent = {};
+    this.waitingSpent = 0;
     this.movementSpent = 0;
     const refreshed: SaveGame = {
       ...current,
@@ -459,6 +544,8 @@ export class Game {
     this.state = null;
     this.allocation = emptyAllocation();
     this.activitySpent = {};
+    this.waitingSpent = 0;
+    this.movementSpent = 0;
     this.view = 'start';
   }
 
@@ -543,6 +630,8 @@ export class Game {
       progressAfter,
     });
     this.allocation = emptyAllocation();
+    this.waitingSpent = 0;
+    this.movementSpent = 0;
     this.view = 'recap';
   }
 
