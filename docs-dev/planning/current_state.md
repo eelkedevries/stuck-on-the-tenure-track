@@ -114,8 +114,29 @@ bar; attending helps, missing costs stress/reputation (`091`,
 
 ### Original specification of M17
 
-Milestone M17 was specified in `074`. It makes the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn stays an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has been updated (now version 1.6) across §3, §4.2, §4.11, §4.11a (new deadlines section), and §8, and the build roadmap lists prompts `073`–`083`. Prerequisites (action-outcome wiring `075`, event engine `076`, save-schema extension `077`) precede the board vertical slice (`078`) so the interface is meaningful when it arrives. The save version will be bumped by `077`, resetting incompatible local saves.
+Milestone M17 was specified in `074`. It made the campus board the primary interaction surface: location-bound actions, abstract movement cost, a deadline/pressure layer, an end-of-turn diary, and in-world rival sightings, while preserving the time-point economy, the action categories as the internal effect taxonomy, the ~25-turn tenure-track arc, and the local single-slot save model. The turn remains an abstract, long step (the per-stage 6–12 month calendar is unchanged); movement is an abstract context-switching cost, not literal travel time. The specification has since advanced to version 1.8, and the later feel-pass prompts (`085`–`091`) build on the completed M17 foundation rather than reopening it.
 
-## Recommended next prompt
+## Next planned work: simplification and fun-factor pass
 
-Execute the build prompts in order. The original queue (`010`–`072`) is complete and the playable spine (`073`) is wired; the active work is M17 (`074`–`083`), run in order. Run one prompt per session per `prompt_execution_guide.md`.
+The M17 board-game feel work is complete. The next planned work is a
+player-facing simplification and fun-factor pass inspired by *Jones in the Fast
+Lane*. It should make the existing game easier to read and more immediately fun
+without replacing the simulation underneath.
+
+The pass should focus on:
+
+- simplifying the default HUD so the player sees only the information needed for
+  the immediate decision, with deeper simulation detail still available on
+  demand;
+- making board actions more concrete and recognisable, so locations feel like
+  places where specific academic-life things happen rather than abstract stat
+  controls;
+- making each turn's immediate objective clearer before the player starts moving
+  around the board;
+- making rivals and diary recaps more prominent, so the cohort story stays
+  visible between mechanical decisions;
+- preserving the current action, event, deadline, appointment, rival, save, and
+  health/stress systems beneath the simpler player-facing layer.
+
+Run one prompt per session per `prompt_execution_guide.md`; do not rerun the
+completed M17 prompts (`074`–`091`).
