@@ -53,12 +53,12 @@ const DEFAULT_TIME_COST: Record<ActionCategory, number> = {
 };
 
 const DEFAULT_EFFECT_HINT: Record<ActionCategory, string> = {
-  research: 'Build research skill and outputs',
+  research: 'Advance the stage goal and research skill',
   teaching: 'Gain teaching experience',
   service: 'Earn departmental standing',
-  networking: 'Warm up contacts and reputation',
+  networking: 'Build contacts and visible reputation',
   funding: 'Improve grant prospects',
-  personal: 'Recover mood, sleep, and stress',
+  personal: 'Lower stress; protect sleep and mood',
   misconduct: 'Contextual shortcut; serious detection risk',
 };
 

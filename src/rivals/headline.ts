@@ -11,6 +11,13 @@ type PublicHeadlineFact = {
   text: string;
 };
 
+function prestigeBand(value: number): string {
+  if (value >= 70) return 'elite';
+  if (value >= 50) return 'strong';
+  if (value >= 30) return 'solid';
+  return 'scrappy';
+}
+
 // Pick one dry, specific public update. The turn number rotates ties and
 // near-ties so the visible rival presence changes without adding mechanics.
 export function rivalHeadline(entries: CohortEntry[], turnNumber = 0): string | null {
@@ -42,7 +49,7 @@ export function rivalHeadline(entries: CohortEntry[], turnNumber = 0): string | 
       {
         rival_id: entry.rival_id,
         score: 10 + entry.affiliation_prestige,
-        text: `${entry.name}'s institution prestige is ${entry.affiliation_prestige}.`,
+        text: `${entry.name} has a ${prestigeBand(entry.affiliation_prestige)} institutional platform.`,
       },
     ];
   });
