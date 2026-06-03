@@ -62,8 +62,11 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
       ],
     },
     seminar_room: {
-      focus: 'Attend seminars',
-      activities: [{ label: 'Attend a seminar', category: 'networking' }],
+      focus: 'Tutorials and study groups',
+      activities: [
+        { label: 'Attend a tutorial', category: 'research' },
+        { label: 'Join a study group', category: 'research' },
+      ],
     },
     lab: {
       focus: 'Lab practicals',
@@ -114,7 +117,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     seminar_room: {
       focus: 'Seminars and lab meetings',
       activities: [
-        { label: 'Attend a seminar', category: 'networking' },
+        { label: 'Attend a seminar', category: 'research' },
         { label: 'Present in lab meeting', category: 'networking' },
       ],
     },
