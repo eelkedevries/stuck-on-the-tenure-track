@@ -34,7 +34,7 @@ export function subGoalFor(state: SaveGame): SubGoal {
   switch (stageForTurn(state.calendar.turn_number)) {
     case 'undergraduate':
       return {
-        title: "your Bachelor's degree",
+        title: "earn the Bachelor's diploma",
         criteria: [
           { label: 'Foundational theory', current: e.theory, target: 12 },
           { label: 'Research methods', current: e.methods, target: 10 },
@@ -44,7 +44,7 @@ export function subGoalFor(state: SaveGame): SubGoal {
       };
     case 'msc':
       return {
-        title: "your Master's degree",
+        title: "earn the Master's diploma",
         criteria: [
           { label: 'Advanced theory', current: e.theory, target: 20 },
           { label: 'Advanced methods', current: e.methods, target: 18 },
@@ -54,7 +54,7 @@ export function subGoalFor(state: SaveGame): SubGoal {
       };
     case 'phd':
       return {
-        title: 'your PhD',
+        title: 'defend the PhD dissertation',
         criteria: [
           { label: 'Publications', current: pubs, target: 3 },
           { label: 'Methods mastery', current: e.methods, target: 25 },

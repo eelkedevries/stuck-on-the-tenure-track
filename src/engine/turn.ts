@@ -8,11 +8,12 @@
 
 import type { SaveGame } from '../state/save';
 import type { Stage } from '../calendar/stages';
-import { advanceTurn } from '../calendar/stages';
+import { advanceTurn, rankForTurn, stageForTurn } from '../calendar/stages';
 import { saveGame } from '../state/storage';
 import { emptyAllocation, type Allocation } from './actions';
 import { resolve, type ResolutionResult } from './resolution';
 import { simulateRivals, type Rival } from '../rivals/simulation';
+import { recordMilestone, type MilestoneId } from '../milestones/milestones';
 
 export type TurnPhase =
   | 'turn_start'
@@ -54,6 +55,23 @@ export interface RunTurnDeps {
 // presented by the UI orchestration layer at the start of a turn, before the
 // player acts, with resolutions recorded in `events_history`. Within the
 // synchronous turn loop there is therefore nothing to apply here.
+
+function completedStageMilestone(previousTurn: number, nextTurn: number): MilestoneId | null {
+  const previousStage = stageForTurn(previousTurn);
+  const nextStage = stageForTurn(nextTurn);
+  if (previousStage === nextStage) return null;
+  switch (previousStage) {
+    case 'undergraduate':
+      return 'bachelor_diploma';
+    case 'msc':
+      return 'msc_defence';
+    case 'phd':
+      return 'phd_defence';
+    default:
+      return null;
+  }
+}
+
 function eventPhase(state: SaveGame): SaveGame {
   return state;
 }
@@ -65,9 +83,20 @@ export function runTurn(state: SaveGame, stage: Stage, deps: RunTurnDeps = {}): 
   for (const phase of TURN_PHASES) {
     deps.onPhase?.(phase);
     switch (phase) {
-      case 'turn_start':
-        next = { ...next, calendar: advanceTurn(next.calendar, stage) };
+      case 'turn_start': {
+        const calendar = advanceTurn(next.calendar, stage);
+        next = {
+          ...next,
+          calendar,
+          player: {
+            ...next.player,
+            standing: { ...next.player.standing, rank: rankForTurn(calendar.turn_number) },
+          },
+        };
+        const milestone = completedStageMilestone(state.calendar.turn_number, calendar.turn_number);
+        if (milestone) next = recordMilestone(next, milestone);
         break;
+      }
       case 'event':
         next = eventPhase(next);
         break;
@@ -83,7 +112,7 @@ export function runTurn(state: SaveGame, stage: Stage, deps: RunTurnDeps = {}): 
       }
       case 'rival':
         if (deps.rivals) {
-          deps.onRivals?.(simulateRivals(deps.rivals, deps.rng));
+          deps.onRivals?.(simulateRivals(deps.rivals, deps.rng, next.calendar.turn_number));
         }
         break;
       case 'save':

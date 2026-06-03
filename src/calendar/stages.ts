@@ -6,6 +6,7 @@
 // months.
 
 import type { Calendar } from '../state/save';
+import type { Rank } from '../state/types';
 import { advanceCalendar } from './calendar';
 
 export type Stage =
@@ -48,6 +49,11 @@ export function stageForTurn(turnIndex: number): Stage {
     if (turnIndex < cursor) return budget.stage;
   }
   return STAGE_BUDGET[STAGE_BUDGET.length - 1].stage;
+}
+
+
+export function rankForTurn(turnIndex: number): Rank {
+  return stageForTurn(turnIndex);
 }
 
 // Fraction (0..1) through the current stage by turns, for the sub-goal bar.
