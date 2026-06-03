@@ -349,6 +349,10 @@ export class Game {
     );
 
     const movementSpent = this.movementSpent;
+    const missedAppointments = this.appointments
+      .filter((a) => a.status === 'missed')
+      .map((a) => a.title);
+    const progressBefore = subGoalProgress(subGoalFor(current));
     let advanced: Rival[] = this.rivals;
     const next = runTurn(current, this.stage, {
       allocation: this.allocation,
@@ -372,14 +376,25 @@ export class Game {
     const eventTitles = (current.events_history as unknown as { event_id: string; turn: number }[])
       .filter((e) => e.turn === current.calendar.turn_number)
       .map((e) => EVENT_TITLE.get(e.event_id) ?? e.event_id);
-    const recap = buildRecap({ before: current, after: merged, allocation: committed, movementSpent, eventTitles });
-    // Append an occasional in-world rival sighting tied to where the turn was
-    // spent (the cohort tracker remains the full comparison view).
+    const progressAfter = subGoalProgress(subGoalFor(merged));
+    // Fold an occasional in-world rival sighting into the diary recap, tied to
+    // where the turn was spent (the cohort tracker remains the full comparison
+    // view).
     const visitedThisTurn = (merged.player.location_visits as LocationVisit[])
       .filter((v) => v.turn === current.calendar.turn_number)
       .map((v) => v.location as LocationId);
     const sighting = rivalSighting(advanced, visitedThisTurn);
-    this.recap = sighting ? { ...recap, lines: [...recap.lines, sighting.text] } : recap;
+    this.recap = buildRecap({
+      before: current,
+      after: merged,
+      allocation: committed,
+      movementSpent,
+      eventTitles,
+      rivalLine: sighting?.text,
+      missedAppointments,
+      progressBefore,
+      progressAfter,
+    });
     this.allocation = emptyAllocation();
     this.view = 'recap';
   }
