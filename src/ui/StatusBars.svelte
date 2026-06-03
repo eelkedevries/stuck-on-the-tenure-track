@@ -64,7 +64,7 @@
     >
       <span class="fill" style="width: {tenureProgress}%"></span>
     </div>
-    <p>{subGoal.title}: {subGoalProgress}% of this stage goal.</p>
+    <p>Goal: {subGoal.title}. {subGoalProgress}% of this stage goal.</p>
   </article>
 
   <article class="track-card wellbeing" class:warn={w.stress >= 70}>

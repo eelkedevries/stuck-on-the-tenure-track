@@ -13,6 +13,8 @@ import type { Npc } from '../relationships/types';
 import type { Deadline } from '../deadlines/types';
 import { LOCATIONS, type LocationId } from '../locations/types';
 import { hIndex } from '../papers/hindex';
+import { MILESTONE_PRESENTATION, type MilestoneId, type MilestonePresentation } from '../milestones/milestones';
+import { stageForTurn } from '../calendar/stages';
 
 export interface RecapInput {
   before: SaveGame;
@@ -68,6 +70,21 @@ const SATIRE_LINES = [
 export interface Recap {
   turn: number;
   lines: string[];
+  majorMilestones: MilestonePresentation[];
+}
+
+
+function majorMilestones(before: SaveGame, after: SaveGame): MilestonePresentation[] {
+  const beforeStage = stageForTurn(before.calendar.turn_number);
+  const afterStage = stageForTurn(after.calendar.turn_number);
+  if (beforeStage === afterStage) return [];
+  const milestoneByCompletedStage: Partial<Record<typeof beforeStage, MilestoneId>> = {
+    undergraduate: 'bachelor_diploma',
+    msc: 'msc_defence',
+    phd: 'phd_defence',
+  };
+  const milestone = milestoneByCompletedStage[beforeStage];
+  return milestone ? [MILESTONE_PRESENTATION[milestone]] : [];
 }
 
 function daysUntil(fromISO: string, toISO: string): number {
@@ -279,5 +296,5 @@ export function buildRecap(input: RecapInput): Recap {
   if (eventTitles.length > 0)
     lines.push(`Filed away: ${eventTitles.join('; ')}.`);
 
-  return { turn: turnNo, lines };
+  return { turn: turnNo, lines, majorMilestones: majorMilestones(before, after) };
 }

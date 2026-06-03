@@ -58,7 +58,8 @@ function milestoneForStage(stage: Stage): MilestoneId | null {
 }
 
 const MILESTONE_TITLE: Record<MilestoneId, string> = {
-  msc_defence: 'MSc thesis defence',
+  bachelor_diploma: "Bachelor's diploma review",
+  msc_defence: "Master's thesis defence",
   phd_defence: 'PhD dissertation defence',
   assistant_professor: 'Assistant-professor application',
   tenure_decision: 'Tenure review',

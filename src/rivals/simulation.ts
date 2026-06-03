@@ -6,6 +6,7 @@
 // for determinism. No runtime LLM is used (specification §9).
 
 import type { Rank } from '../state/types';
+import { rankForTurn } from '../calendar/stages';
 import type { RivalArchetype } from './archetypes';
 import { RIVAL_PROFILES } from './archetypes';
 
@@ -27,10 +28,16 @@ export interface Rival {
 // Advance one rival by one turn. Output varies around the archetype's mean by
 // its variance; quality drives h-index growth; networking lifts prestige; risk
 // occasionally leads to misconduct; wellbeing erodes.
-export function advanceRival(rival: Rival, rng: () => number = Math.random): Rival {
+export function advanceRival(
+  rival: Rival,
+  rng: () => number = Math.random,
+  turnNumber: number = 0,
+): Rival {
   const profile = RIVAL_PROFILES[rival.archetype];
+  const rank = rankForTurn(turnNumber);
+  const canPublish = rank === 'phd' || rank === 'postdoc' || rank === 'assistant_professor';
   const swing = Math.max(0, 1 + (rng() * 2 - 1) * profile.variance);
-  const newPapers = Math.round(profile.outputRate * swing);
+  const newPapers = canPublish ? Math.round(profile.outputRate * swing) : 0;
   const publications = rival.publications + newPapers;
   const h_index = Math.min(
     publications,
@@ -42,11 +49,19 @@ export function advanceRival(rival: Rival, rng: () => number = Math.random): Riv
   );
   const committed_misconduct = rival.committed_misconduct || rng() < profile.riskTaking * 0.1;
   const wellbeing = Math.max(0, rival.wellbeing - 1);
-  const recent_event =
-    newPapers >= 3 ? 'a flurry of new papers' : newPapers === 0 ? 'a quiet term' : rival.recent_event;
+  const recent_event = !canPublish
+    ? rank === 'undergraduate'
+      ? "working through Bachelor's coursework"
+      : "working through Master's coursework"
+    : newPapers >= 3
+      ? 'a flurry of new papers'
+      : newPapers === 0
+        ? 'a quiet term'
+        : rival.recent_event;
 
   return {
     ...rival,
+    rank,
     publications,
     h_index,
     affiliation_prestige,
@@ -57,6 +72,10 @@ export function advanceRival(rival: Rival, rng: () => number = Math.random): Riv
 }
 
 // Advance all rivals (typically three) in parallel for the turn.
-export function simulateRivals(rivals: Rival[], rng: () => number = Math.random): Rival[] {
-  return rivals.map((rival) => advanceRival(rival, rng));
+export function simulateRivals(
+  rivals: Rival[],
+  rng: () => number = Math.random,
+  turnNumber: number = 0,
+): Rival[] {
+  return rivals.map((rival) => advanceRival(rival, rng, turnNumber));
 }

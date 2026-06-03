@@ -9,12 +9,14 @@
 import type { SaveGame } from '../state/save';
 
 export type MilestoneId =
+  | 'bachelor_diploma'
   | 'msc_defence'
   | 'phd_defence'
   | 'assistant_professor'
   | 'tenure_decision';
 
 export const MILESTONES: readonly MilestoneId[] = [
+  'bachelor_diploma',
   'msc_defence',
   'phd_defence',
   'assistant_professor',
@@ -23,6 +25,7 @@ export const MILESTONES: readonly MilestoneId[] = [
 
 // Readiness thresholds, rising with career stage.
 const THRESHOLDS: Record<MilestoneId, number> = {
+  bachelor_diploma: 10,
   msc_defence: 20,
   phd_defence: 45,
   assistant_professor: 70,
@@ -30,6 +33,47 @@ const THRESHOLDS: Record<MilestoneId, number> = {
 };
 
 export const FAILURE_REPUTATION_PENALTY = 10;
+
+export interface MilestonePresentation {
+  title: string;
+  achieved: string;
+  next: string;
+  meaning: string;
+}
+
+export const MILESTONE_PRESENTATION: Record<MilestoneId, MilestonePresentation> = {
+  bachelor_diploma: {
+    title: "Bachelor's diploma awarded",
+    achieved: "You earned the Bachelor's diploma, with only the expected amount of ceremonial paperwork.",
+    next: "Next: Master's student.",
+    meaning: "The career tracker now expects advanced coursework and a Master's thesis rather than undergraduate survival.",
+  },
+  msc_defence: {
+    title: "Master's diploma awarded",
+    achieved: "You completed the Master's thesis and received the diploma, probably after refreshing the portal several times.",
+    next: 'Next: PhD student.',
+    meaning: 'Research output now matters more: publications and a dissertation begin to define progress.',
+  },
+  phd_defence: {
+    title: 'PhD dissertation defended',
+    achieved: 'You defended the dissertation. The committee agreed it was a dissertation, which is the important part.',
+    next: 'Next: postdoc.',
+    meaning: 'You are now judged less as a student and more as a future colleague with papers, grants, and visible independence.',
+  },
+  assistant_professor: {
+    title: 'Assistant-professor post secured',
+    achieved: 'You converted temporary contracts into a more permanent temporary pressure system.',
+    next: 'Next: the tenure file.',
+    meaning: 'Teaching, service, grants, publications, and reputation now feed the long-term tenure decision.',
+  },
+  tenure_decision: {
+    title: 'Tenure review completed',
+    achieved: 'The committee reached a decision, after the traditional interval of institutional opacity.',
+    next: 'Next: the end-game CV.',
+    meaning: 'This is the existing endpoint of the beta career arc.',
+  },
+};
+
 
 function expertiseTotal(state: SaveGame): number {
   const e = state.player.expertise;

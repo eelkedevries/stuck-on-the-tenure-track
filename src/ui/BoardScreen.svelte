@@ -39,16 +39,32 @@
   const currentName = $derived(
     ALL_LOCATIONS.find((l) => l.id === currentLocation)?.name ?? currentLocation,
   );
+  const timePercent = $derived(
+    Math.max(0, Math.min(100, Math.round((timeRemaining / TURN_TIME_POINTS) * 100))),
+  );
 
 </script>
 
 <section class="board" aria-label="Campus board">
   <header class="board-status">
     <p class="here"><span class="label">At</span> <span class="value">{currentName}</span></p>
-    <p class="time">
-      <span class="label">Day left</span>
-      <span class="value">{timeRemaining} / {TURN_TIME_POINTS}</span>
-    </p>
+    <div class="time-card">
+      <div class="time-heading">
+        <span class="label" id="turn-time-label">Time left</span>
+        <span class="value">{timeRemaining} / {TURN_TIME_POINTS}</span>
+      </div>
+      <div
+        class="time-meter"
+        role="meter"
+        aria-labelledby="turn-time-label"
+        aria-valuemin="0"
+        aria-valuemax={TURN_TIME_POINTS}
+        aria-valuenow={timeRemaining}
+        aria-valuetext={`Time left: ${timeRemaining} of ${TURN_TIME_POINTS}`}
+      >
+        <span class="time-fill" style="width: {timePercent}%"></span>
+      </div>
+    </div>
   </header>
 
   <div class="location-copy">
@@ -110,10 +126,8 @@
     gap: 0.75rem;
   }
   .board-status {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    align-items: baseline;
+    display: grid;
+    gap: 0.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--border);
   }
@@ -124,6 +138,32 @@
   }
   .value {
     font-weight: bold;
+  }
+  .time-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    padding: 0.55rem;
+  }
+  .time-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .time-meter {
+    height: 0.85rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .time-fill {
+    display: block;
+    height: 100%;
+    background: #c79a00;
+    transition: width 0.25s ease;
   }
   .movehint {
     margin: 0;

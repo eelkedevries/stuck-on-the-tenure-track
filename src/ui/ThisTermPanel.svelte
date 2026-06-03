@@ -129,7 +129,7 @@
   <dl>
     <div>
       <dt>Goal</dt>
-      <dd>Make progress on {subGoal.title}.</dd>
+      <dd>{subGoal.title}.</dd>
     </div>
     <div>
       <dt>Pressure</dt>

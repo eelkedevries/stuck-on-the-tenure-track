@@ -147,3 +147,15 @@ The completed pass focused on:
 Run one prompt per session per `prompt_execution_guide.md`; do not rerun the
 completed M17 prompts (`074`–`091`) or the completed simplification prompts
 (`098`–`105`).
+
+## Progression clarity pass (107)
+
+Prompt `107` makes degree progression more legible without changing the turn
+budget or tenure endpoint. The board now shows the current turn clock as a
+prominent accessible time-left meter. New games begin with both the player and
+cohort rivals as Bachelor’s students, with cohort ranks following the same
+turn-derived career-stage timeline as the player; rival publication output stays
+student-appropriate until the PhD stage. Bachelor’s diploma, Master’s diploma,
+and PhD defence completions are treated as major diary milestones: each appears
+in a distinct recap panel explaining what was achieved, what stage comes next,
+and why it matters.

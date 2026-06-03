@@ -51,12 +51,12 @@ function seededRng(seed: string): () => number {
 // Three starting rivals, drawn from the cohort the player matriculates with.
 function createInitialRivals(seed: string): Rival[] {
   const rng = seededRng(`${seed}:rivals`);
-  const names = ['Dr A. Bakker', 'Dr C. Moreau', 'Dr R. Patel'];
+  const names = ['A. Bakker', 'C. Moreau', 'R. Patel'];
   return names.map((name, i) => ({
     rival_id: `rival-${i + 1}`,
     name,
     archetype: RIVAL_ARCHETYPES[Math.floor(rng() * RIVAL_ARCHETYPES.length)],
-    rank: 'phd',
+    rank: 'undergraduate',
     publications: 0,
     h_index: 0,
     affiliation_prestige: 40 + Math.floor(rng() * 20),
@@ -90,7 +90,7 @@ export function createNewGame(seed: string = `beta-${Date.now()}`): NewGame {
       funds: { personal: 1200, research: 0 },
       wellbeing: { sleep: 70, mood: 70, physical: 70, stress: 20 },
       expertise: { methods: 2, theory: 2, writing: 2, statistics: 2, teaching: 0, politics: 0 },
-      standing: { rank: 'phd', reputation: 5, affiliation_prestige: 40 },
+      standing: { rank: 'undergraduate', reputation: 5, affiliation_prestige: 40 },
       specialisation: { status: 'undeclared', current_sub_discipline: null, commitment_turn: null },
       imposter_state: { perceived_competence: 40, actual_competence: 45 },
       health_conditions: [],
