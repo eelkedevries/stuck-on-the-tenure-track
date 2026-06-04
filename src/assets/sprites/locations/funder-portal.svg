@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" shape-rendering="crispEdges" role="img" aria-label="funder portal">
+  <rect x="3" y="6" width="18" height="12" fill="#cfe3d6" stroke="#23231d" stroke-width="2"></rect>
+  <rect x="5" y="8" width="14" height="8" fill="none" stroke="#23231d" stroke-width="1"></rect>
+  <text x="12" y="16" font-family="ui-monospace, monospace" font-size="11" font-weight="700" text-anchor="middle" fill="#1f6f43">£</text>
+  <circle cx="7" cy="10" r="0.8" fill="#23231d"></circle>
+  <circle cx="17" cy="14" r="0.8" fill="#23231d"></circle>
+</svg>

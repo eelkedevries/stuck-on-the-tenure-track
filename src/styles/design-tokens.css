@@ -1,0 +1,187 @@
+/* ============================================================================
+   STUCK ON THE TENURE TRACK — design tokens
+   Refined-retro board-game system. Parchment + forest green + gold, ink lines.
+   No external fonts or CDNs: system sans for reading, system mono for retro data.
+   British English throughout. Colour is never the sole carrier of meaning.
+   ========================================================================== */
+
+:root {
+  /* — Surfaces ———————————————————————————————————————————————— */
+  --paper:      #f4f4e8; /* page / parchment surround */
+  --board:      #e7e1ca; /* printed board surface */
+  --board-line: #d3cbac; /* board grid lines */
+  --board-edge: #cec59f; /* board inner border */
+  --surface:    #fffdf5; /* card / panel (warm white) */
+  --surface-2:  #f1ecdb; /* inset / secondary fill */
+  --surface-3:  #e9e3d0;
+
+  /* — Ink + text ————————————————————————————————————————————— */
+  --ink:       #1a1a1a;  /* lines, borders, primary text */
+  --ink-soft:  #34332c;
+  --muted:     #6b6a59;  /* secondary text */
+  --muted-2:   #8d8b77;
+  --line:      #1a1a1a;
+
+  /* — Brand + status tracks ———————————————————————————————————
+     Track hues are meaningful and carried over from the codebase, refined to
+     sit in the parchment palette. Always paired with a text label. */
+  --green:    #1f6f43;  --green-d: #14502f;  --green-l: #cfe3d6;
+  --gold:     #c79a00;  --gold-d:  #8a6b00;  --gold-l:  #f0e3a6;
+
+  --career:    #c79a00; /* gold  — tenure progress */
+  --wellbeing: #2f8f6b; /* teal  — sleep/mood/health/stress */
+  --skill:     #3a6ea5; /* blue  — expertise */
+  --standing:  #7a5a9e; /* plum  — reputation/politics */
+
+  --danger:   #b00020;  --danger-l: #f3d2d7; /* overdue / harm */
+  --amber:    #cf7a00;  --amber-l:  #f6dcae; /* soon / caution */
+  --ok:       #1f6f43;                       /* due-now / good   */
+
+  /* — Hard pixel shadows (no blur) ———————————————————————————— */
+  --pop-sm: 2px 2px 0 var(--ink);
+  --pop:    3px 3px 0 var(--ink);
+  --pop-lg: 5px 5px 0 var(--ink);
+
+  /* — Type ——————————————————————————————————————————————————— */
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, "Courier New", monospace;
+
+  /* — Spacing (4px base grid) ————————————————————————————————— */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px;
+
+  /* — Borders ———————————————————————————————————————————————— */
+  --bw: 2px;        /* default line weight */
+  --bw-thick: 3px;  /* emphasis */
+  --radius: 2px;    /* near-sharp pixel corners */
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+svg { display: block; }
+img, svg { image-rendering: pixelated; }
+
+/* Crisp pixel rendering for all sprite-sheet graphics */
+.px { image-rendering: pixelated; shape-rendering: crispEdges; }
+
+/* ── Retro data type: labels, counters, badges ────────────────────────── */
+.mono { font-family: var(--mono); }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Panel ────────────────────────────────────────────────────────────── */
+.panel {
+  background: var(--surface);
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--pop);
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3);
+  border-bottom: var(--bw) solid var(--ink);
+  background: var(--surface-2);
+}
+.panel-head h2, .panel-head h3 { margin: 0; }
+.panel-body { padding: var(--s3); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 10px 14px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--pop-sm);
+  cursor: pointer;
+  transition: transform .06s steps(2), box-shadow .06s steps(2), background .1s;
+}
+.btn:hover { background: var(--surface-2); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+.btn-primary { background: var(--green); color: #fff; border-color: var(--ink); }
+.btn-primary:hover { background: var(--green-d); }
+.btn-gold { background: var(--gold); color: var(--ink); }
+.btn-gold:hover { background: var(--gold-d); color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+
+/* ── Chips / tags ─────────────────────────────────────────────────────── */
+.chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  white-space: nowrap;
+}
+
+/* ── Segmented pixel meter ────────────────────────────────────────────── */
+.meter {
+  position: relative;
+  height: 16px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  background: var(--green);
+  transition: width .35s steps(8);
+}
+/* notch overlay → blocky retro segments */
+.meter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg, transparent 0 9px, rgba(26,26,26,.28) 9px 11px);
+}
+
+/* ── Focus (keyboard accessibility) ──────────────────────────────────── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #0b3d91;
+  outline-offset: 2px;
+}
+
+/* Honour reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

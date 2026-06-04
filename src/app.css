@@ -1,3 +1,6 @@
+@import './styles/design-tokens.css';
+@import './ui/game.css';
+
 /* Global pixel-art base styles for the UI shell (specification §5).
  *
  * Mobile-first, high-contrast, monospace/pixel aesthetic. Sizes use relative

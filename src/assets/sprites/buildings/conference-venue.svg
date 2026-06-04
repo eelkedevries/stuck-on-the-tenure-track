@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="64" height="64" shape-rendering="crispEdges" role="img" aria-label="conference venue">
+  <rect x="0" y="26" width="32" height="6" fill="#cfd9b8"></rect>
+  <rect x="4" y="9" width="24" height="17" fill="#c2ccd2"></rect>
+  <rect x="4" y="9" width="24" height="17" fill="none" stroke="#23231d" stroke-width="1.4"></rect>
+  <path d="M4 9 Q16 3 28 9 Z" fill="#3a6ea5"></path>
+  <path d="M4 9 Q16 3 28 9" fill="none" stroke="#23231d" stroke-width="1"></path>
+  <rect x="11" y="13" width="10" height="6" fill="#b5482f"></rect><rect x="11" y="13" width="10" height="6" fill="none" stroke="#23231d" stroke-width="0.8"></rect>
+  <rect x="13" y="19" width="6" height="7" fill="#3a4750"></rect>
+  <rect x="6" y="4" width="1" height="6" fill="#23231d"></rect><path d="M7 4 L11 5.5 L7 7 Z" fill="#1f6f43"></path>
+  <rect x="25" y="4" width="1" height="6" fill="#23231d"></rect><path d="M25 4 L21 5.5 L25 7 Z" fill="#c79a00"></path>
+</svg>

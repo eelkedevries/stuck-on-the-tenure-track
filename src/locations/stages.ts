@@ -105,10 +105,13 @@ const DEFAULT_FOCUS: Record<LocationId, string> = {
   seminar_room: 'Talks and committees',
   cafe_pub: 'Informal networking',
   home: 'Rest and quiet writing',
+  upscale_home: 'Rest in comfort',
   conference_venue: 'Present and network',
   funder_portal: 'Grant submission',
   gym_outdoors: 'Recover',
   health_centre: 'Look after yourself',
+  park_west: 'Clear your head',
+  park_east: 'A quiet walk',
 };
 
 const DEFAULT_PERSONALITY: Record<LocationId, string> = {
@@ -119,10 +122,13 @@ const DEFAULT_PERSONALITY: Record<LocationId, string> = {
   seminar_room: 'Questions begin as comments and end as autobiography.',
   cafe_pub: 'Collaboration, gossip, and hiring intelligence share a table.',
   home: 'Recovery is possible, provided you ignore the laptop blinking at you.',
+  upscale_home: 'A real flat — the reward for surviving the early stages.',
   conference_venue: 'Name badges, weak coffee, and strategic enthusiasm under strip lighting.',
   funder_portal: 'Prestige is mandatory; attachments must be both final and resubmitted.',
   gym_outdoors: 'Fresh air makes a polite case against another hour of email.',
   health_centre: 'Forms, triage, and the rare relief of being believed by procedure.',
+  park_west: 'Pigeons, a bench, and ten honest minutes.',
+  park_east: 'The river path. Ducks, reeds, and a rare clear thought.',
 };
 
 const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocation>>>> = {

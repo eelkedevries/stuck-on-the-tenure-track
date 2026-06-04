@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" shape-rendering="crispEdges" role="img" aria-label="cap">
+  <path d="M12 4 L22 9 L12 14 L2 9 Z" fill="#23231d"></path>
+  <path d="M6 11 V15 q6 4 12 0 V11" fill="#34332c"></path>
+  <rect x="21" y="9" width="1.5" height="6" fill="#c79a00"></rect>
+  <circle cx="21.7" cy="16" r="1.5" fill="#c79a00"></circle>
+</svg>

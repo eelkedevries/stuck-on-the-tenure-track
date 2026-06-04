@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" shape-rendering="crispEdges" role="img" aria-label="hourglass">
+  <rect x="4" y="3" width="16" height="2" fill="#23231d"></rect>
+  <rect x="4" y="19" width="16" height="2" fill="#23231d"></rect>
+  <path d="M6 5 L18 5 L12 12 Z" fill="#cf7a00"></path>
+  <path d="M12 12 L18 19 L6 19 Z" fill="#f0d8a8"></path>
+  <path d="M6 5 L18 5 L12 12 L18 19 L6 19 L12 12 Z" fill="none" stroke="#23231d" stroke-width="1.5"></path>
+</svg>

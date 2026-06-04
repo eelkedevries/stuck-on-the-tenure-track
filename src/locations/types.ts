@@ -15,10 +15,13 @@ export type LocationId =
   | 'seminar_room'
   | 'cafe_pub'
   | 'home'
+  | 'upscale_home'
   | 'conference_venue'
   | 'funder_portal'
   | 'gym_outdoors'
-  | 'health_centre';
+  | 'health_centre'
+  | 'park_west'
+  | 'park_east';
 
 export interface GameLocation {
   id: LocationId;
@@ -35,11 +38,14 @@ export const LOCATIONS: Record<LocationId, GameLocation> = {
   classroom: { id: 'classroom', name: 'Classroom', actions: ['teaching'], visibilityRelevant: true },
   seminar_room: { id: 'seminar_room', name: 'Seminar room', actions: ['networking', 'service'], visibilityRelevant: true },
   cafe_pub: { id: 'cafe_pub', name: 'Café / pub', actions: ['networking', 'personal'], visibilityRelevant: true },
-  home: { id: 'home', name: 'Home', actions: ['personal', 'research'], visibilityRelevant: false },
+  home: { id: 'home', name: 'Student room', actions: ['personal', 'research'], visibilityRelevant: false },
+  upscale_home: { id: 'upscale_home', name: 'Apartment', actions: ['personal', 'research'], visibilityRelevant: false },
   conference_venue: { id: 'conference_venue', name: 'Conference venue', actions: ['networking', 'research'], visibilityRelevant: true },
   funder_portal: { id: 'funder_portal', name: 'Funder portal', actions: ['funding'], visibilityRelevant: false },
   gym_outdoors: { id: 'gym_outdoors', name: 'Gym / outdoors', actions: ['personal'], visibilityRelevant: false },
   health_centre: { id: 'health_centre', name: 'GP / therapist / occupational health', actions: ['personal'], visibilityRelevant: false },
+  park_west: { id: 'park_west', name: 'Campus green', actions: ['personal'], visibilityRelevant: false },
+  park_east: { id: 'park_east', name: 'Riverside walk', actions: ['personal'], visibilityRelevant: false },
 };
 
 export const ALL_LOCATIONS: readonly GameLocation[] = Object.values(LOCATIONS);

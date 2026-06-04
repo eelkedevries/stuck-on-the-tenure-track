@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="64" height="64" shape-rendering="crispEdges" role="img" aria-label="seminar room">
+  <rect x="0" y="26" width="32" height="6" fill="#cfd9b8"></rect>
+  <path d="M7 13 L16 7 L25 13 Z" fill="#6a5a86"></path>
+  <rect x="8" y="13" width="16" height="13" fill="#cabfdc"></rect>
+  <rect x="8" y="13" width="16" height="13" fill="none" stroke="#23231d" stroke-width="1.4"></rect>
+  <rect x="13" y="18" width="6" height="8" fill="#4a3f63"></rect>
+  <rect x="9.5" y="15" width="4" height="3.5" fill="#efeaf6" stroke="#23231d" stroke-width="0.8"></rect>
+  <rect x="18.5" y="15" width="4" height="3.5" fill="#efeaf6" stroke="#23231d" stroke-width="0.8"></rect>
+</svg>

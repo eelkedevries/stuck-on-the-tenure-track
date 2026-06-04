@@ -1,0 +1,468 @@
+/* ============================================================================
+   game.css — layout + game-specific styles for the board/console screen.
+   Ported from prototype.css. Depends on design-tokens.css.
+   ========================================================================== */
+
+/* ── App console shell ───────────────────────────────────────────────────── */
+.console {
+  flex: 1; min-width: 0; min-height: 0; height: 100%;
+  display: flex; flex-direction: column; background: var(--paper);
+}
+
+/* slim header */
+.c-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 8px 12px; background: #16160f; color: #f4f4e8; flex: none;
+}
+.c-head .mt { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.c-head .mt b {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.c-head .c-stage {
+  display: flex; align-items: center; gap: 5px; flex: none;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--gold);
+}
+
+/* progression bars (4 tracks + diploma) */
+.hud-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px; padding: 7px 10px 9px; background: #16160f;
+  border-bottom: var(--bw-thick) solid var(--ink); flex: none;
+}
+.hud-strip.five { grid-template-columns: repeat(5, 1fr); }
+.hud-strip .h { min-width: 0; }
+.hud-strip .h .hl {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 3px; margin-bottom: 3px;
+}
+.hud-strip .h .hl .nm {
+  font-family: var(--mono); font-weight: 700; font-size: 8px;
+  letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hud-strip .h .hl .pc {
+  font-family: var(--mono); font-weight: 700; font-size: 9px; color: #fff;
+}
+.hud-strip .h .hbar {
+  height: 7px; border: 1.5px solid rgba(255,255,255,.4); background: #000; position: relative;
+}
+.hud-strip .h .hbar > i { display: block; height: 100%; }
+.hud-strip .h .hbar::after {
+  content: ""; position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(90deg, transparent 0 6px, rgba(0,0,0,.5) 6px 7.5px);
+}
+
+/* main area */
+.c-main { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.c-main.scroll { overflow: auto; padding: 12px; gap: 12px; }
+
+/* board fills remaining space */
+.c-board {
+  flex: 1; min-height: 0; display: flex; align-items: stretch;
+  justify-content: center; padding: 8px;
+}
+.c-board .campus {
+  width: 100%; height: 100%; max-width: 980px; margin: auto;
+  padding: 9px; display: flex; flex-direction: column;
+}
+.c-board .campus-grid { flex: 1; aspect-ratio: auto; gap: 5px; }
+.console .campus-head { display: none; }
+
+/* ── The campus board ────────────────────────────────────────────────────── */
+.campus {
+  position: relative; padding: 14px;
+  background: var(--board); border: var(--bw-thick) solid var(--ink);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 3px var(--board-edge), inset 0 0 30px rgba(70,52,22,.18), var(--pop-lg);
+}
+.campus::before {
+  content: ""; position: absolute; inset: 9px;
+  border: 2px solid var(--board-edge); border-radius: 3px; pointer-events: none;
+}
+.campus::after {
+  content: ""; position: absolute; inset: 4px; pointer-events: none; z-index: 5;
+  background:
+    radial-gradient(circle at 6px 6px, var(--ink) 2.5px, transparent 3px) left top,
+    radial-gradient(circle at calc(100% - 6px) 6px, var(--ink) 2.5px, transparent 3px) right top,
+    radial-gradient(circle at 6px calc(100% - 6px), var(--ink) 2.5px, transparent 3px) left bottom,
+    radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), var(--ink) 2.5px, transparent 3px) right bottom;
+  background-repeat: no-repeat; background-size: 14px 14px;
+}
+.campus-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s2); margin-bottom: 10px; position: relative;
+}
+.campus-grid {
+  position: relative; display: grid;
+  grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr);
+  gap: 7px; aspect-ratio: 1 / 1;
+  background-image: radial-gradient(var(--board-edge) 1.4px, transparent 1.6px);
+  background-size: 15px 15px; background-position: 7px 7px;
+}
+.campus-grid::before {
+  content: ""; position: absolute; inset: 4%;
+  border: 3px dashed var(--board-edge); border-radius: 14px; opacity: .5; pointer-events: none;
+}
+
+/* Building tile in the ring */
+.bldg {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start; gap: 0; padding: 3px 2px 2px; text-align: center;
+  cursor: pointer;
+  background: linear-gradient(#e9eee8, #f6f2e7);
+  border: var(--bw) solid var(--ink); border-radius: var(--radius);
+  box-shadow: var(--pop-sm), inset 0 1px 0 rgba(255,255,255,.6);
+  transition: transform .07s steps(2), box-shadow .07s steps(2), background .1s;
+  z-index: 2; overflow: hidden;
+}
+.bldg:hover { background: linear-gradient(#dce8da, #ede8d2); }
+.bldg:active { transform: translate(2px,2px); box-shadow: 0 0 0 var(--ink); }
+.bldg .b-art { width: 100%; display: flex; justify-content: center; align-items: flex-end; flex: 1; min-height: 0; }
+.bldg .b-ico { width: auto; height: 100%; max-height: 100%; max-width: 100%; aspect-ratio: 1; }
+.bldg .b-name {
+  font-size: 8px; font-weight: 700; line-height: 1.02; width: 100%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .01em;
+}
+.bldg .b-cost { font-family: var(--mono); font-size: 8px; font-weight: 700; color: var(--muted); }
+.bldg.park { background: linear-gradient(#dfeede, #eaf2dd); }
+.bldg.here {
+  background: linear-gradient(#cfe9da, #dff3e4); border-color: var(--green-d);
+  box-shadow: 3px 3px 0 var(--green-d), inset 0 1px 0 rgba(255,255,255,.4); cursor: default;
+}
+.bldg.here:active { transform: none; box-shadow: 3px 3px 0 var(--green-d); }
+.bldg.here .b-cost { color: var(--green-d); }
+.bldg.unreachable { opacity: .5; cursor: not-allowed; }
+.bldg.unreachable:active { transform: none; }
+.bldg.target { outline: 3px solid var(--amber); outline-offset: 1px; }
+.bldg.target.overdue { outline-color: var(--danger); }
+
+/* token overlay on a building */
+.bldg .token-layer { position: absolute; top: -8px; right: -8px; display: flex; gap: 1px; }
+.token { width: 20px; height: 20px; border: 1.5px solid var(--ink); border-radius: 3px; background: var(--surface); box-shadow: 1px 1px 0 var(--ink); }
+.token.player { box-shadow: 0 0 0 2px var(--gold), 1px 1px 0 var(--ink); }
+
+/* ── Centre activity window ──────────────────────────────────────────────── */
+.centre-cell { grid-column: 2 / 5; grid-row: 2 / 5; position: relative; z-index: 3; }
+.centre {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  background: var(--surface); border: var(--bw-thick) solid var(--ink);
+  border-radius: var(--radius); box-shadow: var(--pop-sm); overflow: hidden;
+}
+.plaque {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  border-bottom: var(--bw) solid var(--ink); flex: none;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.16);
+}
+.plaque > span {
+  font-family: var(--mono); font-weight: 700; font-size: 12.5px;
+  letter-spacing: .04em; text-transform: uppercase;
+  text-shadow: 1px 1px 0 rgba(0,0,0,.22);
+}
+.plaque .p-t { margin-left: auto; font-size: 11px; opacity: .92; text-shadow: none; }
+.scene { flex: none; border-bottom: var(--bw) solid var(--ink); line-height: 0; background: #bfe0e6; overflow: hidden; }
+.scene-img { width: 100%; height: 110px; display: block; }
+.acts-in { flex: 1; min-height: 0; overflow: auto; padding: 7px; display: flex; flex-direction: column; gap: 6px; }
+.arow {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  cursor: pointer; padding: 7px 9px;
+  background: var(--surface); border: 1.5px solid var(--ink); border-radius: 2px;
+  box-shadow: 1.5px 1.5px 0 var(--ink);
+  transition: transform .07s steps(2), box-shadow .07s steps(2), background .1s;
+}
+.arow:hover { background: var(--surface-2); }
+.arow:active { transform: translate(1px,1px); box-shadow: none; }
+.arow:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
+.arow .an { font-weight: 700; font-size: 12.5px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arow .ae { display: flex; gap: 3px; flex: none; }
+.arow .ae .sq { width: 10px; height: 10px; border: 1px solid var(--ink); display: inline-block; }
+.arow .ae .sq.up { background: var(--green); }
+.arow .ae .sq.down { background: var(--danger); }
+.arow .ac { font-family: var(--mono); font-weight: 700; font-size: 12px; flex: none; min-width: 30px; text-align: right; }
+
+/* ── Walking animation ───────────────────────────────────────────────────── */
+.walkscene { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+.walk-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.walker {
+  position: absolute; bottom: 12%; left: -14%;
+  width: 32px; height: 48px;
+  animation: walkX .95s linear 1 forwards;
+}
+.walker .wf { position: absolute; inset: 0; width: 100%; height: 100%; }
+.walker .wf1 { animation: wflip .24s steps(1) infinite; }
+.walker .wf2 { animation: wflip2 .24s steps(1) infinite; }
+@keyframes walkX { from { left: -14%; } to { left: 86%; } }
+@keyframes wflip { 0%,49.9% { opacity: 1; } 50%,100% { opacity: 0; } }
+@keyframes wflip2 { 0%,49.9% { opacity: 0; } 50%,100% { opacity: 1; } }
+.walk-label {
+  position: absolute; left: 0; right: 0; bottom: 6px; text-align: center;
+  font-family: var(--mono); font-weight: 700; font-size: 11px;
+  color: #fff; text-shadow: 1px 1px 0 #000, -1px 1px 0 #000;
+}
+@media (prefers-reduced-motion: reduce) {
+  .walker { animation: none; left: 40%; }
+  .walker .wf1, .walker .wf2 { animation: none; }
+  .walker .wf2 { opacity: 0; }
+}
+
+/* ── Clock cell (bottom-centre) ──────────────────────────────────────────── */
+@property --deg { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+
+.clock-cell {
+  position: relative; z-index: 4; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  width: 100%; height: 100%; box-sizing: border-box;
+  background: #2a0e10; border: 2.5px solid var(--danger); border-radius: 7px;
+  box-shadow: 2px 2px 0 #000; padding: 6px 5px 7px; cursor: pointer;
+}
+.clock-cell:active { transform: translate(1px,1px); box-shadow: 0 0 0 #000; }
+.clock-cell.active { outline: 3px solid var(--gold); outline-offset: 1px; }
+.dial {
+  flex: 1 1 auto; min-height: 0; height: 100%; width: auto; aspect-ratio: 1;
+  max-width: 100%; border-radius: 50%; border: 3px solid #1a1a1a;
+  background: conic-gradient(var(--danger) 0 var(--deg, 0deg), #efe6cf var(--deg, 0deg) 360deg);
+  transition: --deg .55s ease; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.dial-hand {
+  position: absolute; left: 50%; top: 50%; width: 3px; height: 42%;
+  background: #1a1a1a; border-radius: 2px;
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(var(--deg, 0deg)); z-index: 2;
+}
+.dial-pin {
+  position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+  background: #1a1a1a; border: 1.5px solid #fbf7ea; border-radius: 50%;
+  transform: translate(-50%,-50%); z-index: 3;
+}
+.dial-face {
+  width: 62%; aspect-ratio: 1; border-radius: 50%; background: #fbf7ea;
+  border: 1.5px solid #1a1a1a; position: relative; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+}
+.dial-t { font-family: var(--mono); font-weight: 700; font-size: 13px; color: #1a1a1a; }
+.dial-u { font-family: var(--mono); font-size: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+.clock-cell .c-day { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: .06em; color: #f3c9c9; }
+.clock-cell.done {
+  background: var(--danger); border-color: #1a1a1a;
+  animation: clockPulse 1s steps(2) infinite;
+}
+.clock-cell.done .dial { background: var(--danger); }
+.clock-cell.done .c-day { color: #fff; }
+@keyframes clockPulse {
+  0%,50% { box-shadow: 2px 2px 0 #000; }
+  50.01%,100% { box-shadow: 2px 2px 0 #000, 0 0 0 3px var(--gold); }
+}
+@media (prefers-reduced-motion: reduce) { .clock-cell.done { animation: none; } }
+
+/* ── End-of-day panel ────────────────────────────────────────────────────── */
+.endday {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  padding: 16px; text-align: center; overflow: auto;
+}
+.big-dial {
+  width: 96px; aspect-ratio: 1; border-radius: 50%; border: 4px solid #1a1a1a;
+  box-shadow: 3px 3px 0 #1a1a1a;
+  background: conic-gradient(var(--danger) 0 var(--deg, 0deg), #efe6cf var(--deg, 0deg) 360deg);
+  transition: --deg .55s ease; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.big-hand {
+  position: absolute; left: 50%; top: 50%; width: 4px; height: 42%;
+  background: #1a1a1a; border-radius: 3px;
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%) rotate(var(--deg, 0deg)); z-index: 2;
+}
+.big-pin {
+  position: absolute; left: 50%; top: 50%; width: 11px; height: 11px;
+  background: #1a1a1a; border: 2px solid #fbf7ea; border-radius: 50%;
+  transform: translate(-50%,-50%); z-index: 3;
+}
+.big-face {
+  width: 62%; aspect-ratio: 1; border-radius: 50%; background: #fbf7ea;
+  border: 2px solid #1a1a1a; position: relative; z-index: 4;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+}
+.big-face b { font-family: var(--mono); font-size: 24px; }
+.big-face small { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
+.big-dial.done { background: var(--danger); }
+.endday-copy { font-size: 13px; color: var(--ink-soft); max-width: 300px; margin: 0; }
+.endday-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* ── Decorative scenery cell ─────────────────────────────────────────────── */
+.deco-cell {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  background: linear-gradient(#dfeede, #eaf2dd);
+  border: var(--bw) solid var(--ink); border-radius: var(--radius);
+  box-shadow: var(--pop-sm), inset 0 1px 0 rgba(255,255,255,.6); overflow: hidden;
+}
+.deco-ico { width: 64%; height: auto; max-width: 52px; opacity: .96; }
+
+/* ── Appointment strip ───────────────────────────────────────────────────── */
+.appt-strip {
+  display: flex; align-items: center; gap: 8px; padding: 5px 11px;
+  background: var(--amber-l); border-bottom: 2px solid var(--ink);
+  font-size: 11px; flex: none;
+}
+.appt-strip.safe { background: var(--green-l); }
+.appt-strip.overdue { background: var(--danger-l); }
+.appt-strip .at { font-weight: 700; white-space: nowrap; }
+.appt-strip .ab { flex: 1; height: 8px; border: 1.5px solid var(--ink); background: var(--surface); }
+.appt-strip .ab > i { display: block; height: 100%; }
+.appt-strip .av { font-family: var(--mono); font-weight: 700; font-size: 10px; white-space: nowrap; }
+
+/* ── 5-tab bottom menu ───────────────────────────────────────────────────── */
+.tabbar {
+  position: sticky; bottom: 0; display: flex; background: var(--surface);
+  border-top: var(--bw) solid var(--ink); z-index: 25; flex: none;
+}
+.tabbar button {
+  flex: 1; padding: 10px 4px 12px; background: transparent; border: 0; cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.tabbar button[aria-selected="true"] {
+  color: var(--ink); background: var(--surface-2); box-shadow: inset 0 3px 0 var(--green);
+}
+.tabbar .tab-ico { width: 20px; height: 20px; }
+.tabbar.five button { font-size: 9.5px; gap: 3px; padding: 8px 2px 9px; }
+.tabbar.five .tab-ico { width: 19px; height: 19px; }
+
+/* ── Cohort cards ────────────────────────────────────────────────────────── */
+.cohort { display: grid; gap: 10px; }
+.rival {
+  display: flex; align-items: center; gap: 11px; padding: 10px 11px;
+  background: var(--surface); border: var(--bw) solid var(--ink);
+  border-radius: var(--radius); box-shadow: var(--pop-sm);
+}
+.rival .ava { width: 34px; height: 34px; border: 1.5px solid var(--ink); border-radius: 4px; flex: none; }
+.rival.you { background: var(--green-l); border-color: var(--green-d); }
+.rival .who { flex: 1; min-width: 0; }
+.rival .who b { display: block; font-size: 14px; }
+.rival .who small { color: var(--muted); font-size: 11.5px; }
+.rank { font-family: var(--mono); font-weight: 700; font-size: 13px; }
+.rank .bar {
+  display: inline-block; width: 64px; height: 10px; border: 1.5px solid var(--ink);
+  background: var(--surface-3); vertical-align: middle; margin-left: 6px; position: relative;
+}
+.rank .bar > span { position: absolute; inset: 0 auto 0 0; background: var(--standing); }
+
+/* ── Diary recap ─────────────────────────────────────────────────────────── */
+.diary-list { display: grid; gap: 0; margin: 0; padding: 0; }
+.diary-list li {
+  list-style: none; display: flex; gap: 10px; padding: 9px 2px;
+  border-bottom: 1px dashed var(--board-edge); font-size: 13.5px;
+}
+.diary-list li:last-child { border-bottom: 0; }
+.diary-list .tick { font-family: var(--mono); color: var(--muted); flex: none; }
+.diary-empty { color: var(--muted); font-style: italic; font-size: 13px; }
+
+/* ── Diploma milestone block ─────────────────────────────────────────────── */
+.diploma {
+  display: flex; gap: 12px; align-items: center; padding: 12px;
+  background: var(--gold-l); border: var(--bw-thick) solid var(--ink);
+  border-radius: var(--radius); box-shadow: var(--pop);
+}
+.diploma .seal { width: 44px; height: 44px; flex: none; }
+.diploma .txt b { display: block; font-size: 15px; }
+.diploma .txt small { font-size: 12px; color: var(--ink-soft); }
+
+/* ── Tab pane container ──────────────────────────────────────────────────── */
+.tabpane { display: flex; flex-direction: column; gap: 12px; padding: 12px; overflow: auto; }
+
+/* ── Location hero ───────────────────────────────────────────────────────── */
+.loc-hero {
+  position: relative; border: var(--bw) solid var(--ink); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--pop-sm); line-height: 0;
+}
+.loc-hero-img { width: 100%; height: auto; aspect-ratio: 128 / 52; display: block; }
+.loc-hero-badge {
+  position: absolute; left: 10px; bottom: 10px; background: var(--surface);
+  border: 1.5px solid var(--ink); border-radius: 3px; padding: 3px;
+  box-shadow: 1px 1px 0 var(--ink); line-height: 0;
+}
+.loc-title { margin: 0 0 4px; font-size: 18px; }
+.loc-blurb { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+.loc-acts { display: grid; gap: 10px; }
+.loc-act {
+  border: 1.5px solid var(--ink); border-radius: var(--radius); padding: 9px 11px;
+  box-shadow: var(--pop-sm); background: var(--surface);
+}
+.loc-act-top { display: flex; justify-content: space-between; align-items: baseline; }
+.loc-act-top b { font-size: 14px; }
+.loc-act .effects { margin-top: 6px; }
+.loc-act-fl { margin: 6px 0 0; font-size: 12px; font-style: italic; color: var(--muted); }
+.effects { display: flex; flex-wrap: wrap; gap: 5px; }
+.eff {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  padding: 2px 6px; border: 1.5px solid var(--ink); border-radius: var(--radius);
+}
+.eff.up { background: var(--green-l); }
+.eff.down { background: var(--danger-l); }
+
+/* ── Help tab ────────────────────────────────────────────────────────────── */
+.help-list { display: flex; flex-direction: column; gap: 13px; }
+.help-item { display: flex; gap: 11px; align-items: flex-start; }
+.help-ic { flex: none; margin-top: 1px; }
+.help-item b { font-size: 13.5px; }
+.help-item p { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+
+/* ── This-term strip ─────────────────────────────────────────────────────── */
+.term dl { margin: 0; display: grid; gap: 10px; }
+.term dt {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.term dd { margin: 2px 0 0; font-size: 14px; line-height: 1.4; }
+
+/* ── Deadline board rows ─────────────────────────────────────────────────── */
+.deadline-board { display: flex; flex-direction: column; gap: 4px; }
+.drow {
+  display: flex; align-items: center; gap: 8px; padding: 5px 9px;
+  background: var(--surface); border: var(--bw) solid var(--ink);
+  border-radius: var(--radius); font-size: 12px;
+}
+.dword {
+  font-family: var(--mono); font-weight: 700; font-size: 10px;
+  letter-spacing: .06em; flex: none; min-width: 60px;
+}
+.dtitle { font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ddue { font-family: var(--mono); font-size: 10px; color: var(--muted); flex: none; }
+.urgency-overdue { border-color: var(--danger); }
+.urgency-due_now { border-color: var(--amber); }
+
+/* ── Non-turn shell (start/intro/events/recap/end) ───────────────────────── */
+.game-shell {
+  display: flex; flex-direction: column; min-height: 100vh;
+  max-width: 48rem; margin: 0 auto; background: var(--surface);
+  border-inline: 2px solid var(--ink);
+}
+.game-shell-head {
+  padding: 0.75rem 1rem; border-bottom: 2px solid var(--ink);
+  background: #16160f; color: #f4f4e8;
+}
+.game-shell-head h1 { margin: 0; font-size: 1.1rem; font-family: var(--mono); }
+.game-shell-main { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+.game-shell-foot {
+  padding: 0.5rem 1rem; border-top: 2px solid var(--ink);
+  font-size: 0.8rem; color: var(--muted);
+}
+
+/* ── Skip link ───────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute; left: -999px; top: 0; z-index: 10;
+  padding: 0.5rem 1rem; background: var(--green); color: #fff;
+}
+.skip-link:focus { left: 0; }
+
+/* game title heading used in panels */
+.game-title {
+  font-family: var(--mono); font-weight: 700; font-size: 13px;
+  letter-spacing: .04em; margin: 0;
+}
+.term-line { margin-top: 12px; font-size: 12.5px; color: var(--ink-soft); }
+.term-line .eyebrow { display: block; margin-bottom: 2px; }

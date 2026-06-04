@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="64" height="64" shape-rendering="crispEdges" role="img" aria-label="park west">
+  <rect x="0" y="22" width="32" height="10" fill="#bcd0a0"></rect>
+  <path d="M0 22 Q16 18 32 22 L32 24 L0 24 Z" fill="#a8c389"></path>
+  <rect x="9" y="14" width="2" height="8" fill="#6b4a2a"></rect>
+  <circle cx="10" cy="11" r="6" fill="#2f8f6b"></circle><circle cx="14" cy="13" r="4" fill="#36a07a"></circle>
+  <rect x="22" y="16" width="1.6" height="6" fill="#6b4a2a"></rect>
+  <circle cx="22.8" cy="13" r="4.5" fill="#3a9a72"></circle>
+  <rect x="15" y="22" width="8" height="1.6" fill="#7a3b2a"></rect>
+  <rect x="15.5" y="23.5" width="1.4" height="3" fill="#5e2c1f"></rect><rect x="21.5" y="23.5" width="1.4" height="3" fill="#5e2c1f"></rect>
+</svg>

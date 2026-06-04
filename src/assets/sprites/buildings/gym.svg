@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="64" height="64" shape-rendering="crispEdges" role="img" aria-label="gym">
+  <rect x="0" y="26" width="32" height="6" fill="#cfd9b8"></rect>
+  <path d="M5 13 Q16 8 27 13 L27 14 L5 14 Z" fill="#2f8f6b"></path>
+  <rect x="5" y="13" width="22" height="13" fill="#d2cdbb"></rect>
+  <rect x="5" y="13" width="22" height="13" fill="none" stroke="#23231d" stroke-width="1.4"></rect>
+  <rect x="13" y="18" width="6" height="8" fill="#3a4750"></rect>
+  <g fill="#23231d"><rect x="8" y="9" width="2" height="4"></rect><rect x="9" y="10" width="6" height="2"></rect><rect x="14" y="9" width="2" height="4"></rect></g>
+  <rect x="20" y="16" width="4" height="3" fill="#bcd8e6" stroke="#23231d" stroke-width="0.7"></rect>
+</svg>

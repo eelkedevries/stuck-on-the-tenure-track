@@ -1,10 +1,8 @@
 <script lang="ts">
-  // Cohort screen (specification §5, §4.9): renders the public cohort tracker —
-  // rank, publications, h-index, prestige, and recent events. Private rival
-  // state is never passed here (the tracker projects it out in `047`). The CV
-  // screen is `060`. Presentational only.
+  // Cohort screen — rival cards with sprite avatars. Presentational only.
   import type { CohortEntry } from '../rivals/cohort';
   import type { Rank } from '../state/types';
+  import Sprite from './Sprite.svelte';
 
   interface Props {
     entries: CohortEntry[];
@@ -20,64 +18,43 @@
     assistant_professor: 'Assistant professor',
     tenured: 'Tenured',
   };
+
+  // Sort by publications descending (rough proxy for career score)
+  const sorted = $derived(
+    [...entries].sort((a, b) => b.publications - a.publications)
+  );
 </script>
 
-<section class="cohort-screen" aria-label="Cohort tracker">
-  <h2>Cohort</h2>
-  <table>
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Rank</th>
-        <th scope="col">Papers</th>
-        <th scope="col">h-index</th>
-        <th scope="col">Prestige</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each entries as entry (entry.rival_id)}
-        <tr>
-          <th scope="row">
-            {entry.name}
-            {#if entry.recent_event}
-              <span class="event">— {entry.recent_event}</span>
-            {/if}
-          </th>
-          <td>{RANK_LABELS[entry.rank]}</td>
-          <td>{entry.publications}</td>
-          <td>{entry.h_index}</td>
-          <td>{entry.affiliation_prestige}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</section>
-
-<style>
-  .cohort-screen {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-  th,
-  td {
-    border: 1px solid var(--border);
-    padding: 0.4rem 0.5rem;
-    text-align: left;
-  }
-  thead th {
-    background: var(--accent);
-    color: var(--accent-text);
-  }
-  .event {
-    display: block;
-    color: var(--muted);
-    font-size: 0.8rem;
-    font-weight: normal;
-  }
-</style>
+<div class="tabpane" aria-label="Cohort tracker">
+  <div class="panel">
+    <div class="panel-head">
+      <h3 class="game-title">Your cohort</h3>
+      <span class="eyebrow">Race to tenure</span>
+    </div>
+    <div class="panel-body">
+      <div class="cohort">
+        {#each sorted as entry, i (entry.rival_id)}
+          <div class="rival">
+            <Sprite id={'tok-rival' + (i + 1)} cls="ava" size={34} vb="0 0 16 16" />
+            <span class="who">
+              <b>{i + 1}. {entry.name}</b>
+              <small>{RANK_LABELS[entry.rank]}{entry.affiliation_prestige ? ' · prestige ' + entry.affiliation_prestige : ''}</small>
+              {#if entry.recent_event}
+                <small style="color: var(--amber); display:block">{entry.recent_event}</small>
+              {/if}
+            </span>
+            <span class="rank">
+              {entry.publications}p
+              <span class="bar">
+                <span style="width: {Math.min(100, entry.publications * 4)}%; background: var(--standing)"></span>
+              </span>
+            </span>
+          </div>
+        {/each}
+        {#if entries.length === 0}
+          <p class="diary-empty">No cohort data yet.</p>
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

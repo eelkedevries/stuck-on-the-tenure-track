@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" shape-rendering="crispEdges" role="img" aria-label="health centre">
+  <rect x="4" y="4" width="16" height="16" rx="3" fill="#fffdf5" stroke="#23231d" stroke-width="2"></rect>
+  <rect x="10.5" y="7" width="3" height="10" fill="#b00020"></rect>
+  <rect x="7" y="10.5" width="10" height="3" fill="#b00020"></rect>
+</svg>
