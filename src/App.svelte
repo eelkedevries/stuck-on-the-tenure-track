@@ -20,6 +20,9 @@
   import { rivalHeadline } from './rivals/headline';
   import { buildCv } from './ui/cv';
   import { Game } from './ui/game.svelte';
+  import { formatMoney } from './economy/economy';
+  import { ordinal } from './rivals/race';
+  import { LOCATION_META } from './ui/locationMeta';
   import type { Stage } from './calendar/stages';
 
   const game = new Game();
@@ -36,29 +39,12 @@
   type Tab = 'board' | 'location' | 'cohort' | 'diary' | 'help';
   let activeTab = $state<Tab>('board');
 
-  // Location info for the Location tab (derived from current location)
-  const LOCATION_META: Record<string, { name: string; blurb: string }> = {
-    home:             { name: 'Student room',    blurb: 'Your single room: a bed, a desk, and the quiet hum of impostor syndrome.' },
-    upscale_home:     { name: 'Apartment',        blurb: 'A real flat — the reward for surviving the early stages.' },
-    office:           { name: 'Office',           blurb: 'Shared, draughty, the engine room of a career.' },
-    lab:              { name: 'Lab',              blurb: 'Benches, beakers and the faint smell of progress.' },
-    library:          { name: 'Library',          blurb: 'Silence, stacks and strong coffee.' },
-    classroom:        { name: 'Lecture hall',     blurb: 'Where you teach — and are quietly judged.' },
-    seminar_room:     { name: 'Seminar room',     blurb: 'Round-table country.' },
-    cafe_pub:         { name: 'Café / pub',       blurb: 'Caffeine and gossip, the true currencies of academia.' },
-    conference_venue: { name: 'Conference',       blurb: 'Lanyards, name-dropping and the occasional genuinely good idea.' },
-    funder_portal:    { name: 'Funder portal',    blurb: 'Ninety pages so a panel can say "not this round".' },
-    gym_outdoors:     { name: 'Gym',              blurb: 'Your body, briefly remembered.' },
-    health_centre:    { name: 'Health centre',    blurb: 'The GP will tell you to rest.' },
-    park_west:        { name: 'Campus green',     blurb: 'Green space. Pigeons, a bench, and ten honest minutes.' },
-    park_east:        { name: 'Riverside walk',   blurb: 'The river path. Ducks, reeds, and a rare clear thought.' },
-  };
-
   const HELP_ITEMS = [
-    { icon: 'ui-hourglass', vb: '0 0 24 24', title: 'Turn time',    body: 'Each day gives you 100 time points. Travelling between buildings and doing activities both spend them. The clock on the board fills red as time runs down; when it is full, the day ends.' },
-    { icon: 'ui-clock',     vb: '0 0 24 24', title: 'Deadlines',    body: 'Some appointments run on their own clock, shown above the board. They can run out before your turn time does — mind the colour: green ahead, amber soon, red now.' },
+    { icon: 'ui-hourglass', vb: '0 0 24 24', title: 'Term time',    body: 'Each term gives you 100 time points. Travelling between buildings and doing activities both spend them. The clock on the board fills red as time runs down; when it is full, the term ends.' },
+    { icon: 'ui-coin',      vb: '0 0 24 24', title: 'Money',        body: 'Cash is shown at the top. Each term your loan, stipend or salary lands and the rent goes out. Bar shifts, tutoring and invigilating top it up; pints, gym sessions and conference fees drain it. Going overdrawn hurts.' },
+    { icon: 'ui-clock',     vb: '0 0 24 24', title: 'Deadlines',    body: 'Some appointments run on their own clock, shown above the board. They can run out before your term time does — mind the colour: green ahead, amber soon, red now.' },
     { icon: 'ui-flag',      vb: '0 0 24 24', title: 'The four tracks', body: 'Career, Wellbeing, Skill and Standing summarise how you are doing. Activities push them up or down — keep an eye on Wellbeing.' },
-    { icon: 'tok-rival1',   vb: '0 0 16 16', title: 'Your cohort',  body: 'Four rivals race you towards tenure. See where they stand on the board and on the Cohort tab.' },
+    { icon: 'tok-rival1',   vb: '0 0 16 16', title: 'The race',     body: 'Three rivals race you to tenure. Their tokens roam the board, the strip above the board shows the standings, and the Cohort tab has the full table. First to tenure wins.' },
     { icon: 'ui-cap',       vb: '0 0 24 24', title: 'Diploma & stages', body: "The Diploma bar tracks progress through the current stage: Bachelor's, Master's, PhD, postdoc, assistant professor, tenure." },
   ];
 </script>
@@ -71,6 +57,7 @@
   {@const cohortEntries = cohortTracker(game.rivals)}
   {@const headline = rivalHeadline(cohortEntries, game.state.calendar.turn_number)}
   {@const locMeta = LOCATION_META[game.currentLocation] ?? { name: game.currentLocation, blurb: '' }}
+  {@const standings = game.standings}
 
   <div class="console" role="main" aria-label="Campus board">
     <!-- Slim dark header -->
@@ -79,9 +66,15 @@
         <b>Stuck on the Tenure Track</b>
         {#if headline}<span style="color: var(--amber); font-size: 9px; margin-left: 4px">{headline}</span>{/if}
       </div>
-      <div class="c-stage">
-        <Sprite id="ui-cap" size={14} />
-        {STAGE_LABEL[game.stage]}
+      <div class="c-right">
+        <span class="c-cash" class:broke={game.cash < 0}>
+          <Sprite id="ui-coin" size={13} />
+          {formatMoney(game.cash)}
+        </span>
+        <div class="c-stage">
+          <Sprite id="ui-cap" size={14} />
+          {STAGE_LABEL[game.stage]}
+        </div>
       </div>
     </div>
 
@@ -93,15 +86,42 @@
       subGoalProgress={game.subGoalProgress}
     />
 
+    <!-- Cohort race strip: the standings, one tap from the full table -->
+    <button class="race-strip" onclick={() => { activeTab = 'cohort'; }} aria-label="Cohort race standings — open cohort tab">
+      <span class="race-flag"><Sprite id="ui-flag" size={13} /></span>
+      <span class="race-entries">
+        {#each standings as s, i (s.id)}
+          <span class="race-entry" class:you={s.isPlayer}>
+            <b>{ordinal(s.position)}</b>
+            <Sprite
+              id={s.isPlayer ? 'tok-player' : 'tok-rival' + (cohortEntries.findIndex(e => e.rival_id === s.id) + 1)}
+              size={14}
+              vb="0 0 16 16"
+            />
+            {s.isPlayer ? 'You' : s.name}
+          </span>
+          {#if i < standings.length - 1}<span class="race-sep">·</span>{/if}
+        {/each}
+      </span>
+      <span class="race-line">{game.raceLine}</span>
+    </button>
+
     <!-- Main content area -->
     <div class="c-main">
       {#if activeTab === 'board'}
-        <!-- Appointment strip if active -->
+        <!-- Appointment strip: the next one due, or the one just missed -->
         {#if game.nextAppointment}
           <AppointmentBar
             appointment={game.nextAppointment}
             elapsed={game.elapsed}
             atLocation={game.nextAppointment.location === game.currentLocation}
+          />
+        {:else if game.lastMissedAppointment}
+          <AppointmentBar
+            appointment={game.lastMissedAppointment}
+            elapsed={game.elapsed}
+            atLocation={false}
+            missed
           />
         {/if}
         <!-- Board fills remaining space -->
@@ -113,7 +133,8 @@
             timeRemaining={game.timeRemaining}
             activities={game.activities}
             spent={game.activitySpent}
-            day={game.state.calendar.turn_number}
+            day={game.state.calendar.turn_number + 1}
+            cash={game.cash}
             rivals={cohortEntries}
             onMove={(id) => game.moveTo(id)}
             onAct={(activityId, category, points) => game.act(activityId, category, points)}
@@ -156,7 +177,14 @@
                     <div class="loc-act">
                       <div class="loc-act-top">
                         <b>{act.label}</b>
-                        <span class="mono">{act.timeCost}t</span>
+                        <span class="mono">
+                          {#if act.cash !== 0}
+                            <span class="a-cash" class:earn={act.cash > 0} class:spend={act.cash < 0}>
+                              {act.cash > 0 ? '+' : ''}{formatMoney(act.cash)}
+                            </span>
+                          {/if}
+                          {act.timeCost}t
+                        </span>
                       </div>
                       <div class="effects" style="margin-top: 6px">
                         {#each act.positiveEffects as e}
@@ -212,7 +240,7 @@
 
       {:else if activeTab === 'cohort'}
         <div class="c-main scroll">
-          <CohortScreen entries={cohortEntries} />
+          <CohortScreen entries={cohortEntries} {standings} playerRank={STAGE_LABEL[game.stage]} />
         </div>
 
       {:else if activeTab === 'diary'}
@@ -220,11 +248,11 @@
           <div class="tabpane">
             <div class="panel">
               <div class="panel-head">
-                <h3 class="game-title">Diary — day {game.state.calendar.turn_number}</h3>
+                <h3 class="game-title">Diary — term {game.state.calendar.turn_number + 1}</h3>
                 <span class="eyebrow">In progress</span>
               </div>
               <div class="panel-body">
-                <p class="diary-empty">Your diary recap will appear here after the day ends. Tap the clock on the board to end the day.</p>
+                <p class="diary-empty">Your diary recap will appear here after the term ends. Tap the clock on the board to end the term.</p>
                 <div class="term-line" style="margin-top: 12px">
                   <span class="eyebrow">This term's goal</span>
                   {game.subGoal.title}.
@@ -327,7 +355,7 @@
       <div class="mt"><b>Stuck on the Tenure Track</b></div>
       <div class="c-stage">
         <Sprite id="ui-flag" size={14} />
-        Day recap
+        Term recap
       </div>
     </div>
     <DiaryScreen recap={game.recap} onContinue={() => game.continueFromRecap()} />

@@ -87,7 +87,9 @@ export function createNewGame(seed: string = `beta-${Date.now()}`): NewGame {
       name: 'You',
       gender: 'unspecified',
       broad_discipline: 'psychology',
-      funds: { personal: 1200, research: 0 },
+      // Tight on purpose: freshers' week took the rest. Paid shifts on the
+      // board are how the balance grows.
+      funds: { personal: 350, research: 0 },
       wellbeing: { sleep: 70, mood: 70, physical: 70, stress: 20 },
       expertise: { methods: 2, theory: 2, writing: 2, statistics: 2, teaching: 0, politics: 0 },
       standing: { rank: 'undergraduate', reputation: 5, affiliation_prestige: 40 },

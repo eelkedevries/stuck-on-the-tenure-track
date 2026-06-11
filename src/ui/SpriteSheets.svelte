@@ -48,6 +48,22 @@
   import gFlag from '../assets/sprites/glyphs/flag.svg?raw';
   import gStar from '../assets/sprites/glyphs/star.svg?raw';
 
+  // Location characters (Jones-style clerks)
+  import nLandlady from '../assets/sprites/npcs/landlady.svg?raw';
+  import nConcierge from '../assets/sprites/npcs/concierge.svg?raw';
+  import nChair from '../assets/sprites/npcs/chair.svg?raw';
+  import nTech from '../assets/sprites/npcs/tech.svg?raw';
+  import nLibrarian from '../assets/sprites/npcs/librarian.svg?raw';
+  import nStudent from '../assets/sprites/npcs/student.svg?raw';
+  import nEmeritus from '../assets/sprites/npcs/emeritus.svg?raw';
+  import nBarista from '../assets/sprites/npcs/barista.svg?raw';
+  import nRep from '../assets/sprites/npcs/rep.svg?raw';
+  import nRobot from '../assets/sprites/npcs/robot.svg?raw';
+  import nCoach from '../assets/sprites/npcs/coach.svg?raw';
+  import nGp from '../assets/sprites/npcs/gp.svg?raw';
+  import nPigeon from '../assets/sprites/npcs/pigeon.svg?raw';
+  import nDuck from '../assets/sprites/npcs/duck.svg?raw';
+
   // Extract inner SVG content and viewBox from a raw SVG string
   function svgInner(raw: string): { inner: string; vb: string } {
     const vbMatch = raw.match(/viewBox="([^"]+)"/);
@@ -114,6 +130,21 @@
     sym('ui-cap', gCap, '0 0 24 24'),
     sym('ui-flag', gFlag, '0 0 24 24'),
     sym('ui-star', gStar, '0 0 24 24'),
+    // Location characters (24x24)
+    sym('npc-landlady', nLandlady, '0 0 24 24'),
+    sym('npc-concierge', nConcierge, '0 0 24 24'),
+    sym('npc-chair', nChair, '0 0 24 24'),
+    sym('npc-tech', nTech, '0 0 24 24'),
+    sym('npc-librarian', nLibrarian, '0 0 24 24'),
+    sym('npc-student', nStudent, '0 0 24 24'),
+    sym('npc-emeritus', nEmeritus, '0 0 24 24'),
+    sym('npc-barista', nBarista, '0 0 24 24'),
+    sym('npc-rep', nRep, '0 0 24 24'),
+    sym('npc-robot', nRobot, '0 0 24 24'),
+    sym('npc-coach', nCoach, '0 0 24 24'),
+    sym('npc-gp', nGp, '0 0 24 24'),
+    sym('npc-pigeon', nPigeon, '0 0 24 24'),
+    sym('npc-duck', nDuck, '0 0 24 24'),
   ];
 
   // Inline SVG symbol strings for extra glyphs without files
@@ -133,6 +164,15 @@
   <rect x="10" y="14" width="12" height="10" fill="#1f6f43"/>
   <rect x="8" y="8" width="16" height="10" fill="#2f8f6b"/>
   <rect x="12" y="3" width="8" height="8" fill="#1f6f43"/>
+</symbol>
+<symbol id="ui-coin" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" fill="#c79a00" stroke="#1a1a1a" stroke-width="1.5"/>
+  <circle cx="12" cy="12" r="6.5" fill="#f0e3a6"/>
+  <rect x="10" y="7" width="3" height="2" fill="#8a6b00"/>
+  <rect x="9" y="9" width="3" height="2" fill="#8a6b00"/>
+  <rect x="9" y="11" width="5" height="2" fill="#8a6b00"/>
+  <rect x="9" y="13" width="3" height="2" fill="#8a6b00"/>
+  <rect x="9" y="15" width="6" height="2" fill="#8a6b00"/>
 </symbol>
 `;
 </script>

@@ -1,6 +1,6 @@
 # Current state
 
-Last updated: 2026-06-01.
+Last updated: 2026-06-11.
 
 ## Repository state
 
@@ -147,6 +147,25 @@ The completed pass focused on:
 Run one prompt per session per `prompt_execution_guide.md`; do not rerun the
 completed M17 prompts (`074`–`091`) or the completed simplification prompts
 (`098`–`105`).
+
+## Jones-fidelity and fun pass (109)
+
+Prompt `109` layered the *Jones in the Fast Lane* pressure loop over the existing
+simulation without touching the save schema. **Money** now flows: per-stage
+income (loan/stipend/salary) lands and rent goes out at term end
+(`src/economy/economy.ts`), paid work (bar shifts, tutoring, marking,
+invigilating) and priced activities (rounds, gym, GP, conference fees) sit on
+the board (`cash` on activities in `src/locations/stages.ts`), the balance is
+always visible in the header, and overdrafts cost stress and mood. The **cohort
+race is visible**: a public score (`src/rivals/race.ts`) orders the player and
+rivals in a race strip and a full Cohort race table, and rival tokens occupy
+deterministic board locations each term (`src/rivals/positions.ts`), with
+"rival is here" sightings in interiors. Every location has a **named character**
+with rotating satirical patter in a speech bubble (`src/ui/npcs.ts`, fourteen
+portrait sprites under `src/assets/sprites/npcs/`). Acting pops a **feedback
+toast**; missed appointments stay on the strip as MISSED; buildings carry
+Jones-style name signs; display names are unified in `src/ui/locationMeta.ts`;
+and all player-facing wording now says **term** (one-based) instead of "day".
 
 ## Progression clarity pass (107)
 

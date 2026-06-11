@@ -26,6 +26,8 @@ export interface RecapInput {
   missedAppointments?: string[];
   progressBefore?: number;
   progressAfter?: number;
+  // Term-end money story (income, rent, overdraft), from the economy module.
+  financeLines?: string[];
 }
 
 const FOCUS_LINES: Record<ActionCategory, string[]> = {
@@ -210,7 +212,7 @@ function readableConsequence(
   if (urgent.length > 0 && top === 'personal')
     return `${urgent[0].title} is close enough to appear in dreams; you chose recovery anyway.`;
   if (top === 'personal' && totalWork >= 20)
-    return 'You made some career progress, then spent the remaining day on recovery before the machinery noticed.';
+    return 'You made some career progress, then spent the rest of the term on recovery before the machinery noticed.';
   if (top && allocation[top] >= 45) return FOCUS_LINES[top][0];
   if (top) return FOCUS_LINES[top][1];
   if (eventTitles.length > 0)
@@ -281,6 +283,9 @@ export function buildRecap(input: RecapInput): Recap {
 
   // One visible progress or setback line.
   lines.push(progressLine(input));
+
+  // The money story: stipend in, rent out, and any overdraft drama.
+  for (const financeLine of input.financeLines ?? []) lines.push(financeLine);
 
   // Keep a compact travel/event footnote only when it adds useful context.
   const visited = after.player.location_visits

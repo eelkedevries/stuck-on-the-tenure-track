@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48" shape-rendering="crispEdges" role="img" aria-label="student rep">
+  <rect x="4" y="16" width="16" height="8" fill="#5a3a7a"></rect>
+  <rect x="9" y="16" width="6" height="2" fill="#7a5a9e"></rect>
+  <rect x="4" y="16" width="2" height="8" fill="#7a5a9e"></rect>
+  <rect x="18" y="16" width="2" height="8" fill="#7a5a9e"></rect>
+  <rect x="10" y="15" width="4" height="2" fill="#c98a5a"></rect>
+  <rect x="7" y="6" width="10" height="9" fill="#c98a5a"></rect>
+  <rect x="6" y="4" width="12" height="3" fill="#23231d"></rect>
+  <rect x="6" y="7" width="1" height="2" fill="#23231d"></rect>
+  <rect x="17" y="7" width="1" height="2" fill="#23231d"></rect>
+  <rect x="9" y="9" width="1" height="1" fill="#23231d"></rect>
+  <rect x="14" y="9" width="1" height="1" fill="#23231d"></rect>
+  <rect x="9" y="12" width="5" height="1" fill="#5a3a26"></rect>
+  <rect x="5" y="14" width="3" height="3" fill="#37414b"></rect>
+  <rect x="16" y="14" width="3" height="3" fill="#37414b"></rect>
+</svg>

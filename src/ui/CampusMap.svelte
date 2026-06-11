@@ -1,10 +1,15 @@
 <script lang="ts">
   // Jones-style ring board with centre activity window, clock dial,
-  // and walk animation. Ported from prototype.app.jsx.
+  // and walk animation. The centre window plays the location interior like a
+  // Jones storefront: scene, resident character with a line of patter, then
+  // the menu of things to do (with prices). Acting pops a feedback toast.
   import { COORDS, travelCost } from '../locations/board';
   import { ALL_LOCATIONS, type LocationId } from '../locations/types';
   import type { ActionCategory } from '../engine/actions';
   import type { BoardActivity } from '../locations/stages';
+  import { NPCS, npcLine } from './npcs';
+  import { formatMoney } from '../economy/economy';
+  import { LOCATION_META } from './locationMeta';
   import Sprite from './Sprite.svelte';
 
   interface RivalToken { id: string; name: string; sprite: string; pos: LocationId }
@@ -13,6 +18,7 @@
     selected?: LocationId | null;
     timeRemaining: number;
     day?: number;
+    cash?: number;
     rivals?: RivalToken[];
     target?: LocationId | null;
     overdue?: boolean;
@@ -27,6 +33,7 @@
     selected = null,
     timeRemaining,
     day = 1,
+    cash = 0,
     rivals = [],
     target = null,
     overdue = false,
@@ -45,6 +52,15 @@
 
   const current = $derived((selected ?? 'office') as LocationId);
 
+  // Visits this session, for rotating the character's patter on re-entry.
+  let visitTick = $state(0);
+
+  // Feedback toast for the last activity taken.
+  interface Toast { id: number; text: string; cash: number }
+  let toast = $state<Toast | null>(null);
+  let toastSeq = 0;
+  let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
   // When time runs out, switch to clock view
   $effect(() => {
     if (timeRemaining <= 0 && view !== 'clock') view = 'clock';
@@ -58,12 +74,15 @@
     }
     const cost = travelCost(current, id);
     if (cost > timeRemaining) return;
+    clearTimeout(toastTimer);
+    toast = null;
     walkTo = id;
     walking = true;
     onSelect?.(id);
     setTimeout(() => {
       walking = false;
       walkTo = null;
+      visitTick += 1;
       view = 'location';
     }, 950);
   }
@@ -71,6 +90,19 @@
   function handleClockClick() {
     if (walking) return;
     view = view === 'clock' ? 'location' : 'clock';
+  }
+
+  function handleAct(act: BoardActivity) {
+    const parts = [`−${act.timeCost}t`];
+    if (act.cash > 0) parts.push(`+${formatMoney(act.cash)}`);
+    if (act.cash < 0) parts.push(formatMoney(act.cash));
+    for (const e of act.positiveEffects.slice(0, 2)) parts.push(`▲ ${e.replace(/ \+$/, '')}`);
+    for (const e of act.negativeEffects.slice(0, 1)) parts.push(`▼ ${e.replace(/ −$/, '')}`);
+    toastSeq += 1;
+    toast = { id: toastSeq, text: `${act.label}: ${parts.join(' · ')}`, cash: act.cash };
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast = null; }, 2200);
+    onAct?.(act.id, act.category, act.timeCost);
   }
 
   // Sprite / display helpers
@@ -83,29 +115,14 @@
     return 'int-' + locId;
   }
 
-  // Location metadata
-  interface LocMeta { name: string; blurb: string; accent: [string, string] }
-  const LOCATION_META: Record<LocationId, LocMeta> = {
-    home:             { name: 'Student room',     blurb: 'Your single room: a bed, a desk, and the quiet hum of impostor syndrome.',                     accent: ['var(--wellbeing)', '#fff'] },
-    upscale_home:     { name: 'Apartment',         blurb: 'A real flat — the reward for surviving the early stages.',                                       accent: ['var(--wellbeing)', '#fff'] },
-    office:           { name: 'Office',            blurb: 'Shared, draughty, the engine room of a career.',                                                 accent: ['var(--gold)', '#1a1a1a'] },
-    lab:              { name: 'Lab',               blurb: 'Benches, beakers and the faint smell of progress.',                                              accent: ['var(--green)', '#fff'] },
-    library:          { name: 'Library',           blurb: 'Silence, stacks and strong coffee.',                                                             accent: ['var(--green)', '#fff'] },
-    classroom:        { name: 'Lecture hall',      blurb: 'Where you teach — and are quietly judged.',                                                      accent: ['var(--skill)', '#fff'] },
-    seminar_room:     { name: 'Seminar room',      blurb: 'Round-table country.',                                                                           accent: ['var(--standing)', '#fff'] },
-    cafe_pub:         { name: 'Café / pub',        blurb: 'Caffeine and gossip, the true currencies of academia.',                                          accent: ['var(--standing)', '#fff'] },
-    conference_venue: { name: 'Conference',        blurb: 'Lanyards, name-dropping and the occasional genuinely good idea.',                                accent: ['var(--skill)', '#fff'] },
-    funder_portal:    { name: 'Funder portal',     blurb: 'Ninety pages so a panel can say "not this round".',                                             accent: ['var(--gold)', '#1a1a1a'] },
-    gym_outdoors:     { name: 'Gym',               blurb: 'Your body, briefly remembered.',                                                                 accent: ['var(--wellbeing)', '#fff'] },
-    health_centre:    { name: 'Health centre',     blurb: 'The GP will tell you to rest.',                                                                   accent: ['var(--danger)', '#fff'] },
-    park_west:        { name: 'Campus green',      blurb: 'Green space. Pigeons, a bench, and ten honest minutes.',                                         accent: ['var(--green-d)', '#fff'] },
-    park_east:        { name: 'Riverside walk',    blurb: 'The river path. Ducks, reeds, and a rare clear thought.',                                        accent: ['var(--green-d)', '#fff'] },
-  };
-
   const PARK_IDS = new Set<LocationId>(['park_west', 'park_east']);
 
   const meta = $derived(LOCATION_META[current]);
   const [accentBg, accentFg] = $derived(meta.accent);
+
+  const npc = $derived(NPCS[current]);
+  const patter = $derived(npcLine(current, day, visitTick));
+  const rivalsHere = $derived(rivals.filter((r) => r.pos === current));
 
   const spent_deg = $derived(Math.max(0, Math.min(100, 100 - timeRemaining)) * 3.6);
   const clockFull = $derived(timeRemaining <= 0);
@@ -136,10 +153,10 @@
             <div class="walk-label">Walking to {destName}…</div>
           </div>
         {:else if view === 'clock'}
-          <!-- End-of-day panel -->
+          <!-- End-of-term panel -->
           <div class="plaque" style="background: var(--danger)">
             <Sprite id="ui-clock" size={20} />
-            <span style="color: #fff">Day clock</span>
+            <span style="color: #fff">Term clock</span>
           </div>
           <div class="endday">
             <div class={'big-dial' + (clockFull ? ' done' : '')} style="--deg: {spent_deg}deg">
@@ -152,13 +169,13 @@
             </div>
             <p class="endday-copy">
               {#if clockFull}
-                The day is spent. Time to sleep on it.
+                The term is spent. Time to write the diary and move on.
               {:else}
-                You have {timeRemaining} time points left today. End the day whenever you like — unused time is lost.
+                You have {timeRemaining} time points left this term. End it whenever you like — unused time becomes rest.
               {/if}
             </p>
             <div class="endday-actions">
-              <button class="btn btn-primary" onclick={() => onEndDay?.()}>End the day ▸</button>
+              <button class="btn btn-primary" onclick={() => onEndDay?.()}>End the term ▸</button>
               {#if !clockFull}
                 <button class="btn" onclick={() => { view = 'location'; }}>Not yet</button>
               {/if}
@@ -175,26 +192,55 @@
             <svg class="scene-img" viewBox="0 0 128 64" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <use href={'#' + intId(current)} />
             </svg>
+            {#if toast}
+              {#key toast.id}
+                <div class="act-toast" class:gain={toast.cash > 0} class:cost={toast.cash < 0} role="status">
+                  {toast.text}
+                </div>
+              {/key}
+            {/if}
+          </div>
+          <div class="npc-row">
+            <span class="npc-face">
+              <Sprite id={npc.sprite} size={46} vb="0 0 24 24" />
+            </span>
+            <div class="npc-bubble">
+              <b class="npc-name">{npc.name} <small>· {npc.role}</small></b>
+              <p class="npc-line">{patter}</p>
+              {#if rivalsHere.length > 0}
+                <p class="rival-note">
+                  {#each rivalsHere as rv (rv.id)}
+                    <Sprite id={rv.sprite} cls="rival-mini" size={14} vb="0 0 16 16" />
+                  {/each}
+                  {rivalsHere.map((r) => r.name).join(' and ')}
+                  {rivalsHere.length === 1 ? 'is' : 'are'} here, looking annoyingly productive.
+                </p>
+              {/if}
+            </div>
           </div>
           <div class="acts-in">
             {#if activities.length > 0}
               {#each activities as act (act.id)}
-                {@const can = act.timeCost <= timeRemaining}
+                {@const affordable = act.cash >= 0 || cash + act.cash >= 0}
+                {@const can = act.timeCost <= timeRemaining && affordable}
                 <button
                   class="arow"
                   disabled={!can}
-                  onclick={() => can && onAct?.(act.id, act.category, act.timeCost)}
-                  title={act.flavour}
+                  onclick={() => can && handleAct(act)}
+                  title={!affordable ? 'You cannot afford this right now.' : act.flavour}
                 >
-                  <span class="an">{act.label}</span>
-                  <span class="ae">
-                    {#each act.positiveEffects as _e, _i}
-                      <span class="sq up" title="▲ {_e}"></span>
-                    {/each}
-                    {#each act.negativeEffects as _e, _i}
-                      <span class="sq down" title="▼ {_e}"></span>
-                    {/each}
+                  <span class="a-main">
+                    <span class="an">
+                      {act.label}
+                      {#if act.badge}<span class="a-badge">{act.badge}</span>{/if}
+                    </span>
+                    <span class="ah">{!affordable ? 'Not enough cash' : act.effectHint}</span>
                   </span>
+                  {#if act.cash !== 0}
+                    <span class="a-cash" class:earn={act.cash > 0} class:spend={act.cash < 0}>
+                      {act.cash > 0 ? '+' : ''}{formatMoney(act.cash)}
+                    </span>
+                  {/if}
                   <span class="ac">{act.timeCost}t</span>
                 </button>
               {/each}
@@ -215,6 +261,7 @@
       {@const onit = rivals.filter(r => r.pos === location.id)}
       {@const isPark = PARK_IDS.has(location.id)}
       {@const isTarget = target === location.id}
+      {@const [signBg, signFg] = LOCATION_META[location.id].accent}
       <button
         style="grid-column: {pos.x + 1} / {pos.x + 2}; grid-row: {pos.y + 1} / {pos.y + 2}"
         class="bldg"
@@ -228,10 +275,12 @@
         aria-pressed={here}
         onclick={() => handleBuildingClick(location.id)}
       >
+        <span class="b-sign" style="background: {signBg}; color: {signFg}">
+          {LOCATION_META[location.id]?.name ?? location.name}
+        </span>
         <span class="b-art">
           <Sprite id={extId(location.id)} cls="b-ico" size={34} vb="0 0 32 32" />
         </span>
-        <span class="b-name">{LOCATION_META[location.id]?.name ?? location.name}</span>
         <span class="b-cost">{here ? 'HERE' : '·' + cost + 't'}</span>
         {#if here || onit.length > 0}
           <span class="token-layer">
@@ -253,7 +302,7 @@
         class:active={view === 'clock'}
         class:done={clockFull}
         onclick={handleClockClick}
-        aria-label="Day clock — {timeRemaining} time left. {view === 'clock' ? 'Close end-of-day.' : 'Open end-of-day.'}"
+        aria-label="Term clock — {timeRemaining} time left. {view === 'clock' ? 'Close end-of-term.' : 'Open end-of-term.'}"
       >
         <div class="dial" style="--deg: {spent_deg}deg">
           <div class="dial-hand"></div>
@@ -263,7 +312,7 @@
             <span class="dial-u">left</span>
           </div>
         </div>
-        <span class="c-day">DAY {day}</span>
+        <span class="c-day">TERM {day}</span>
       </button>
     </div>
 

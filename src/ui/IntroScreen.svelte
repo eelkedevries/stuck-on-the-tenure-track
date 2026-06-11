@@ -19,17 +19,18 @@
     and earn more.
   </p>
 
-  <h3>How a turn works</h3>
+  <h3>How a term works</h3>
   <ol>
     <li><strong>Events.</strong> Things happen. Read each one and choose how to respond.</li>
     <li><strong>The campus.</strong> Go to places on the board and spend your time there — studying, teaching, researching, resting.</li>
+    <li><strong>Money.</strong> Your loan lands each term and the rent goes out. Bar shifts and tutoring pay; pints and conference fees do not. Stay out of the red.</li>
     <li><strong>Deadlines.</strong> Keep an eye on what's due. Missing things has consequences.</li>
-    <li><strong>End the turn.</strong> You get a short diary of what happened, then time moves on (about six months a turn).</li>
+    <li><strong>End the term.</strong> You get a short diary of what happened, then time moves on (about six months a term).</li>
   </ol>
 
   <p class="aside">
-    Mind your sleep, your mood, and the people who put up with you. A glittering CV and no life
-    still counts as winning — technically.
+    Mind your sleep, your mood, your bank balance, and the people who put up with you. A glittering
+    CV and no life still counts as winning — technically.
   </p>
 
   <button type="button" class="primary" onclick={() => onBegin?.()}>Begin</button>

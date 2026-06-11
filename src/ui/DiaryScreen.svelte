@@ -14,7 +14,7 @@
 <div class="c-main scroll" aria-label="End-of-turn diary">
   <div class="panel">
     <div class="panel-head">
-      <h3 class="game-title">Turn {recap.turn} — diary</h3>
+      <h3 class="game-title">Term {recap.turn + 1} — diary</h3>
       <span class="eyebrow">Recap</span>
     </div>
     <div class="panel-body">

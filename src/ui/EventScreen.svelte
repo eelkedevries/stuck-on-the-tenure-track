@@ -45,7 +45,7 @@
   </ul>
 
   <button type="button" class="continue" disabled={!canContinue} onclick={() => onContinue?.()}>
-    {canContinue ? 'Get on with the day' : 'Respond to everything first'}
+    {canContinue ? 'Get on with the term' : 'Respond to everything first'}
   </button>
 </section>
 

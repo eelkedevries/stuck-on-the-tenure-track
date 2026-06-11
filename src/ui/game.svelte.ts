@@ -33,6 +33,8 @@ import { buildRecap, type Recap } from './recap';
 import { rivalSighting } from '../rivals/sightings';
 import type { LocationVisit } from '../state/save';
 import { scheduleAppointments, type Appointment } from '../appointments/appointments';
+import { applyTermFinances } from '../economy/economy';
+import { raceStandings, raceLine, type RaceEntry } from '../rivals/race';
 
 // Content packs are static, so load them once; the per-player event pool is
 // derived from them by sub-discipline at the start of each turn.
@@ -175,6 +177,22 @@ export class Game {
     return travelCost(this.currentLocation, id);
   }
 
+  // Personal cash in hand — the Jones-style pressure resource. Rent and income
+  // move it at term end; paid work and spending move it during the term.
+  get cash(): number {
+    return this.state?.player.funds.personal ?? 0;
+  }
+
+  // The cohort race, including the player, ordered by public academic score.
+  get standings(): RaceEntry[] {
+    if (!this.state) return [];
+    return raceStandings(this.state, this.rivals);
+  }
+
+  get raceLine(): string {
+    return raceLine(this.standings);
+  }
+
   // Time-points elapsed in the current turn.
   get elapsed(): number {
     return TURN_TIME_POINTS - this.timeRemaining;
@@ -186,6 +204,16 @@ export class Game {
       this.appointments
         .filter((a) => a.status === 'pending')
         .sort((a, b) => a.at_tp - b.at_tp)[0] ?? null
+    );
+  }
+
+  // The most recently missed appointment, kept visible for the rest of the
+  // term so the failure is felt rather than silently logged.
+  get lastMissedAppointment(): Appointment | null {
+    return (
+      this.appointments
+        .filter((a) => a.status === 'missed')
+        .sort((a, b) => b.at_tp - a.at_tp)[0] ?? null
     );
   }
 
@@ -275,6 +303,7 @@ export class Game {
           timeCost: wait,
           effectHint: `Let ${wait}t pass so the timed activity becomes available`,
           flavour: 'Waiting only advances the clock; you still need to spend time on the actual activity afterwards.',
+          cash: 0,
           positiveEffects: ['Ready on time'],
           negativeEffects: ['Time −'],
           badge: appointmentWaitBadge(a.type),
@@ -298,6 +327,7 @@ export class Game {
           timeCost: Math.min(20, Math.max(10, this.timeRemaining)),
           effectHint: 'Attend this timed commitment before its bar empties',
           flavour: 'Being here is not enough — spend time on this to count it.',
+          cash: 0,
           positiveEffects: ['Attendance +', 'Standing +'],
           negativeEffects: ['Time −', 'Stress if missed'],
           badge: appointmentBadge(a.type),
@@ -324,6 +354,7 @@ export class Game {
           timeCost: linked.timeCost,
           effectHint: linked.effectHint,
           flavour: 'Spend time on this before the turn resolves, or it may count as missed.',
+          cash: 0,
           positiveEffects: linked.positiveEffects,
           negativeEffects: linked.negativeEffects,
           badge: 'Deadline activity',
@@ -396,10 +427,15 @@ export class Game {
   }
 
   // Spend time on a visible location activity, drawing down the budget while
-  // tracking the selected card separately from the internal category.
+  // tracking the selected card separately from the internal category. Paid
+  // work and priced activities move cash immediately, so the till rings the
+  // moment the choice is made; purchases the player cannot afford are refused.
   act(activityId: string, category: ActionCategory, points: number): void {
     if (this.waitForAppointment(activityId)) return;
     if (!this.availableActions.includes(category)) return;
+    const activity = this.activities.find((a) => a.id === activityId);
+    const cash = activity?.cash ?? 0;
+    if (cash < 0 && this.cash + cash < 0) return;
     const elapsedAtStart = this.elapsed;
     const pts = Math.max(0, Math.min(Math.floor(points), this.timeRemaining));
     if (pts === 0) return;
@@ -408,6 +444,18 @@ export class Game {
       ...this.activitySpent,
       [activityId]: (this.activitySpent[activityId] ?? 0) + pts,
     };
+    if (cash !== 0 && this.state) {
+      this.state = {
+        ...this.state,
+        player: {
+          ...this.state.player,
+          funds: {
+            ...this.state.player.funds,
+            personal: this.state.player.funds.personal + cash,
+          },
+        },
+      };
+    }
     this.attendAppointment(activityId, elapsedAtStart);
     this.resolveAppointments();
     this.endIfTimeUp();
@@ -418,7 +466,7 @@ export class Game {
     this.act(activityId, category, this.timeRemaining);
   }
 
-  // Let the rest of the day pass as rest, ending the turn. This is how a turn
+  // Let the rest of the term pass as rest, ending the turn. This is how a turn
   // ends when time remains — there is no "end turn" button.
   relax(): void {
     if (!this.state) return;
@@ -587,6 +635,8 @@ export class Game {
       .filter((a) => a.status === 'missed')
       .map((a) => a.title);
     const progressBefore = subGoalProgress(subGoalFor(current));
+    // The stage the term was lived in, for stipend/rent purposes.
+    const stagePlayed = this.stage;
     let advanced: Rival[] = this.rivals;
     const next = runTurn(current, this.stage, {
       allocation: this.allocation,
@@ -596,6 +646,10 @@ export class Game {
       },
     });
     let merged: SaveGame = { ...next, rivals: advanced as unknown as SaveGame['rivals'] };
+
+    // Term-end finances: income lands, rent goes out, overdrafts hurt.
+    const finances = applyTermFinances(merged, stagePlayed);
+    merged = finances.state;
 
     this.pendingEnd = merged.calendar.turn_number >= totalTurns();
     if (this.pendingEnd) {
@@ -628,6 +682,7 @@ export class Game {
       missedAppointments,
       progressBefore,
       progressAfter,
+      financeLines: finances.lines,
     });
     this.allocation = emptyAllocation();
     this.waitingSpent = 0;
