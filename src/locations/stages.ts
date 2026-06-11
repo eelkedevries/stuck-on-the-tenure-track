@@ -10,8 +10,19 @@
 import type { Stage } from '../calendar/stages';
 import { LOCATIONS, type LocationId } from './types';
 import type { ActionCategory } from '../engine/actions';
+import type { EventEffects } from '../content/types';
 
 type RoutineBoardCategory = Exclude<ActionCategory, 'misconduct'>;
+
+// A push-your-luck activity: the outcome is rolled the moment it is taken,
+// applying either the win or the lose effects (any stake goes through `cash`).
+export interface ActivityGamble {
+  odds: number; // probability of the win outcome, 0..1
+  win: EventEffects;
+  lose: EventEffects;
+  winText: string;
+  loseText: string;
+}
 
 export interface Activity {
   id?: string;
@@ -24,6 +35,7 @@ export interface Activity {
   // negative costs (rounds, fees, memberships). Applied immediately by the
   // store; omitted means free.
   cash?: number;
+  gamble?: ActivityGamble;
   // Optional per-activity effect labels; defaults derive from the category.
   positiveEffects?: string[];
   negativeEffects?: string[];
@@ -139,6 +151,26 @@ const DEFAULT_PERSONALITY: Record<LocationId, string> = {
   park_east: 'The river path. Ducks, reeds, and a rare clear thought.',
 };
 
+// The pub's standing flutter: a tenner in, perhaps sixty out. Available at
+// every stage, because the quiz machine outlives all careers.
+const PUB_QUIZ: Activity = {
+  label: 'Pub quiz night',
+  category: 'personal',
+  timeCost: 10,
+  cash: -10,
+  effectHint: 'A flutter: £10 in, maybe £60 out',
+  flavour: 'Your specialist subject is, regrettably, your actual specialist subject.',
+  positiveEffects: ['Maybe £60', 'Mood +'],
+  negativeEffects: ['Cash −'],
+  gamble: {
+    odds: 0.35,
+    win: { personal_funds: 60, mood: 3 },
+    lose: { mood: 1 },
+    winText: 'Your table wins the pub quiz. Glory, and £60 behind the bar.',
+    loseText: 'Second place, again, to the retired geographers.',
+  },
+};
+
 const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocation>>>> = {
   undergraduate: {
     classroom: {
@@ -201,6 +233,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
           positiveEffects: ['Cash +'],
           negativeEffects: ['Time −', 'Energy −'],
         },
+        PUB_QUIZ,
       ],
     },
     conference_venue: {
@@ -299,6 +332,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
           positiveEffects: ['Cash +'],
           negativeEffects: ['Time −', 'Energy −'],
         },
+        PUB_QUIZ,
       ],
     },
     conference_venue: {
@@ -376,7 +410,25 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
     },
     seminar_room: {
       focus: 'Attend talks',
-      activities: [{ label: 'Attend a talk', category: 'networking' }],
+      activities: [
+        { label: 'Attend a talk', category: 'networking' },
+        {
+          label: 'Three-minute-thesis contest',
+          category: 'networking',
+          timeCost: 15,
+          effectHint: 'High stakes: a name for yourself and £100, or public blankness',
+          flavour: 'One slide, three minutes, every word a hostage.',
+          positiveEffects: ['Maybe rep ++', 'Maybe £100'],
+          negativeEffects: ['Stress risk'],
+          gamble: {
+            odds: 0.25,
+            win: { reputation: 3, personal_funds: 100, mood: 3 },
+            lose: { stress: 4 },
+            winText: 'You win the three-minute thesis: clean, funny, devastating.',
+            loseText: 'You blank at minute two. The silence has a postcode.',
+          },
+        },
+      ],
     },
     conference_venue: {
       focus: 'Present your work — if you can pay the fee',
@@ -412,6 +464,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
       activities: [
         { label: 'Peer support', category: 'networking', cash: -15 },
         { label: 'Unwind', category: 'personal', cash: -10 },
+        PUB_QUIZ,
       ],
     },
     home: {
@@ -496,6 +549,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
       activities: [
         { label: 'Meet a collaborator', category: 'networking', cash: -15 },
         { label: 'Unwind', category: 'personal', cash: -10 },
+        PUB_QUIZ,
       ],
     },
     home: {
@@ -565,6 +619,7 @@ const STAGE_BOARD: Partial<Record<Stage, Partial<Record<LocationId, StageLocatio
           flavour: 'Strategic rounds. The receipts are, in a sense, an investment portfolio.',
         },
         { label: 'Unwind', category: 'personal', cash: -10 },
+        PUB_QUIZ,
       ],
     },
     conference_venue: {

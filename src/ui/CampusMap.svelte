@@ -10,9 +10,11 @@
   import { NPCS, npcLine } from './npcs';
   import { formatMoney } from '../economy/economy';
   import { LOCATION_META } from './locationMeta';
+  import type { Flash } from './game.svelte';
   import Sprite from './Sprite.svelte';
 
   interface RivalToken { id: string; name: string; sprite: string; pos: LocationId }
+  interface Pipeline { drafting: number; submitted: number; published: number }
 
   interface Props {
     selected?: LocationId | null;
@@ -24,6 +26,8 @@
     overdue?: boolean;
     activities?: BoardActivity[];
     spent?: Record<string, number>;
+    flash?: Flash | null;
+    pipeline?: Pipeline | null;
     onSelect?: (id: LocationId) => void;
     onAct?: (activityId: string, category: ActionCategory, points: number) => void;
     onEndDay?: () => void;
@@ -39,6 +43,8 @@
     overdue = false,
     activities = [],
     spent = {},
+    flash = null,
+    pipeline = null,
     onSelect,
     onAct,
     onEndDay,
@@ -55,11 +61,19 @@
   // Visits this session, for rotating the character's patter on re-entry.
   let visitTick = $state(0);
 
-  // Feedback toast for the last activity taken.
-  interface Toast { id: number; text: string; cash: number }
+  // Feedback toast, driven by the store's flash channel (action results,
+  // campus moments, gamble outcomes).
+  interface Toast { id: number; text: string; tone: Flash['tone'] }
   let toast = $state<Toast | null>(null);
-  let toastSeq = 0;
   let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
+  $effect(() => {
+    const f = flash;
+    if (!f) return;
+    toast = { id: f.seq, text: f.text, tone: f.tone };
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast = null; }, 2800);
+  });
 
   // When time runs out, switch to clock view
   $effect(() => {
@@ -93,17 +107,16 @@
   }
 
   function handleAct(act: BoardActivity) {
-    const parts = [`−${act.timeCost}t`];
-    if (act.cash > 0) parts.push(`+${formatMoney(act.cash)}`);
-    if (act.cash < 0) parts.push(formatMoney(act.cash));
-    for (const e of act.positiveEffects.slice(0, 2)) parts.push(`▲ ${e.replace(/ \+$/, '')}`);
-    for (const e of act.negativeEffects.slice(0, 1)) parts.push(`▼ ${e.replace(/ −$/, '')}`);
-    toastSeq += 1;
-    toast = { id: toastSeq, text: `${act.label}: ${parts.join(' · ')}`, cash: act.cash };
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toast = null; }, 2200);
     onAct?.(act.id, act.category, act.timeCost);
   }
+
+  // A rival in the room earns a line of needle, rotating with the term.
+  const TAUNTS = [
+    '“How is the writing going?” they ask, terribly kindly.',
+    '“I had a really productive term,” they say, unprompted.',
+    'They mention their supervisor replied within the hour. Twice.',
+    '“You look tired,” they say, radiating eight hours of sleep.',
+  ];
 
   // Sprite / display helpers
   function extId(locId: LocationId): string {
@@ -194,7 +207,7 @@
             </svg>
             {#if toast}
               {#key toast.id}
-                <div class="act-toast" class:gain={toast.cash > 0} class:cost={toast.cash < 0} role="status">
+                <div class="act-toast" class:good={toast.tone === 'good'} class:bad={toast.tone === 'bad'} role="status">
                   {toast.text}
                 </div>
               {/key}
@@ -213,11 +226,20 @@
                     <Sprite id={rv.sprite} cls="rival-mini" size={14} vb="0 0 16 16" />
                   {/each}
                   {rivalsHere.map((r) => r.name).join(' and ')}
-                  {rivalsHere.length === 1 ? 'is' : 'are'} here, looking annoyingly productive.
+                  {rivalsHere.length === 1 ? 'is' : 'are'} here.
+                  {TAUNTS[(day + rivalsHere[0].name.length) % TAUNTS.length]}
                 </p>
               {/if}
             </div>
           </div>
+          {#if pipeline && (current === 'office' || current === 'lab' || current === 'library')}
+            <div class="pipeline" aria-label="Paper pipeline">
+              <span class="pl-t">Papers</span>
+              <span class="pl-chip">{pipeline.drafting} drafting</span>
+              <span class="pl-chip">{pipeline.submitted} in review</span>
+              <span class="pl-chip done">{pipeline.published} published</span>
+            </div>
+          {/if}
           <div class="acts-in">
             {#if activities.length > 0}
               {#each activities as act (act.id)}
@@ -236,6 +258,9 @@
                     </span>
                     <span class="ah">{!affordable ? 'Not enough cash' : act.effectHint}</span>
                   </span>
+                  {#if act.gamble}
+                    <span class="a-odds">{Math.round(act.gamble.odds * 100)}%</span>
+                  {/if}
                   {#if act.cash !== 0}
                     <span class="a-cash" class:earn={act.cash > 0} class:spend={act.cash < 0}>
                       {act.cash > 0 ? '+' : ''}{formatMoney(act.cash)}

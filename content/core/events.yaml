@@ -19,3 +19,109 @@ events:
       - label: Shelve it for now
         result: A kinder evening, and a paper losing momentum.
         effects: { mood: 2, writing: -1 }
+  - event_id: laptop_dies
+    title: The laptop dies
+    body: >-
+      A small pop, a smell of warm plastic, and a screen that will never wake
+      again. Everything important is (probably) backed up.
+    tags: [personal, money]
+    choices:
+      - label: Buy a refurbished replacement
+        result: Poorer, but functional by Friday.
+        effects: { personal_funds: -180, stress: 2 }
+      - label: Live off the library computers
+        result: Free, but the hot-desking diet wears thin fast.
+        effects: { stress: 5, mood: -2 }
+  - event_id: wedding_invite
+    title: A wedding, inconveniently
+    body: >-
+      An old friend is getting married, far away, on the worst possible
+      weekend. The invitation is lovely. The train fare is not.
+    tags: [personal, money]
+    choices:
+      - label: Go, and dance badly
+        result: Expensive, joyous, restorative.
+        effects: { personal_funds: -120, mood: 7, sleep: -3 }
+      - label: Send a card and regrets
+        result: The work gets done. The photos sting a little.
+        effects: { mood: -4, stress: 1 }
+  - event_id: flu_season
+    title: Flu season arrives
+    body: >-
+      Half the corridor is coughing. Your throat has started taking notes.
+    tags: [health]
+    choices:
+      - label: Rest properly for a few days
+        result: Sensible. The to-do list grumbles but survives.
+        effects: { sleep: 6, physical: 3, theory: -1 }
+      - label: Push through on paracetamol
+        result: You keep pace, at a price your body files for later.
+        effects: { physical: -5, methods: 1, stress: 2 }
+  - event_id: old_friend_visit
+    title: An old friend passes through
+    body: >-
+      One night only. They know nothing about your field and care less, which
+      is exactly the appeal.
+    tags: [personal]
+    choices:
+      - label: Make the time
+        result: You laugh about nothing for four hours. It helps enormously.
+        effects: { mood: 6, personal_funds: -20, stress: -3 }
+      - label: Postpone, again
+        result: They understand, again. That is somehow worse.
+        effects: { mood: -3 }
+  - event_id: campus_strike
+    title: Pickets at the gate
+    body: >-
+      The union is out over pensions and pay. There is a brazier, a dog in a
+      little vest, and a sign-up sheet.
+    tags: [politics]
+    choices:
+      - label: Join the picket
+        result: Cold toes, warm solidarity, docked pay.
+        effects: { politics: 3, personal_funds: -40, mood: 2 }
+      - label: Slip in the side entrance
+        result: The work continues. So do the looks.
+        effects: { mood: -3, reputation: -1 }
+  - event_id: review_request
+    title: A request to review
+    body: >-
+      An editor invites you to review a manuscript suspiciously close to your
+      own next paper. Service, intelligence-gathering, or both.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [peer_review, service]
+    choices:
+      - label: Accept the review
+        result: Two evenings gone; you now know exactly where the field is.
+        effects: { politics: 2, theory: 1, stress: 3 }
+      - label: Decline politely
+        result: The editor notes it. Editors remember.
+        effects: { mood: 1, reputation: -1 }
+  - event_id: media_call
+    title: The radio calls
+    body: >-
+      A producer wants ninety seconds on your area, live, at 7:40 tomorrow
+      morning. They will introduce you slightly wrongly.
+    conditions: { stages: [postdoc, assistant_professor] }
+    tags: [networking, visibility]
+    choices:
+      - label: Do the interview
+        result: You are briefly famous in three postcodes. The dean hears it.
+        effects: { reputation: 3, stress: 4, sleep: -2 }
+      - label: Recommend a colleague
+        result: Generous, invisible, and quietly noted by the colleague.
+        effects: { politics: 1, mood: 1 }
+  - event_id: consultancy_offer
+    title: A consultancy day-rate appears
+    body: >-
+      Industry would like one day of your expertise at a rate that makes the
+      stipend look like a rounding error.
+    conditions: { stages: [postdoc, assistant_professor] }
+    tags: [money]
+    choices:
+      - label: Take the day
+        result: The invoice clears. The writing day does not.
+        effects: { personal_funds: 250, writing: -1, stress: 2 }
+      - label: Guard the research time
+        result: Purity preserved; the bank balance unimpressed.
+        effects: { mood: 1, writing: 1 }

@@ -28,6 +28,8 @@ export interface RecapInput {
   progressAfter?: number;
   // Term-end money story (income, rent, overdraft), from the economy module.
   financeLines?: string[];
+  // What is nearly ripe next term — the hook that earns "one more turn".
+  teaser?: string[];
 }
 
 const FOCUS_LINES: Record<ActionCategory, string[]> = {
@@ -73,6 +75,8 @@ export interface Recap {
   turn: number;
   lines: string[];
   majorMilestones: MilestonePresentation[];
+  // Short look-ahead lines shown under the diary, so the turn ends on a promise.
+  teaser: string[];
 }
 
 
@@ -301,5 +305,10 @@ export function buildRecap(input: RecapInput): Recap {
   if (eventTitles.length > 0)
     lines.push(`Filed away: ${eventTitles.join('; ')}.`);
 
-  return { turn: turnNo, lines, majorMilestones: majorMilestones(before, after) };
+  return {
+    turn: turnNo,
+    lines,
+    majorMilestones: majorMilestones(before, after),
+    teaser: input.teaser ?? [],
+  };
 }

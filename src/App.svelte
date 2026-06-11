@@ -135,6 +135,8 @@
             spent={game.activitySpent}
             day={game.state.calendar.turn_number + 1}
             cash={game.cash}
+            flash={game.flash}
+            pipeline={game.pipeline}
             rivals={cohortEntries}
             onMove={(id) => game.moveTo(id)}
             onAct={(activityId, category, points) => game.act(activityId, category, points)}

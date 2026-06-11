@@ -27,11 +27,20 @@ export interface EventContext {
   stage: Stage;
   recentCategories: ActionCategory[];
   seenEventIds: string[];
+  // When provided, events seen long enough ago become eligible again, so a
+  // small pool never leaves a turn empty. Entries mirror `events_history`.
+  seenEvents?: { event_id: string; turn: number }[];
+  currentTurn?: number;
   rng?: () => number;
 }
 
 // Maximum events surfaced in a turn: one mandatory plus up to two optional.
 const MAX_EVENTS = 3;
+
+// A seen event may return after this many turns. Stages run four to six turns,
+// so a repeat usually lands a stage later, where it reads as a recurring fact
+// of academic life rather than a glitch.
+const REUSE_COOLDOWN_TURNS = 3;
 
 // The events available to a player: core + discipline, plus only the player's
 // committed sub-discipline (so an undeclared or early player never sees, say,
@@ -62,18 +71,34 @@ function eligible(event: ContentEvent, ctx: EventContext): boolean {
 export function selectTurnEvents(events: ContentEvent[], ctx: EventContext): SelectedEvent[] {
   const rng = ctx.rng ?? Math.random;
   const seen = new Set(ctx.seenEventIds);
-  const pool = events.filter((e) => !seen.has(e.event_id) && eligible(e, ctx));
-  if (pool.length === 0) return [];
+
+  // The turn each event was last seen, for cooldown-based reuse.
+  const lastSeen = new Map<string, number>();
+  for (const entry of ctx.seenEvents ?? []) {
+    lastSeen.set(entry.event_id, Math.max(lastSeen.get(entry.event_id) ?? -Infinity, entry.turn));
+  }
+  const staleEnough = (id: string): boolean => {
+    if (ctx.currentTurn == null) return false;
+    const last = lastSeen.get(id);
+    return last != null && ctx.currentTurn - last >= REUSE_COOLDOWN_TURNS;
+  };
+
+  const fresh = events.filter((e) => !seen.has(e.event_id) && eligible(e, ctx));
+  const reusable = events.filter((e) => seen.has(e.event_id) && staleEnough(e.event_id) && eligible(e, ctx));
+  if (fresh.length === 0 && reusable.length === 0) return [];
 
   // Score by relevance to what the player just did, with a random tiebreak so
   // turns vary. Tags that name an action category the player leaned into score
-  // higher.
+  // higher; never-seen events outrank returning ones.
   const recent = new Set<string>(ctx.recentCategories);
-  const scored = pool
-    .map((event) => {
+  const scored = [
+    ...fresh.map((event) => ({ event, base: 2 })),
+    ...reusable.map((event) => ({ event, base: 0 })),
+  ]
+    .map(({ event, base }) => {
       const tags = event.tags ?? [];
       const relevant = tags.some((t) => recent.has(t));
-      return { event, score: (relevant ? 2 : 1) + rng() };
+      return { event, score: base + (relevant ? 2 : 1) + rng() };
     })
     .sort((a, b) => b.score - a.score);
 

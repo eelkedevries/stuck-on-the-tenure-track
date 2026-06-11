@@ -261,3 +261,200 @@ events:
       - label: Trust the work
         result: Rested and calm, and rolling the dice a little.
         effects: { mood: 3, reputation: -1 }
+
+  # --- Variance pass (prompt 110): more per-stage dilemmas -----------------
+  - event_id: flatmate_crisis
+    title: The 2 a.m. flatmate
+    body: >-
+      A knock. Your flatmate, holding tea, radiating heartbreak. You have a
+      nine o'clock.
+    conditions: { stages: [undergraduate] }
+    tags: [personal]
+    choices:
+      - label: Stay up and listen
+        result: You are a good person and a tired one.
+        effects: { mood: 3, sleep: -7 }
+      - label: Offer tomorrow, kindly
+        result: Boundaries set; guilt scheduled for breakfast.
+        effects: { sleep: 4, mood: -2 }
+  - event_id: textbook_price
+    title: The £60 textbook
+    body: >-
+      The module guide calls it essential. The lecturer wrote it. The library
+      owns two copies, both recalled until June.
+    conditions: { stages: [undergraduate, msc] }
+    tags: [study, money]
+    choices:
+      - label: Buy it new
+        result: Knowledge acquired, beans for dinner.
+        effects: { personal_funds: -60, theory: 2 }
+      - label: Hunt a dog-eared second-hand copy
+        result: Cheaper, with someone else's confident wrong annotations.
+        effects: { personal_funds: -20, theory: 1, stress: 1 }
+  - event_id: course_rep
+    title: Be the course rep?
+    body: >-
+      Nobody else has volunteered. The staff-student committee has biscuits
+      and minutes, in that order of importance.
+    conditions: { stages: [undergraduate] }
+    tags: [politics]
+    choices:
+      - label: Volunteer
+        result: You learn how the department actually works. Useful, forever.
+        effects: { politics: 3, stress: 2 }
+      - label: Keep your head down
+        result: A quieter term for you; a quieter cohort for everyone.
+        effects: { mood: 1 }
+  - event_id: deadline_clash
+    title: Two deadlines, one Friday
+    body: >-
+      The stats assignment and the essay are due four hours apart, set by
+      lecturers who clearly do not speak to one another.
+    conditions: { stages: [undergraduate, msc] }
+    tags: [study]
+    choices:
+      - label: All-nighter, both in on time
+        result: Heroic, technically. Your eyelids disagree.
+        effects: { statistics: 2, writing: 1, sleep: -9 }
+      - label: Ask for an extension
+        result: Granted, with a pause you will remember unprompted for years.
+        effects: { sleep: 2, stress: -2, reputation: -1 }
+  - event_id: msc_imposter_evening
+    title: Everyone here seems brilliant
+    body: >-
+      The cohort WhatsApp is a wall of finished drafts and fellowship plans.
+      You have a sandwich and doubts.
+    conditions: { stages: [msc] }
+    tags: [personal]
+    choices:
+      - label: Say it out loud to a coursemate
+        result: They feel exactly the same. The relief is chemical.
+        effects: { mood: 5, stress: -4 }
+      - label: Work later to compensate
+        result: The draft grows; so does the doubt.
+        effects: { writing: 2, mood: -3, sleep: -3 }
+  - event_id: thesis_backup
+    title: The backup that wasn't
+    body: >-
+      The USB stick with the thesis data is in a washing machine, mid-cycle.
+      The cloud sync was "going to be set up this weekend".
+    conditions: { stages: [msc] }
+    tags: [study]
+    choices:
+      - label: Recreate the lost week
+        result: Painful, thorough, and now triple-backed-up.
+        effects: { methods: 2, stress: 6 }
+      - label: Trim the analysis plan
+        result: Leaner thesis, lighter conscience, lingering what-if.
+        effects: { stress: 1, writing: -1 }
+  - event_id: participant_pool_dry
+    title: The participant pool runs dry
+    body: >-
+      Week nine: every undergraduate who wants course credit has been tested,
+      twice. Your study needs forty more.
+    conditions: { stages: [phd] }
+    tags: [research]
+    choices:
+      - label: Pay participants from your own pocket
+        result: Data flows; lunches become theoretical.
+        effects: { personal_funds: -80, methods: 2 }
+      - label: Extend the study into next term
+        result: The timeline slips. Timelines do that.
+        effects: { stress: 3, mood: -1 }
+  - event_id: preprint_scooped
+    title: Scooped, almost
+    body: >-
+      A preprint appears doing nearly your study, nearly your way, from a lab
+      with nearly infinite funding.
+    conditions: { stages: [phd, postdoc] }
+    tags: [publishing, research]
+    choices:
+      - label: Race to submit first
+        result: Submitted in a fortnight of adrenaline and instant noodles.
+        effects: { writing: 3, sleep: -8, stress: 4 }
+      - label: Slow down and differentiate
+        result: A better paper, later, calmer.
+        effects: { methods: 2, theory: 1, stress: 1 }
+  - event_id: teaching_vs_data
+    title: Tutorial or testing slot?
+    body: >-
+      Your tutorial group needs you at two; the eye-tracker is free at two.
+      Both bookings have your name on them.
+    conditions: { stages: [phd] }
+    tags: [teaching, research]
+    choices:
+      - label: Teach, reschedule the lab
+        result: The students get their money's worth; the study waits a week.
+        effects: { teaching: 2, stress: 2 }
+      - label: Swap the tutorial with a colleague
+        result: The data lands. You now owe a favour with interest.
+        effects: { methods: 2, politics: -1 }
+  - event_id: open_data_request
+    title: A request for your data
+    body: >-
+      A stranger emails asking for the dataset behind your last paper,
+      "for a replication". Their tone is 60% curiosity, 40% audit.
+    conditions: { stages: [phd, postdoc, assistant_professor] }
+    tags: [publishing, open_science]
+    choices:
+      - label: Share everything, tidied
+        result: Two days of cleaning scripts; a reputation for openness.
+        effects: { reputation: 2, stress: 2 }
+      - label: Stall politely
+        result: The email thread grows teeth. Openness, delayed, sours.
+        effects: { politics: 1, reputation: -2 }
+  - event_id: student_in_tears
+    title: A student in your office
+    body: >-
+      Your tutee arrives mid-collapse: family, money, deadlines, all at once.
+      The next meeting is in ten minutes.
+    conditions: { stages: [assistant_professor] }
+    tags: [teaching, personal]
+    choices:
+      - label: Cancel the next thing and listen
+        result: You were the right person at the right time. It cost a meeting.
+        effects: { reputation: 1, mood: 2, stress: 2 }
+      - label: Refer them to student services
+        result: Correct procedure, faint aftertaste.
+        effects: { stress: -1, mood: -2 }
+  - event_id: budget_cut
+    title: The funder trims your budget
+    body: >-
+      "We are pleased to fund your project at 80% of the requested level."
+      The work, of course, remains at 100%.
+    conditions: { stages: [postdoc, assistant_professor] }
+    tags: [funding, money]
+    choices:
+      - label: Absorb it and push on
+        result: The spreadsheet bleeds quietly into the evenings.
+        effects: { stress: 4, politics: 1 }
+      - label: Descope the project openly
+        result: Honest, defensible, and noted by the panel.
+        effects: { stress: 1, reputation: -1 }
+  - event_id: external_examiner
+    title: External examiner invitation
+    body: >-
+      Another university would like your judgement, twice a year, for a fee
+      that almost covers the train.
+    conditions: { stages: [assistant_professor] }
+    tags: [service, money]
+    choices:
+      - label: Accept the role
+        result: Status, spreadsheets, and £150 a visit.
+        effects: { personal_funds: 150, politics: 2, stress: 3 }
+      - label: Decline this cycle
+        result: Your weekends remain your own, for now.
+        effects: { mood: 2 }
+  - event_id: lab_dog
+    title: A dog visits the department
+    body: >-
+      Someone's collie is doing the rounds of the corridor, conducting an
+      informal wellbeing audit. Productivity halts entirely.
+    tags: [personal]
+    choices:
+      - label: Take your turn with the dog
+        result: Ten minutes of unconditional approval. Science can wait.
+        effects: { mood: 4, stress: -3 }
+      - label: Close the office door
+        result: The work continues. Through the door, a single bark of judgement.
+        effects: { writing: 1, mood: -2 }

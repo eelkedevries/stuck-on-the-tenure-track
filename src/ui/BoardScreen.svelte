@@ -6,6 +6,7 @@
   import type { ActionCategory } from '../engine/actions';
   import type { BoardActivity } from '../locations/stages';
   import type { CohortEntry } from '../rivals/cohort';
+  import type { Flash } from './game.svelte';
   import { rivalPosition } from '../rivals/positions';
 
   interface Props {
@@ -20,6 +21,8 @@
     rivals?: CohortEntry[];
     target?: LocationId | null;
     overdue?: boolean;
+    flash?: Flash | null;
+    pipeline?: { drafting: number; submitted: number; published: number } | null;
     onMove?: (id: LocationId) => void;
     onAct?: (activityId: string, category: ActionCategory, points: number) => void;
     onRelax?: () => void;
@@ -38,6 +41,8 @@
     rivals = [],
     target = null,
     overdue = false,
+    flash = null,
+    pipeline = null,
     onMove,
     onAct,
     onRelax,
@@ -66,6 +71,8 @@
   {overdue}
   {activities}
   {spent}
+  {flash}
+  {pipeline}
   onSelect={(id) => onMove?.(id)}
   onAct={(actId, cat, pts) => onAct?.(actId, cat, pts)}
   onEndDay={() => onRelax?.()}

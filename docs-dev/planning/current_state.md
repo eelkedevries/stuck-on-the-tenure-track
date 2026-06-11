@@ -148,6 +148,23 @@ Run one prompt per session per `prompt_execution_guide.md`; do not rerun the
 completed M17 prompts (`074`–`091`) or the completed simplification prompts
 (`098`–`105`).
 
+## Fun-factor research and variance pass (110)
+
+Prompt `110` applied findings from five web-research reports (Jones in the Fast
+Lane teardown, decision design, life-sim event systems, reward/juice
+literature, rival/satire games) to attack the "identical-week grind": the
+event pool now **reuses events after a three-turn cooldown** (fresh ones still
+outrank returns) and grew by **~22 authored dilemmas** across core and
+psychology packs; **campus moments** (`src/engine/moments.ts`) fire on first
+arrival at a location each term; ordinary activities roll occasional **bonus or
+snag outcomes**; the café hosts a **pub quiz** gamble at every stage and the
+PhD seminar room a **three-minute-thesis contest** (odds on the card); starting
+a term exhausted, stressed, unwell, or overdrawn now costs 5–25 points off the
+clock (**failure taxes time, never ends the run**); one **flash channel** feeds
+all board feedback; and the diary closes with a **"Next term" teaser panel**
+(deadline, papers under review, goal within reach, rent vs balance, race gap)
+with a staggered reveal. No save-schema changes.
+
 ## Jones-fidelity and fun pass (109)
 
 Prompt `109` layered the *Jones in the Fast Lane* pressure loop over the existing

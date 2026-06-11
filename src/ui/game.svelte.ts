@@ -18,7 +18,16 @@ import { createNewGame } from '../state/newgame';
 import { decideTenure, applyTenure, tenureScore, TENURE_THRESHOLD } from '../milestones/tenure';
 import { loadAllPacks } from '../content/loader';
 import { resolveEvents } from '../content/inheritance';
-import { selectTurnEvents, eventPoolFor, applyEventEffects, type SelectedEvent } from '../engine/events';
+import {
+  selectTurnEvents,
+  eventPoolFor,
+  applyEventEffects,
+  summariseEffects,
+  type SelectedEvent,
+} from '../engine/events';
+import { rollMoment } from '../engine/moments';
+import type { EventEffects } from '../content/types';
+import type { Paper } from '../papers/types';
 import { type LocationId } from '../locations/types';
 import { travelCost } from '../locations/board';
 import {
@@ -33,7 +42,7 @@ import { buildRecap, type Recap } from './recap';
 import { rivalSighting } from '../rivals/sightings';
 import type { LocationVisit } from '../state/save';
 import { scheduleAppointments, type Appointment } from '../appointments/appointments';
-import { applyTermFinances } from '../economy/economy';
+import { applyTermFinances, formatMoney, STAGE_FINANCES } from '../economy/economy';
 import { raceStandings, raceLine, type RaceEntry } from '../rivals/race';
 
 // Content packs are static, so load them once; the per-player event pool is
@@ -143,6 +152,29 @@ interface EventLogEntry {
 
 export type ActivitySpent = Record<string, number>;
 
+// One-line board feedback: action results, campus moments, gamble outcomes.
+export interface Flash {
+  seq: number;
+  text: string;
+  tone: 'good' | 'bad' | 'info';
+}
+
+// Occasional extra outcomes on activities — a variable-reward sprinkle so the
+// same card does not always play out identically. Kept light: a couple of
+// points either way, applied through the ordinary event-effects path.
+const ACT_BONUSES: { text: string; effects: EventEffects }[] = [
+  { text: 'It goes unusually well.', effects: { mood: 2 } },
+  { text: 'Someone notices the effort.', effects: { reputation: 1 } },
+  { text: 'You finish early and sharp.', effects: { stress: -2 } },
+];
+const WORK_BONUS = { text: 'Tips on top.', effects: { personal_funds: 15 } as EventEffects };
+const ACT_SNAGS: { text: string; effects: EventEffects }[] = [
+  { text: 'It drags horribly.', effects: { stress: 2 } },
+  { text: 'A small humiliation en route.', effects: { mood: -2 } },
+];
+const BONUS_CHANCE = 0.12;
+const SNAG_CHANCE = 0.06;
+
 export class Game {
   state = $state<SaveGame | null>(null);
   allocation = $state<Allocation>(emptyAllocation());
@@ -151,10 +183,17 @@ export class Game {
   recap = $state<Recap | null>(null);
   appointments = $state<Appointment[]>([]);
   activitySpent = $state<ActivitySpent>({});
+  // Latest board feedback line; the board shows it as a toast.
+  flash = $state<Flash | null>(null);
+  private flashSeq = 0;
   // Waiting and travel spend turn time without resolving as a productivity category.
   waitingSpent = $state(0);
   // Travel time spent this turn (not an action category).
   movementSpent = $state(0);
+  // Time lost to starting the term in a bad way — exhausted, unwell, or
+  // overdrawn. The Jones rule: failure taxes next turn's clock, never ends
+  // the run.
+  handicapSpent = $state(0);
   private lastCategories: ActionCategory[] = [];
   private pendingEnd = false;
 
@@ -191,6 +230,20 @@ export class Game {
 
   get raceLine(): string {
     return raceLine(this.standings);
+  }
+
+  // The paper pipeline at a glance, shown in the research locations' window
+  // once the publishing career has begun.
+  get pipeline(): { drafting: number; submitted: number; published: number } | null {
+    if (!this.state) return null;
+    const stage = this.stage;
+    if (stage !== 'phd' && stage !== 'postdoc' && stage !== 'assistant_professor') return null;
+    const papers = this.state.player.papers as unknown as Paper[];
+    return {
+      drafting: papers.filter((p) => p.status === 'in_preparation').length,
+      submitted: papers.filter((p) => p.status === 'submitted').length,
+      published: papers.filter((p) => p.status === 'published').length,
+    };
   }
 
   // Time-points elapsed in the current turn.
@@ -268,9 +321,16 @@ export class Game {
     return (this.state?.board.current_location ?? 'office') as LocationId;
   }
 
-  // Time points left this turn = budget minus actions committed, waiting, and movement.
+  // Time points left this turn = budget minus actions committed, waiting,
+  // movement, and any start-of-term handicap.
   get timeRemaining(): number {
-    return TURN_TIME_POINTS - allocationTotal(this.allocation) - this.waitingSpent - this.movementSpent;
+    return (
+      TURN_TIME_POINTS -
+      allocationTotal(this.allocation) -
+      this.waitingSpent -
+      this.movementSpent -
+      this.handicapSpent
+    );
   }
 
   // The named activities available at the current location for the current
@@ -402,14 +462,23 @@ export class Game {
     return true;
   }
 
+  private showFlash(text: string, tone: Flash['tone']): void {
+    this.flashSeq += 1;
+    this.flash = { seq: this.flashSeq, text, tone };
+  }
+
   // Move to another location, paying the context-switch cost and recording the
-  // visit for location memory (§4.11).
+  // visit for location memory (§4.11). First arrival somewhere in a term can
+  // produce a campus moment — a small surprise with light effects.
   moveTo(id: LocationId): void {
     const current = this.state;
     if (!current) return;
     if (id === current.board.current_location) return;
     const cost = travelCost(current.board.current_location as LocationId, id);
     if (this.timeRemaining < cost) return;
+    const firstVisitThisTerm = !current.player.location_visits.some(
+      (v) => v.location === id && v.turn === current.calendar.turn_number,
+    );
     this.movementSpent += cost;
     this.state = {
       ...current,
@@ -422,14 +491,37 @@ export class Game {
         ],
       },
     };
+    if (firstVisitThisTerm) {
+      const moment = rollMoment(id, this.stage);
+      if (moment && this.state) {
+        this.state = applyEventEffects(this.state, moment.effects);
+        const fx = summariseEffects(moment.effects);
+        this.showFlash(
+          fx === 'No real effect' ? moment.text : `${moment.text} (${fx})`,
+          moment.tone === 'neutral' ? 'info' : moment.tone,
+        );
+      }
+    }
     this.resolveAppointments();
     this.endIfTimeUp();
+  }
+
+  // The standard feedback line for an activity: time, money, headline effects.
+  private actSummary(act: BoardActivity, pts: number): string {
+    const parts = [`−${pts}t`];
+    if (act.cash > 0) parts.push(`+${formatMoney(act.cash)}`);
+    if (act.cash < 0) parts.push(formatMoney(act.cash));
+    for (const e of act.positiveEffects.slice(0, 2)) parts.push(`▲ ${e.replace(/ \+$/, '')}`);
+    for (const e of act.negativeEffects.slice(0, 1)) parts.push(`▼ ${e.replace(/ −$/, '')}`);
+    return `${act.label}: ${parts.join(' · ')}`;
   }
 
   // Spend time on a visible location activity, drawing down the budget while
   // tracking the selected card separately from the internal category. Paid
   // work and priced activities move cash immediately, so the till rings the
   // moment the choice is made; purchases the player cannot afford are refused.
+  // Gambles resolve on the spot; ordinary activities occasionally roll a small
+  // bonus or snag so no card plays out identically every time.
   act(activityId: string, category: ActionCategory, points: number): void {
     if (this.waitForAppointment(activityId)) return;
     if (!this.availableActions.includes(category)) return;
@@ -455,6 +547,38 @@ export class Game {
           },
         },
       };
+    }
+    if (activity && this.state) {
+      const gamble = activity.gamble;
+      if (gamble) {
+        const won = Math.random() < gamble.odds;
+        const effects = won ? gamble.win : gamble.lose;
+        this.state = applyEventEffects(this.state, effects);
+        this.showFlash(
+          `${won ? gamble.winText : gamble.loseText} (${summariseEffects(effects)})`,
+          won ? 'good' : 'bad',
+        );
+      } else {
+        const roll = Math.random();
+        if (roll < BONUS_CHANCE) {
+          const pool = activity.cash > 0 ? [...ACT_BONUSES, WORK_BONUS] : ACT_BONUSES;
+          const bonus = pool[Math.floor(Math.random() * pool.length)];
+          this.state = applyEventEffects(this.state, bonus.effects);
+          this.showFlash(
+            `${this.actSummary(activity, pts)} · ✦ ${bonus.text} (${summariseEffects(bonus.effects)})`,
+            'good',
+          );
+        } else if (roll > 1 - SNAG_CHANCE) {
+          const snag = ACT_SNAGS[Math.floor(Math.random() * ACT_SNAGS.length)];
+          this.state = applyEventEffects(this.state, snag.effects);
+          this.showFlash(
+            `${this.actSummary(activity, pts)} · ${snag.text} (${summariseEffects(snag.effects)})`,
+            'bad',
+          );
+        } else {
+          this.showFlash(this.actSummary(activity, pts), 'info');
+        }
+      }
     }
     this.attendAppointment(activityId, elapsedAtStart);
     this.resolveAppointments();
@@ -492,6 +616,7 @@ export class Game {
     this.activitySpent = {};
     this.waitingSpent = 0;
     this.movementSpent = 0;
+    this.handicapSpent = 0;
     this.lastCategories = [];
     // Show the intro/onboarding before the first turn.
     this.view = 'intro';
@@ -510,9 +635,39 @@ export class Game {
     this.activitySpent = {};
     this.waitingSpent = 0;
     this.movementSpent = 0;
+    this.handicapSpent = 0;
     this.lastCategories = [];
     if (this.isOver(loaded)) this.view = 'end';
     else this.beginTurn();
+  }
+
+  // The time tax for starting a term in a bad state, with its reasons. Capped
+  // so a rough patch squeezes the clock without freezing it.
+  private startingHandicap(): { cost: number; reasons: string[] } {
+    const current = this.state;
+    if (!current) return { cost: 0, reasons: [] };
+    const w = current.player.wellbeing;
+    const conditions = (current.player.health_conditions as unknown as { status: string }[]) ?? [];
+    const unwell = conditions.some((c) => c.status === 'active' || c.status === 'chronic');
+    let cost = 0;
+    const reasons: string[] = [];
+    if (w.sleep < 30) {
+      cost += 10;
+      reasons.push('short of sleep');
+    }
+    if (w.stress > 75) {
+      cost += 5;
+      reasons.push('frayed by stress');
+    }
+    if (unwell) {
+      cost += 10;
+      reasons.push('unwell');
+    }
+    if (current.player.funds.personal < 0) {
+      cost += 5;
+      reasons.push('distracted by the overdraft');
+    }
+    return { cost: Math.min(25, cost), reasons };
   }
 
   // Start-of-turn: reset the time budget and movement, record the starting
@@ -525,6 +680,15 @@ export class Game {
     this.activitySpent = {};
     this.waitingSpent = 0;
     this.movementSpent = 0;
+    this.handicapSpent = 0;
+    const handicap = this.startingHandicap();
+    this.handicapSpent = handicap.cost;
+    if (handicap.cost > 0) {
+      this.showFlash(
+        `You start the term ${handicap.reasons.join(' and ')}: −${handicap.cost}t off the clock.`,
+        'bad',
+      );
+    }
     const refreshed: SaveGame = {
       ...current,
       board: { ...current.board, time_remaining: TURN_TIME_POINTS },
@@ -539,11 +703,13 @@ export class Game {
     this.state = scheduleDeadlines(refreshed);
     this.appointments = scheduleAppointments(this.stage, current.calendar.turn_number);
     const pool = eventPoolFor(ALL_PACKS, current.player.specialisation.current_sub_discipline);
-    const seen = (this.state.events_history as unknown as EventLogEntry[]).map((e) => e.event_id);
+    const seenEvents = this.state.events_history as unknown as EventLogEntry[];
     this.pendingEvents = selectTurnEvents(pool, {
       stage: this.stage,
       recentCategories: this.lastCategories,
-      seenEventIds: seen,
+      seenEventIds: seenEvents.map((e) => e.event_id),
+      seenEvents,
+      currentTurn: current.calendar.turn_number,
     });
     this.view = this.pendingEvents.length > 0 ? 'event' : 'turn';
   }
@@ -594,6 +760,7 @@ export class Game {
     this.activitySpent = {};
     this.waitingSpent = 0;
     this.movementSpent = 0;
+    this.handicapSpent = 0;
     this.view = 'start';
   }
 
@@ -651,6 +818,45 @@ export class Game {
     const finances = applyTermFinances(merged, stagePlayed);
     merged = finances.state;
 
+    // End the term on a promise: what is nearly ripe when the next one starts.
+    const teaser: string[] = [];
+    const upcoming = (merged.deadlines as unknown as Deadline[])
+      .filter((d) => d.status === 'pending')
+      .sort((a, b) => Date.parse(a.due_date) - Date.parse(b.due_date));
+    if (upcoming[0]) teaser.push(`${upcoming[0].title} is on the horizon.`);
+    const inReview = (merged.player.papers as unknown as Paper[]).filter(
+      (p) => p.status === 'submitted',
+    ).length;
+    if (inReview > 0) {
+      teaser.push(
+        `${inReview} paper${inReview === 1 ? ' is' : 's are'} under review — a verdict could land any term.`,
+      );
+    }
+    const goalAfter = subGoalFor(merged);
+    const goalPct = subGoalProgress(goalAfter);
+    if (goalPct >= 70 && goalPct < 100) {
+      teaser.push(`The push to ${goalAfter.title} sits at ${goalPct}% — within reach.`);
+    }
+    const nextStage = stageForTurn(merged.calendar.turn_number);
+    const nextRent = STAGE_FINANCES[nextStage].rent;
+    if (merged.player.funds.personal < nextRent) {
+      teaser.push(
+        `Rent next term is ${formatMoney(nextRent)}; the balance is ${formatMoney(merged.player.funds.personal)}. Paid work beckons.`,
+      );
+    }
+    const after = raceStandings(merged, advanced);
+    const you = after.find((e) => e.isPlayer);
+    if (you && you.position > 1) {
+      const leader = after[0];
+      const gap = leader.score - you.score;
+      if (gap <= 4) teaser.push(`${leader.name} leads by ${gap} — catchable.`);
+    } else if (you) {
+      const second = after.find((e) => !e.isPlayer);
+      if (second && you.score - second.score <= 3) {
+        teaser.push(`${second.name} is ${you.score - second.score} point${you.score - second.score === 1 ? '' : 's'} behind you, and pushing.`);
+      }
+    }
+
     this.pendingEnd = merged.calendar.turn_number >= totalTurns();
     if (this.pendingEnd) {
       const decision = decideTenure(merged);
@@ -683,10 +889,12 @@ export class Game {
       progressBefore,
       progressAfter,
       financeLines: finances.lines,
+      teaser: teaser.slice(0, 3),
     });
     this.allocation = emptyAllocation();
     this.waitingSpent = 0;
     this.movementSpent = 0;
+    this.handicapSpent = 0;
     this.view = 'recap';
   }
 

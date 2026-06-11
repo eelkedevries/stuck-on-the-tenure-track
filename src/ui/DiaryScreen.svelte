@@ -34,11 +34,22 @@
       {#if recap.lines.length > 0}
         <ul class="diary-list">
           {#each recap.lines as line, i (i)}
-            <li><span class="tick">—</span><span>{line}</span></li>
+            <li style="--i: {i}"><span class="tick">—</span><span>{line}</span></li>
           {/each}
         </ul>
       {:else}
         <p class="diary-empty">Nothing to report this turn.</p>
+      {/if}
+
+      {#if recap.teaser.length > 0}
+        <div class="teaser">
+          <span class="eyebrow">Next term</span>
+          <ul class="diary-list">
+            {#each recap.teaser as line, i (i)}
+              <li style="--i: {recap.lines.length + i}"><span class="tick">▸</span><span>{line}</span></li>
+            {/each}
+          </ul>
+        </div>
       {/if}
 
       <div style="margin-top: 16px">
